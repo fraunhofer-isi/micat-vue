@@ -1,3 +1,14 @@
+<script setup lang="ts">
+import { inject } from 'vue';
+import type { Ref } from 'vue';
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
+import { ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
+import type { ModalInjectInterface } from "@/types";
+import { defaultModalInject } from "@/defaults";
+
+const { showModal, modalTitle, modalText, modalType, closeModal } = inject<ModalInjectInterface>('showModal') || defaultModalInject
+</script>
+
 <template>
   <TransitionRoot as="template" :show="showModal">
     <Dialog as="div" class="relative z-10" @close="closeModal()">
@@ -14,23 +25,23 @@
                   <div
                     class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10"
                     :class="{
-                      'bg-red-100': type === 'danger',
-                      'bg-sky-100': type === 'help'
+                      'bg-red-100': modalType === 'danger',
+                      'bg-sky-100': modalType === 'help'
                     }"
                   >
-                    <ExclamationTriangleIcon v-if="type === 'danger'" class="h-6 w-6 text-red-600" aria-hidden="true" />
-                    <InformationCircleIcon v-else-if="type === 'help'" class="h-6 w-6 text-sky-600" aria-hidden="true" />
+                    <ExclamationTriangleIcon v-if="modalType === 'danger'" class="h-6 w-6 text-red-600" aria-hidden="true" />
+                    <InformationCircleIcon v-else-if="modalType === 'help'" class="h-6 w-6 text-sky-600" aria-hidden="true" />
                   </div>
                   <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">{{ title }}</DialogTitle>
+                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">{{ modalTitle }}</DialogTitle>
                     <div class="mt-2">
-                      <p class="text-sm text-gray-500">{{ text }}</p>
+                      <p class="text-sm text-gray-500">{{ modalText }}</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button type="button" class="inline-flex w-full justify-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 sm:ml-3 sm:w-auto" @click="closeModal()">Close</button>
+                <button type="button" class="inline-flex w-full justify-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 sm:ml-3 sm:w-auto border-0 focus:border-0 focus:outline-none" @click="closeModal()">Close</button>
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -39,16 +50,3 @@
     </Dialog>
   </TransitionRoot>
 </template>
-
-<script setup>
-import { inject } from 'vue';
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
-import { ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
-
-defineProps({
-  title: String,
-  text: String,
-  type: String
-})
-const { showModal, openModal, closeModal } = inject('showModal')
-</script>

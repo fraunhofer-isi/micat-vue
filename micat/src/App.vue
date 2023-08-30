@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, provide } from 'vue';
 import { RouterView } from 'vue-router';
-import Modal from "@/components/Modal.vue";
+import NotificationBox from "@/components/NotificationBox.vue";
+import type { HelpTextInterface, ModalInjectInterface } from "@/types";
 
-
-const helpTexts = {
+const helpTexts: HelpTextInterface = {
   'timeframe': {
     'title': 'Time frame',
     'text': 'tba',
@@ -22,11 +22,11 @@ const helpTexts = {
   },
 };
 
-const showModal: Boolean = ref(false);
-const modalTitle: String = ref('');
-const modalText: String = ref('');
-const modalType: String = ref('help');
-const openModal = (key: String) => {
+const showModal = ref<Boolean>(false);
+const modalTitle = ref<String>('');
+const modalText = ref<String>('');
+const modalType = ref<String>('help');
+const openModal = (key: string) => {
   modalTitle.value = helpTexts[key].title;
   modalText.value = helpTexts[key].text;
   modalType.value = helpTexts[key].type;
@@ -37,6 +37,9 @@ const closeModal = () => {
 };
 provide('showModal', {
   showModal,
+  modalTitle,
+  modalText,
+  modalType,
   openModal,
   closeModal
 })
@@ -59,10 +62,10 @@ provide('showModal', {
           <div class="hidden w-full md:block md:w-auto" id="navbar-default">
             <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-blue-950 dark:border-gray-700">
               <li>
-                <a href="https://micatool.eu/" target="_blank" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Project</a>
+                <a href="https://micatool.eu/" target="_blank" class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Project</a>
               </li>
               <li>
-                <a href="https://fraunhofer-isi.github.io/micat" target="_blank" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Documentation</a>
+                <a href="https://fraunhofer-isi.github.io/micat" target="_blank" class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Documentation</a>
               </li>
             </ul>
           </div>
@@ -72,6 +75,6 @@ provide('showModal', {
 
     <RouterView />
 
-    <Modal :title="modalTitle" :text="modalText" :type="modalType"></Modal>
+    <NotificationBox></NotificationBox>
   </div>
 </template>
