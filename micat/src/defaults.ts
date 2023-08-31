@@ -1,4 +1,4 @@
-import type { ModalInjectInterface } from "@/types";
+import type { ModalInjectInterface, StageInjectInterface } from "@/types";
 
 export const defaultModalInject: ModalInjectInterface = {
     showModal: false,
@@ -7,4 +7,8 @@ export const defaultModalInject: ModalInjectInterface = {
     modalType: '',
     openModal: () => null,
     closeModal: () => null
+}
+export const defaultStageInject: StageInjectInterface = {
+    stage: 1,
+    stages: {}
 }

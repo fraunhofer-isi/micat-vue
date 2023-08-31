@@ -22,6 +22,8 @@ const helpTexts: HelpTextInterface = {
   },
 };
 
+const stages = Object.freeze({ home: 1, full: 2 });
+const stage = ref<Number>(stages.home);
 const showModal = ref<Boolean>(false);
 const modalTitle = ref<String>('');
 const modalText = ref<String>('');
@@ -35,7 +37,7 @@ const openModal = (key: string) => {
 const closeModal = () => {
   showModal.value = false;
 };
-provide('showModal', {
+provide('modal', {
   showModal,
   modalTitle,
   modalText,
@@ -43,6 +45,7 @@ provide('showModal', {
   openModal,
   closeModal
 })
+provide('stage', { stage, stages })
 </script>
 
 <template>
