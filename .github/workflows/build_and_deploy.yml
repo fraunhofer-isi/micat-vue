@@ -1,0 +1,48 @@
+# © 2023 Fraunhofer-Gesellschaft e.V., München
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+
+# generate key pair on server with
+# ssh-keygen -m PEM -t rsa -b 4096
+# use "demo_key" as target file and no password
+# add public key to authorized keys with
+# cat demo_key.pub >> ~/.ssh/authorized_keys
+# open private key file with
+# nano demo_key
+# and copy private key to a GitHub secret variable of the repository: SSH_PRIVATE_KEY
+# also create the secrets REMOTE_USER, REMOTE_HOST, REMOTE_PORT, REMOTE_TARGET and
+# apply corresponding values
+name: build_and_deploy
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: install node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '19.x'
+    - name: install node.js dependencies
+      run: cd micat
+      run: npm install
+    - name: build
+      run: cd micat
+      run: npm run build --if-present
+    - name: deploy
+      uses: easingthemes/ssh-deploy@main
+      with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-rlgoDzvc -i --delete"
+          SOURCE: "micat/dist/"
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}
+
