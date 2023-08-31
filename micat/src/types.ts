@@ -1,5 +1,5 @@
-export interface CountryInterface {
-    rows:    Array<Array<number | string>>;
+export interface RegionsInterface {
+    rows: Array<Array<number | string>>;
 }
 export interface HelpTextInterface {
     [key: string]: {
@@ -15,4 +15,8 @@ export interface ModalInjectInterface {
     modalType: string;
     openModal(key: string): any;
     closeModal(): any;
+}
+export interface StageInjectInterface {
+    stage: number;
+    stages: { [key: string]: number }
 }

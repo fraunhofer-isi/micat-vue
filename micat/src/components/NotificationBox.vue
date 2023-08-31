@@ -6,7 +6,7 @@ import { ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/vue/2
 import type { ModalInjectInterface } from "@/types";
 import { defaultModalInject } from "@/defaults";
 
-const { showModal, modalTitle, modalText, modalType, closeModal } = inject<ModalInjectInterface>('showModal') || defaultModalInject
+const { showModal, modalTitle, modalText, modalType, closeModal } = inject<ModalInjectInterface>('modal') || defaultModalInject
 </script>
 
 <template>
