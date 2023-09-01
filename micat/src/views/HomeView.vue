@@ -1,116 +1,249 @@
 <script setup async lang="ts">
-import { inject, onMounted, ref } from 'vue';
-import type { Ref } from 'vue';
-import { InformationCircleIcon } from '@heroicons/vue/24/outline';
-import type { ModalInjectInterface, StageInjectInterface, RegionsInterface } from "@/types";
-import { defaultModalInject, defaultStageInject } from "@/defaults";
+import {inject, onMounted, ref, watch} from 'vue';
+import type {Ref} from 'vue';
+import {InformationCircleIcon, TrashIcon, PlusCircleIcon} from '@heroicons/vue/24/outline';
+import type {ModalInjectInterface, StageInjectInterface, RegionsInterface} from "@/types";
+import {defaultModalInject, defaultStageInject} from "@/defaults";
 
-const { openModal } = inject<ModalInjectInterface>('modal') || defaultModalInject
-const { stage, stages } = inject<StageInjectInterface>('stage') || defaultStageInject
+// Injections
+const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
+const {stage, stages} = inject<StageInjectInterface>('stage') || defaultStageInject
+
+// Variables
 let regions: Ref<Array<Array<number | string>>> = ref([]);
-
 const units = {
   1: "ktoe (tonne of oil equivalent)",
   2: "MJ (Megajoule)",
   3: "GJ (Gigajoule)",
   4: "MWh (Energy quantity per hour)",
 }
-
 const future = ref<Boolean>(false);
 const region = ref<Number>(0);
 const municipality = ref<Boolean>(false);
 const inhabitants = ref<Number>(100000);
 const unit = ref<Number>(1);
+let currentYear = Math.floor(new Date().getFullYear() / 5) * 5;
+const years = ref<Array<Number>>([currentYear - 10, currentYear - 5, currentYear]);
+const newYears = ref<Array<Number>>([...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
+const newYearSelected = ref<Number>(newYears.value[0]);
+
+// Watchers
+watch(future, async (newFuture, oldFuture) => {
+  // Check if there are valid years defined. If not add default ones.
+  currentYear = new Date().getFullYear();
+  if (newFuture) {
+    // Filter out years from the past
+    years.value = years.value.filter(year => year >= currentYear);
+    if (years.value.length == 0) {
+      // Round up to nearest 5
+      const nextValidYear = Math.ceil(currentYear / 5) * 5;
+      years.value = [nextValidYear, nextValidYear + 5, nextValidYear + 10];
+      newYears.value = [...Array(30).keys()].map(delta => currentYear + delta).filter(newYear => years.value.indexOf(newYear) == -1);
+    }
+  } else {
+    // Filter out years from the past
+    years.value = years.value.filter(year => year <= currentYear);
+    if (years.value.length == 0) {
+      // Round down to nearest 5
+      const nextValidYear = Math.floor(currentYear / 5) * 5;
+      years.value = [nextValidYear - 10, nextValidYear - 5, nextValidYear];
+      newYears.value = [...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1);
+    }
+  }
+})
+
+// Lifecycle
 onMounted(async () => {
   const response: Response = await fetch(`${import.meta.env.VITE_API_URL}id_region`);
   const data: RegionsInterface = await response.json();
   regions.value = data.rows;
 })
+
+// Functions
+const addYear = () => {
+  years.value.push(newYearSelected.value);
+  years.value.sort();
+  newYears.value = newYears.value.filter(newYear => newYear !== newYearSelected.value);
+  newYearSelected.value = newYears.value[0];
+};
+const removeYear = (year: Number) => {
+  if (years.value.length > 2) {
+    // Keep at least two years
+    years.value = years.value.filter(x => x !== year);
+    newYears.value.push(year);
+    newYears.value.sort();
+  }
+};
 </script>
 
 <template>
   <main>
-    <div class="grid grid-cols-2 max-w-screen-xl mx-auto mt-[15vh]">
-      <div class="col pr-[7rem]" v-if="stage === stages.home">
-        <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency projects</h1>
-        <p class="mt-6 text-lg font-light dark:text-white">Select a suitable scenario from the world of energy efficiency, optionally add your own values and receive a comprehensive analysis for your region.</p>
+    <div class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
+      <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
+        <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency
+          projects</h1>
+        <p class="mt-6 text-lg font-light dark:text-white">Select a suitable scenario from the world of energy
+          efficiency, optionally add your own values and receive a comprehensive analysis for your region.</p>
       </div>
-      <div class="col">
+      <div
+          class="col"
+          :class="{
+            'col-span-4': stage === stages.full,
+            'col-span-5': stage === stages.home,
+          }"
+      >
         <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5">
           <div class="absolute top-[-14px] left-0 w-full text-center">
-            <span class="inline-block font-bold italic bg-white dark:bg-blue-950 dark:text-white px-4">Select your use case</span>
+            <span class="inline-block font-bold italic bg-white dark:bg-blue-950 dark:text-white px-4">
+              <span v-if="stage === stages.home">Select your use case</span>
+              <span v-else>Options</span>
+            </span>
           </div>
-          <div class="grid grid-cols-2 items-center">
+          <div class="grid grid-cols-5 items-center">
             <!-- time frame -->
-            <div>
+            <div class="col-span-2">
               <label for="timeframe" class="dark:text-white text-sm">Time frame</label>
-              <InformationCircleIcon @click="openModal('timeframe')" class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"></InformationCircleIcon>
+              <InformationCircleIcon @click="openModal('timeframe')"
+                                     class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"></InformationCircleIcon>
             </div>
-            <div>
-              <label for="timeframe" class="inline-flex items-center rounded-full cursor-pointer dark:text-gray-800 border border-sky-600 dark:border-0">
+            <div class="col-span-3">
+              <label for="timeframe"
+                     class="inline-flex items-center rounded-full cursor-pointer dark:text-gray-800 border border-sky-600 dark:border-0">
                 <input id="timeframe" type="checkbox" class="hidden peer" v-model="future">
-                <span class="leading-3 pl-9 pr-8 pt-4 pb-3 rounded-l-full bg-sky-600 text-white peer-checked:text-sky-900 peer-checked:bg-white text-center"><span class="uppercase font-bold">past</span><br><span class="text-sm">(ex-post)</span></span>
-                <span class="leading-3 pl-8 pr-9 pt-4 pb-3 rounded-r-full dark:bg-white text-sky-900 peer-checked:bg-sky-600 peer-checked:text-white text-center"><span class="uppercase font-bold">future</span><br><span class="text-sm">(ex-ante)</span></span>
+                <span
+                    class="leading-3 pl-9 pr-8 pt-4 pb-3 rounded-l-full bg-sky-600 text-white peer-checked:text-sky-900 peer-checked:bg-white text-center"><span
+                    class="uppercase font-bold">past</span><br><span class="text-sm">(ex-post)</span></span>
+                <span
+                    class="leading-3 pl-8 pr-9 pt-4 pb-3 rounded-r-full dark:bg-white text-sky-900 peer-checked:bg-sky-600 peer-checked:text-white text-center"><span
+                    class="uppercase font-bold">future</span><br><span class="text-sm">(ex-ante)</span></span>
               </label>
             </div>
             <!-- end time frame -->
             <!-- region -->
-            <div class="mt-8">
+            <div class="mt-8 col-span-2">
               <label for="region" class="dark:text-white text-sm">Region</label>
-              <InformationCircleIcon @click="openModal('region')" class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"></InformationCircleIcon>
+              <InformationCircleIcon @click="openModal('region')"
+                                     class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"></InformationCircleIcon>
             </div>
-            <div class="mt-8">
+            <div class="mt-8 col-span-3">
               <select
                   id="region"
                   class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                   v-model="region"
               >
-                  <option v-for="(region, i) in regions" v-bind:key="`region-${i}`" :value="region[0]">{{ region[1] }}</option>
+                <option v-for="(region, i) in regions" v-bind:key="`region-${i}`" :value="region[0]">{{
+                    region[1]
+                  }}
+                </option>
               </select>
               <div v-if="region !== 0">
                 <div class="flex items-center mb-2 mt-3">
-                    <input v-model="municipality" id="municipality-1" type="radio" :value="false" name="municipality" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                    <label for="default-radio-1" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Whole country</label>
+                  <input v-model="municipality" id="municipality-1" type="radio" :value="false" name="municipality"
+                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                  <label for="default-radio-1" class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300">Whole
+                    country</label>
                 </div>
                 <div class="flex items-center">
-                    <input v-model="municipality" id="municipality-2" type="radio" :value="true" name="municipality" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                    <label for="default-radio-2" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Municipality with <input type="text" id="inhabitants" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-1.5 py-0.5 inline dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 max-w-[65px]" v-model="inhabitants"> inhabitants</label>
+                  <input v-model="municipality" id="municipality-2" type="radio" :value="true" name="municipality"
+                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                  <label for="default-radio-2" class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300">Municipality
+                    with <input type="number" id="inhabitants"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-1.5 py-0.5 inline dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 max-w-[85px]"
+                                v-model="inhabitants"> inhabitants</label>
                 </div>
               </div>
             </div>
             <!-- end region -->
             <!-- unit -->
-            <div class="mt-8">
+            <div class="mt-8 col-span-2">
               <label for="unit" class="dark:text-white text-sm">Unit</label>
-              <InformationCircleIcon @click="openModal('unit')" class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"></InformationCircleIcon>
+              <InformationCircleIcon @click="openModal('unit')"
+                                     class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"></InformationCircleIcon>
             </div>
-            <div class="mt-8">
+            <div class="mt-8 col-span-3">
               <select
                   id="unit"
                   class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                   v-model="unit"
               >
-                  <option v-for="[key, value] in Object.entries(units)" v-bind:key="`unit-${key}`" :value="key">{{ value }}</option>
+                <option v-for="[key, value] in Object.entries(units)" v-bind:key="`unit-${key}`" :value="key">{{
+                    value
+                  }}
+                </option>
               </select>
             </div>
             <!-- end unit -->
           </div>
         </div>
         <button
-          class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full uppercase"
-          @click="stage = stages.full"
-          v-if="stage === stages.home"
+            class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full uppercase"
+            @click="stage = stages.full"
+            v-if="stage === stages.home"
         >
           Start
         </button>
         <a
-          class="border border-sky-500 text-sky-500 hover:border-sky-600 hover:text-sky-600  hover:dark:border-sky-400 hover:dark:text-sky-400 font-bold py-2 px-8 rounded-full uppercase ml-3"
-          href="https://fraunhofer-isi.github.io/micat"
-          target="_blank"
-          v-if="stage === stages.home"
+            class="border border-sky-500 text-sky-500 hover:border-sky-600 hover:text-sky-600  hover:dark:border-sky-400 hover:dark:text-sky-400 font-bold py-2 px-8 rounded-full uppercase ml-3"
+            href="https://fraunhofer-isi.github.io/micat"
+            target="_blank"
+            v-if="stage === stages.home"
         >
           Learn more
         </a>
+        <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mt-[3rem]"
+             v-if="stage === stages.full">
+          <div class="absolute top-[-14px] left-0 w-full text-center">
+            <span class="inline-block font-bold italic bg-white dark:bg-blue-950 dark:text-white px-4">
+              Time frame
+              <InformationCircleIcon
+                  @click="openModal('years')"
+                  class="h-6 w-6 ml-1 cursor-pointer inline dark:text-white"
+              ></InformationCircleIcon>
+            </span>
+          </div>
+          <div class="flex flex-wrap">
+            <div v-for="year in years" v-bind:key="year.toString()" class="whitespace-nowrap border-sky-600 mr-4 mb-7">
+              <span class="leading-7 px-2 py-2 rounded-l-full bg-sky-600 text-white text-center">{{ year }}</span>
+              <span class="leading-7 px-2 py-2 rounded-r-full dark:bg-white text-sky-900 text-center">
+                <TrashIcon
+                    @click="removeYear(year)"
+                    class="mt-[-3px] h-5 w-5 inline"
+                    :class="{
+                      'text-red-200': years.length <= 2,
+                      'text-red-700': years.length > 2,
+                      'cursor-pointer': years.length > 2,
+                    }"
+                ></TrashIcon>
+              </span>
+            </div>
+          </div>
+          <div class="mt-2">
+            <select
+                id="new-year"
+                class="py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
+                v-model="newYearSelected"
+            >
+              <option v-for="newYear in newYears" v-bind:key="newYear.toString()" :value="newYear"
+                      :selected="newYear === newYearSelected">{{ newYear }}
+              </option>
+            </select>
+            <PlusCircleIcon @click="addYear()"
+                            class="h-7 w-7 ml-5 cursor-pointer inline text-sky-700 dark:text-white"></PlusCircleIcon>
+          </div>
+        </div>
+      </div>
+      <div
+          class="col col-span-6"
+          v-if="stage === stages.full"
+      >
+        <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5">
+          <div class="absolute top-[-14px] left-0 w-full text-center">
+            <span class="inline-block font-bold italic bg-white dark:bg-blue-950 dark:text-white px-4">Actions</span>
+          </div>
+          <div class="grid grid-cols-5 items-center">
+
+          </div>
+        </div>
       </div>
     </div>
   </main>
