@@ -1,9 +1,3 @@
-export interface RegionsInterface {
-    rows: Array<Array<number | string>>;
-}
-export interface SubsectorsInterface {
-    rows: Array<Array<number | string>>;
-}
 export interface HelpTextInterface {
     [key: string]: {
         title: string;
@@ -24,7 +18,25 @@ export interface StageInjectInterface {
     stages: { [key: string]: number }
 }
 
+export interface ImprovementValueInterface {
+    [key: string]: number;
+}
+
+export interface ImprovementInterface {
+    name: string;
+    id: number;
+    subsector?: number;
+    values: ImprovementValueInterface;
+}
+
 export interface ProgramInterface {
     name: string;
-    subsector: string;
+    subsector: number;
+    improvements: Array<ImprovementInterface>;
+}
+
+export interface SubsectorInterface {
+    name: number | string;
+    id: number | string;
+    improvements: Array<ImprovementInterface>;
 }

@@ -1,15 +1,19 @@
 <script setup async lang="ts">
 import {inject, onMounted, ref, watch} from 'vue';
 import type {Ref} from 'vue';
-import {InformationCircleIcon, TrashIcon, PlusCircleIcon} from '@heroicons/vue/24/outline';
+import {
+  InformationCircleIcon,
+  TrashIcon,
+  PlusCircleIcon,
+  DocumentDuplicateIcon
+} from '@heroicons/vue/24/outline';
 import type {
   ModalInjectInterface,
   StageInjectInterface,
-  RegionsInterface,
   ProgramInterface,
-  SubsectorsInterface
+  SubsectorInterface, ImprovementValueInterface
 } from "@/types";
-import {defaultModalInject, defaultProgram, defaultStageInject} from "@/defaults";
+import {defaultImprovement, defaultModalInject, defaultProgram, defaultStageInject} from "@/defaults";
 
 // Injections
 const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
@@ -17,7 +21,7 @@ const {stage, stages} = inject<StageInjectInterface>('stage') || defaultStageInj
 
 // Variables
 let regions: Ref<Array<Array<number | string>>> = ref([]);
-let subsectors: Ref<Array<Array<number | string>>> = ref([]);
+let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
 const units = {
   1: "ktoe (tonne of oil equivalent)",
   2: "MJ (Megajoule)",
@@ -64,13 +68,37 @@ watch(future, async (newFuture, oldFuture) => {
 onMounted(async () => {
   // id_region
   const responseRegion: Response = await fetch(`${import.meta.env.VITE_API_URL}id_region`);
-  const dataRegion: RegionsInterface = await responseRegion.json();
+  const dataRegion: { rows: Array<[id: number, name: string]> } = await responseRegion.json();
   regions.value = dataRegion.rows;
 
   // id_subsector
+  // Get all database tables related to subsectors and descendants
   const responseSubsector: Response = await fetch(`${import.meta.env.VITE_API_URL}id_subsector`);
-  const dataSubsector: SubsectorsInterface = await responseSubsector.json();
-  subsectors.value = dataSubsector.rows;
+  const dataSubsector: { rows: Array<[id: number, name: string]> } = await responseSubsector.json();
+  const responseImprovements: Response = await fetch(`${import.meta.env.VITE_API_URL}id_action_type`);
+  const dataImprovements: { rows: Array<[id: number, name: string, name2: string]> } = await responseImprovements.json();
+  const responseMapping: Response = await fetch(`${import.meta.env.VITE_API_URL}mapping__subsector__action_type`);
+  const dataMapping: { rows: Array<[id: number, idSubsector: number, idImprovement: number]> } = await responseMapping.json();
+
+  const improvements: { [key: number]: { id: number, subsectors: Array<number>, name: string, values: ImprovementValueInterface }} = {};
+  dataImprovements.rows.forEach(improvement => {
+    improvements[improvement[0]] = {
+      id: improvement[0],
+      name: improvement[2],
+      values: {},
+      subsectors: []
+    };
+  });
+  dataMapping.rows.forEach(mapping => {
+    improvements[mapping[2]].subsectors.push(mapping[1]);
+  });
+  dataSubsector.rows.forEach(subsector => {
+    subsectors.value.push({
+      id: subsector[0],
+      name: subsector[1],
+      improvements: Object.values(improvements).filter(improvement => improvement.subsectors.indexOf(subsector[0]) > -1)
+    });
+  });
 })
 
 // Functions
@@ -97,6 +125,21 @@ const removeProgram = (i: number) => {
   if (programs.value.length >= 2) {
     programs.value.splice(i, 1);
   }
+}
+const copyImprovement = (program: ProgramInterface, i: number) => {
+  program.improvements.push({ ...program.improvements[i] });
+}
+const addImprovement = (program: ProgramInterface) => {
+  program.improvements.push(defaultImprovement);
+}
+const removeImprovement = (program: ProgramInterface, i: number) => {
+  if (program.improvements.length >= 2) {
+    program.improvements.splice(i, 1);
+  }
+}
+const getSubsectorImprovements = (subsectorId: number) => {
+  if (!subsectorId) return [];
+  return subsectors.value.filter(subsector => subsector.id === subsectorId)[0].improvements;
 }
 const analyze = () => {
   console.log(programs.value);
@@ -271,6 +314,7 @@ const analyze = () => {
         <div
             class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5"
             v-for="(program, i) in programs"
+            v-bind:key="`program-${i}`"
         >
           <div class="absolute top-[-14px] left-0 w-full text-center">
             <span class="inline-block bg-white dark:bg-blue-950 dark:text-white px-4">
@@ -301,12 +345,49 @@ const analyze = () => {
                   class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                   v-model="program.subsector"
               >
-                <option v-for="(subsector, i) in subsectors" v-bind:key="`region-${i}`" :value="subsector[0]">{{
-                    subsector[2]
-                  }}
+                <option value="0" selected disabled>Select subsector</option>
+                <option v-for="subsector in subsectors" v-bind:key="`subsector-${i}-${subsector.id}`" :value="subsector.id">
+                  {{ subsector.name }}
                 </option>
               </select>
             </div>
+          </div>
+          <div class="grid grid-cols-3 mt-8 gap-5 items-center">
+            <div
+              class="rounded-3xl border border-gray-300 dark:border-gray-400 relative mb-2"
+              v-for="(improvement, improvementIndex) in program.improvements"
+              v-bind:key="`improvement-${i}-${improvement.id}`"
+            >
+              <div class="p-6">
+                <select
+                    :id="`improvement-${i}-${improvement.id}`"
+                    class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                    v-model="improvement.id"
+                >
+                  <option value="0" selected disabled>Select improvement</option>
+                  <option v-for="improvementSelection in getSubsectorImprovements(program.subsector)" v-bind:key="`improvement-selection-${i}-${improvementSelection.id}`" :value="improvementSelection.id">
+                    {{ improvementSelection.name }}
+                  </option>
+                </select>
+              </div>
+              <div
+                class="border-t border-gray-300 dark:border-gray-400 px-6 py-3 text-center bg-blue-50 dark:bg-blue-900 rounded-b-3xl"
+              >
+                <DocumentDuplicateIcon
+                    @click="copyImprovement(program, improvementIndex)"
+                    class="mt-[-3px] h-5 w-5 inline mx-1 cursor-pointer text-orange-500 dark:text-orange-400"
+                ></DocumentDuplicateIcon>
+                <TrashIcon
+                    @click="removeImprovement(program, improvementIndex)"
+                    class="mt-[-3px] h-5 w-5 inline mx-1 cursor-pointer text-red-700 dark:text-red-400"
+                    v-if="program.improvements.length >= 2"
+                ></TrashIcon>
+              </div>
+            </div>
+            <PlusCircleIcon
+                @click="addImprovement(program)"
+                class="h-7 w-7 cursor-pointer inline text-gray-300 dark:text-white"
+            ></PlusCircleIcon>
           </div>
         </div>
         <div class="text-center mb-5">
@@ -314,7 +395,7 @@ const analyze = () => {
             class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
             @click="addProgram()"
           >
-            <PlusCircleIcon class="h-5 w-5 mt-[-2px] inline text-sky-700 dark:text-white"></PlusCircleIcon>
+            <PlusCircleIcon class="h-5 w-5 mt-[-2px] inline text-white"></PlusCircleIcon>
             Add program
           </button>
         </div>
