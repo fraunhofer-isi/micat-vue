@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { inject } from 'vue';
-import type { Ref } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 import { ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
 import type { ModalInjectInterface } from "@/types";

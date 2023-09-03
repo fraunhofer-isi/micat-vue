@@ -13,13 +13,11 @@ export const defaultStageInject: StageInjectInterface = {
     stages: {}
 }
 export const defaultImprovement: ImprovementInterface = {
-    name: '',
-    subsector: 0,
     id: 0,
     values: {},
 }
 export const defaultProgram: ProgramInterface = {
     name: 'Program 1',
     subsector: 0,
-    improvements: [defaultImprovement]
+    improvements: [{ ...defaultImprovement }]
 }

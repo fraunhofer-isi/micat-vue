@@ -40,7 +40,7 @@ const newYearSelected = ref<number>(newYears.value[0]);
 const programs = ref<Array<ProgramInterface>>([structuredClone(defaultProgram)]);
 
 // Watchers
-watch(future, async (newFuture, oldFuture) => {
+watch(future, async (newFuture) => {
   // Check if there are valid years defined. If not add default ones.
   currentYear = new Date().getFullYear();
   if (newFuture) {
@@ -76,11 +76,17 @@ onMounted(async () => {
   const responseSubsector: Response = await fetch(`${import.meta.env.VITE_API_URL}id_subsector`);
   const dataSubsector: { rows: Array<[id: number, name: string]> } = await responseSubsector.json();
   const responseImprovements: Response = await fetch(`${import.meta.env.VITE_API_URL}id_action_type`);
-  const dataImprovements: { rows: Array<[id: number, name: string, name2: string]> } = await responseImprovements.json();
+  const dataImprovements: {
+    rows: Array<[id: number, name: string, name2: string]>
+  } = await responseImprovements.json();
   const responseMapping: Response = await fetch(`${import.meta.env.VITE_API_URL}mapping__subsector__action_type`);
-  const dataMapping: { rows: Array<[id: number, idSubsector: number, idImprovement: number]> } = await responseMapping.json();
+  const dataMapping: {
+    rows: Array<[id: number, idSubsector: number, idImprovement: number]>
+  } = await responseMapping.json();
 
-  const improvements: { [key: number]: { id: number, subsectors: Array<number>, name: string, values: ImprovementValueInterface }} = {};
+  const improvements: {
+    [key: number]: { id: number, subsectors: Array<number>, name: string, values: ImprovementValueInterface }
+  } = {};
   dataImprovements.rows.forEach(improvement => {
     improvements[improvement[0]] = {
       id: improvement[0],
@@ -117,7 +123,7 @@ const removeYear = (year: number) => {
   }
 };
 const addProgram = () => {
-  const clone = structuredClone(defaultProgram);
+  const clone = JSON.parse(JSON.stringify(defaultProgram));
   clone.name = `Program ${programs.value.length + 1}`
   programs.value.push(clone);
 }
@@ -127,10 +133,10 @@ const removeProgram = (i: number) => {
   }
 }
 const copyImprovement = (program: ProgramInterface, i: number) => {
-  program.improvements.push({ ...program.improvements[i] });
+  program.improvements.push(JSON.parse(JSON.stringify(program.improvements[i])));
 }
 const addImprovement = (program: ProgramInterface) => {
-  program.improvements.push(defaultImprovement);
+  program.improvements.push(JSON.parse(JSON.stringify(defaultImprovement)));
 }
 const removeImprovement = (program: ProgramInterface, i: number) => {
   if (program.improvements.length >= 2) {
@@ -156,8 +162,8 @@ const analyze = () => {
           efficiency, optionally add your own values and receive a comprehensive analysis for your region.</p>
       </div>
       <div
-          class="col"
-          :class="{
+        class="col"
+        :class="{
             'col-span-4': stage === stages.full,
             'col-span-5': stage === stages.home,
           }"
@@ -181,11 +187,11 @@ const analyze = () => {
                      class="inline-flex items-center rounded-full cursor-pointer dark:text-gray-800 border border-sky-600 dark:border-0">
                 <input id="timeframe" type="checkbox" class="hidden peer" v-model="future">
                 <span
-                    class="leading-3 pl-8 pr-7 pt-4 pb-3 rounded-l-full bg-sky-600 text-white peer-checked:text-sky-900 peer-checked:bg-white text-center"><span
-                    class="uppercase font-bold">past</span><br><span class="text-sm">(ex-post)</span></span>
+                  class="leading-3 pl-8 pr-7 pt-4 pb-3 rounded-l-full bg-sky-600 text-white peer-checked:text-sky-900 peer-checked:bg-white text-center"><span
+                  class="uppercase font-bold">past</span><br><span class="text-sm">(ex-post)</span></span>
                 <span
-                    class="leading-3 pl-7 pr-8 pt-4 pb-3 rounded-r-full dark:bg-white text-sky-900 peer-checked:bg-sky-600 peer-checked:text-white text-center"><span
-                    class="uppercase font-bold">future</span><br><span class="text-sm">(ex-ante)</span></span>
+                  class="leading-3 pl-7 pr-8 pt-4 pb-3 rounded-r-full dark:bg-white text-sky-900 peer-checked:bg-sky-600 peer-checked:text-white text-center"><span
+                  class="uppercase font-bold">future</span><br><span class="text-sm">(ex-ante)</span></span>
               </label>
             </div>
             <!-- end time frame -->
@@ -197,9 +203,9 @@ const analyze = () => {
             </div>
             <div class="mt-8 col-span-3">
               <select
-                  id="region"
-                  class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-                  v-model="region"
+                id="region"
+                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                v-model="region"
               >
                 <option v-for="(region, i) in regions" v-bind:key="`region-${i}`" :value="region[0]">{{
                     region[1]
@@ -219,7 +225,8 @@ const analyze = () => {
                   <label for="default-radio-2" class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300">Municipality
                     with <input type="number" id="inhabitants"
                                 class="bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[80px]"
-                                v-model="inhabitants"> <span v-if="stage === stages.home">inhabitants</span><span v-else>inhab.</span></label>
+                                v-model="inhabitants"> <span v-if="stage === stages.home">inhabitants</span><span
+                      v-else>inhab.</span></label>
                 </div>
               </div>
             </div>
@@ -232,9 +239,9 @@ const analyze = () => {
             </div>
             <div class="mt-8 col-span-3">
               <select
-                  id="unit"
-                  class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-                  v-model="unit"
+                id="unit"
+                class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                v-model="unit"
               >
                 <option v-for="[key, value] in Object.entries(units)" v-bind:key="`unit-${key}`" :value="key">{{
                     value
@@ -246,17 +253,17 @@ const analyze = () => {
           </div>
         </div>
         <button
-            class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full uppercase"
-            @click="stage = stages.full"
-            v-if="stage === stages.home"
+          class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full uppercase"
+          @click="stage = stages.full"
+          v-if="stage === stages.home"
         >
           Start
         </button>
         <a
-            class="border border-sky-500 text-sky-500 hover:border-sky-600 hover:text-sky-600  hover:dark:border-sky-400 hover:dark:text-sky-400 font-bold py-2 px-8 rounded-full uppercase ml-3"
-            href="https://fraunhofer-isi.github.io/micat"
-            target="_blank"
-            v-if="stage === stages.home"
+          class="border border-sky-500 text-sky-500 hover:border-sky-600 hover:text-sky-600  hover:dark:border-sky-400 hover:dark:text-sky-400 font-bold py-2 px-8 rounded-full uppercase ml-3"
+          href="https://fraunhofer-isi.github.io/micat"
+          target="_blank"
+          v-if="stage === stages.home"
         >
           Learn more
         </a>
@@ -266,19 +273,21 @@ const analyze = () => {
             <span class="inline-block font-bold italic bg-white dark:bg-blue-950 dark:text-white px-4">
               Time frame
               <InformationCircleIcon
-                  @click="openModal('years')"
-                  class="h-6 w-6 ml-1 cursor-pointer inline dark:text-white"
+                @click="openModal('years')"
+                class="h-6 w-6 ml-1 cursor-pointer inline dark:text-white"
               ></InformationCircleIcon>
             </span>
           </div>
           <div class="flex flex-wrap">
             <div v-for="year in years" v-bind:key="year.toString()" class="whitespace-nowrap rounded-full mr-4 mb-7">
-              <span class="px-2 py-2 rounded-l-full bg-sky-600 text-white text-center border-sky-600 border">{{ year }}</span>
+              <span class="px-2 py-2 rounded-l-full bg-sky-600 text-white text-center border-sky-600 border">{{
+                  year
+                }}</span>
               <span class="px-2 py-2 rounded-r-full dark:bg-white text-sky-900 text-center border-sky-600 border">
                 <TrashIcon
-                    @click="removeYear(year)"
-                    class="mt-[-3px] h-5 w-5 inline"
-                    :class="{
+                  @click="removeYear(year)"
+                  class="mt-[-3px] h-5 w-5 inline"
+                  :class="{
                       'text-red-200': years.length <= 2,
                       'text-red-700': years.length > 2,
                       'cursor-pointer': years.length > 2,
@@ -289,45 +298,45 @@ const analyze = () => {
           </div>
           <div class="mt-2">
             <select
-                id="new-year"
-                class="py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
-                v-model="newYearSelected"
+              id="new-year"
+              class="py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
+              v-model="newYearSelected"
             >
               <option
-                  v-for="newYear in newYears" v-bind:key="newYear.toString()" :value="newYear"
-                  :selected="newYear === newYearSelected"
+                v-for="newYear in newYears" v-bind:key="newYear.toString()" :value="newYear"
+                :selected="newYear === newYearSelected"
               >
                 {{ newYear }}
               </option>
             </select>
             <PlusCircleIcon
-                @click="addYear()"
-                class="h-7 w-7 ml-5 cursor-pointer inline text-sky-700 dark:text-white"
+              @click="addYear()"
+              class="h-7 w-7 ml-5 cursor-pointer inline text-sky-700 dark:text-white"
             ></PlusCircleIcon>
           </div>
         </div>
       </div>
       <div
-          class="col col-span-6"
-          v-if="stage === stages.full"
+        class="col col-span-6"
+        v-if="stage === stages.full"
       >
         <div
-            class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5"
-            v-for="(program, i) in programs"
-            v-bind:key="`program-${i}`"
+          class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5"
+          v-for="(program, i) in programs"
+          v-bind:key="`program-${i}`"
         >
           <div class="absolute top-[-14px] left-0 w-full text-center">
             <span class="inline-block bg-white dark:bg-blue-950 dark:text-white px-4">
               <input
-                  type="text"
-                  :id="`program-name-${i}`"
-                  class="bg-gray-50 border border-gray-300 text-sky-900 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[85px]"
-                  v-model="program.name"
+                type="text"
+                :id="`program-name-${i}`"
+                class="bg-gray-50 border border-gray-300 text-sky-900 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[85px]"
+                v-model="program.name"
               >
               <TrashIcon
-                  v-if="programs.length >= 2"
-                  @click="removeProgram(i)"
-                  class="ml-3 h-5 w-5 inline cursor-pointer text-red-700"
+                v-if="programs.length >= 2"
+                @click="removeProgram(i)"
+                class="ml-3 h-5 w-5 inline cursor-pointer text-red-700"
               ></TrashIcon>
             </span>
           </div>
@@ -335,18 +344,19 @@ const analyze = () => {
             <div>
               <label :for="`subsector-${i}`" class="dark:text-white text-sm">Subsector</label>
               <InformationCircleIcon
-                  @click="openModal('subsector')"
-                  class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+                @click="openModal('subsector')"
+                class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
               ></InformationCircleIcon>
             </div>
             <div>
               <select
-                  :id="`subsector-${i}`"
-                  class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-                  v-model="program.subsector"
+                :id="`subsector-${i}`"
+                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                v-model="program.subsector"
               >
                 <option value="0" selected disabled>Select subsector</option>
-                <option v-for="subsector in subsectors" v-bind:key="`subsector-${i}-${subsector.id}`" :value="subsector.id">
+                <option v-for="subsector in subsectors" v-bind:key="`subsector-${i}-${subsector.id}`"
+                        :value="subsector.id">
                   {{ subsector.name }}
                 </option>
               </select>
@@ -360,33 +370,48 @@ const analyze = () => {
             >
               <div class="p-6">
                 <select
-                    :id="`improvement-${i}-${improvement.id}`"
-                    class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-                    v-model="improvement.id"
+                  :id="`improvement-${i}-${improvement.id}`"
+                  class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                  v-model="improvement.id"
                 >
                   <option value="0" selected disabled>Select improvement</option>
-                  <option v-for="improvementSelection in getSubsectorImprovements(program.subsector)" v-bind:key="`improvement-selection-${i}-${improvementSelection.id}`" :value="improvementSelection.id">
+                  <option v-for="improvementSelection in getSubsectorImprovements(program.subsector)"
+                          v-bind:key="`improvement-selection-${i}-${improvementSelection.id}`"
+                          :value="improvementSelection.id">
                     {{ improvementSelection.name }}
                   </option>
                 </select>
+                <div v-for="year in years" v-bind:key="year.toString()" class="whitespace-nowrap rounded-full mt-7">
+                  <span class="px-2 py-2 rounded-l-full bg-sky-600 text-white text-center border-sky-600 border">{{ year }}</span>
+                  <span class="px-2 py-2 rounded-r-full dark:bg-white text-sky-900 text-center border-sky-600 border">
+                    <input
+                      v-model="improvement.values[year]"
+                      :id="`improvement-value-${improvement.id}-${year}`"
+                      type="number"
+                      :name="`improvement-value-${improvement.id}-${year}`"
+                      class="bg-white border-0 text-gray-500 rounded-lg focus:ring-0 focus:border-0 px-1.5 py-0.5 inline max-w-[90px]"
+                      placeholder="0"
+                    >
+                  </span>
+                </div>
               </div>
               <div
                 class="border-t border-gray-300 dark:border-gray-400 px-6 py-3 text-center bg-blue-50 dark:bg-blue-900 rounded-b-3xl"
               >
                 <DocumentDuplicateIcon
-                    @click="copyImprovement(program, improvementIndex)"
-                    class="mt-[-3px] h-5 w-5 inline mx-1 cursor-pointer text-orange-500 dark:text-orange-400"
+                  @click="copyImprovement(program, improvementIndex)"
+                  class="mt-[-3px] h-5 w-5 inline mx-1 cursor-pointer text-orange-500 dark:text-orange-400"
                 ></DocumentDuplicateIcon>
                 <TrashIcon
-                    @click="removeImprovement(program, improvementIndex)"
-                    class="mt-[-3px] h-5 w-5 inline mx-1 cursor-pointer text-red-700 dark:text-red-400"
-                    v-if="program.improvements.length >= 2"
+                  @click="removeImprovement(program, improvementIndex)"
+                  class="mt-[-3px] h-5 w-5 inline mx-1 cursor-pointer text-red-700 dark:text-red-400"
+                  v-if="program.improvements.length >= 2"
                 ></TrashIcon>
               </div>
             </div>
             <PlusCircleIcon
-                @click="addImprovement(program)"
-                class="h-7 w-7 cursor-pointer inline text-gray-300 dark:text-white"
+              @click="addImprovement(program)"
+              class="h-7 w-7 cursor-pointer inline text-gray-300 dark:text-white"
             ></PlusCircleIcon>
           </div>
         </div>
@@ -400,8 +425,8 @@ const analyze = () => {
           </button>
         </div>
         <button
-            class="bg-amber-300 hover:bg-amber-400 font-bold py-2 px-8 rounded-full uppercase"
-            @click="analyze()"
+          class="bg-amber-300 hover:bg-amber-400 font-bold py-2 px-8 rounded-full uppercase"
+          @click="analyze()"
         >
           Analyze
         </button>

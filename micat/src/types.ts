@@ -23,9 +23,8 @@ export interface ImprovementValueInterface {
 }
 
 export interface ImprovementInterface {
-    name: string;
     id: number;
-    subsector?: number;
+    name?: string;
     values: ImprovementValueInterface;
 }
 

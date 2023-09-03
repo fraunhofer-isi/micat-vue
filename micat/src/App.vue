@@ -2,7 +2,7 @@
 import { ref, provide } from 'vue';
 import { RouterView } from 'vue-router';
 import NotificationBox from "@/components/NotificationBox.vue";
-import type { HelpTextInterface, ModalInjectInterface } from "@/types";
+import type { HelpTextInterface } from "@/types";
 
 const helpTexts: HelpTextInterface = {
   'timeframe': {
