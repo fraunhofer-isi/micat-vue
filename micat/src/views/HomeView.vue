@@ -2,8 +2,14 @@
 import {inject, onMounted, ref, watch} from 'vue';
 import type {Ref} from 'vue';
 import {InformationCircleIcon, TrashIcon, PlusCircleIcon} from '@heroicons/vue/24/outline';
-import type {ModalInjectInterface, StageInjectInterface, RegionsInterface} from "@/types";
-import {defaultModalInject, defaultStageInject} from "@/defaults";
+import type {
+  ModalInjectInterface,
+  StageInjectInterface,
+  RegionsInterface,
+  ProgramInterface,
+  SubsectorsInterface
+} from "@/types";
+import {defaultModalInject, defaultProgram, defaultStageInject} from "@/defaults";
 
 // Injections
 const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
@@ -11,21 +17,23 @@ const {stage, stages} = inject<StageInjectInterface>('stage') || defaultStageInj
 
 // Variables
 let regions: Ref<Array<Array<number | string>>> = ref([]);
+let subsectors: Ref<Array<Array<number | string>>> = ref([]);
 const units = {
   1: "ktoe (tonne of oil equivalent)",
   2: "MJ (Megajoule)",
   3: "GJ (Gigajoule)",
   4: "MWh (Energy quantity per hour)",
 }
-const future = ref<Boolean>(false);
-const region = ref<Number>(0);
-const municipality = ref<Boolean>(false);
-const inhabitants = ref<Number>(100000);
-const unit = ref<Number>(1);
+const future = ref<boolean>(false);
+const region = ref<number>(0);
+const municipality = ref<boolean>(false);
+const inhabitants = ref<number>(100000);
+const unit = ref<number>(1);
 let currentYear = Math.floor(new Date().getFullYear() / 5) * 5;
-const years = ref<Array<Number>>([currentYear - 10, currentYear - 5, currentYear]);
-const newYears = ref<Array<Number>>([...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
-const newYearSelected = ref<Number>(newYears.value[0]);
+const years = ref<Array<number>>([currentYear - 10, currentYear - 5, currentYear]);
+const newYears = ref<Array<number>>([...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
+const newYearSelected = ref<number>(newYears.value[0]);
+const programs = ref<Array<ProgramInterface>>([structuredClone(defaultProgram)]);
 
 // Watchers
 watch(future, async (newFuture, oldFuture) => {
@@ -54,9 +62,15 @@ watch(future, async (newFuture, oldFuture) => {
 
 // Lifecycle
 onMounted(async () => {
-  const response: Response = await fetch(`${import.meta.env.VITE_API_URL}id_region`);
-  const data: RegionsInterface = await response.json();
-  regions.value = data.rows;
+  // id_region
+  const responseRegion: Response = await fetch(`${import.meta.env.VITE_API_URL}id_region`);
+  const dataRegion: RegionsInterface = await responseRegion.json();
+  regions.value = dataRegion.rows;
+
+  // id_subsector
+  const responseSubsector: Response = await fetch(`${import.meta.env.VITE_API_URL}id_subsector`);
+  const dataSubsector: SubsectorsInterface = await responseSubsector.json();
+  subsectors.value = dataSubsector.rows;
 })
 
 // Functions
@@ -66,7 +80,7 @@ const addYear = () => {
   newYears.value = newYears.value.filter(newYear => newYear !== newYearSelected.value);
   newYearSelected.value = newYears.value[0];
 };
-const removeYear = (year: Number) => {
+const removeYear = (year: number) => {
   if (years.value.length > 2) {
     // Keep at least two years
     years.value = years.value.filter(x => x !== year);
@@ -74,6 +88,19 @@ const removeYear = (year: Number) => {
     newYears.value.sort();
   }
 };
+const addProgram = () => {
+  const clone = structuredClone(defaultProgram);
+  clone.name = `Program ${programs.value.length + 1}`
+  programs.value.push(clone);
+}
+const removeProgram = (i: number) => {
+  if (programs.value.length >= 2) {
+    programs.value.splice(i, 1);
+  }
+}
+const analyze = () => {
+  console.log(programs.value);
+}
 </script>
 
 <template>
@@ -111,10 +138,10 @@ const removeYear = (year: Number) => {
                      class="inline-flex items-center rounded-full cursor-pointer dark:text-gray-800 border border-sky-600 dark:border-0">
                 <input id="timeframe" type="checkbox" class="hidden peer" v-model="future">
                 <span
-                    class="leading-3 pl-9 pr-8 pt-4 pb-3 rounded-l-full bg-sky-600 text-white peer-checked:text-sky-900 peer-checked:bg-white text-center"><span
+                    class="leading-3 pl-8 pr-7 pt-4 pb-3 rounded-l-full bg-sky-600 text-white peer-checked:text-sky-900 peer-checked:bg-white text-center"><span
                     class="uppercase font-bold">past</span><br><span class="text-sm">(ex-post)</span></span>
                 <span
-                    class="leading-3 pl-8 pr-9 pt-4 pb-3 rounded-r-full dark:bg-white text-sky-900 peer-checked:bg-sky-600 peer-checked:text-white text-center"><span
+                    class="leading-3 pl-7 pr-8 pt-4 pb-3 rounded-r-full dark:bg-white text-sky-900 peer-checked:bg-sky-600 peer-checked:text-white text-center"><span
                     class="uppercase font-bold">future</span><br><span class="text-sm">(ex-ante)</span></span>
               </label>
             </div>
@@ -128,7 +155,7 @@ const removeYear = (year: Number) => {
             <div class="mt-8 col-span-3">
               <select
                   id="region"
-                  class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                  class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                   v-model="region"
               >
                 <option v-for="(region, i) in regions" v-bind:key="`region-${i}`" :value="region[0]">{{
@@ -139,17 +166,17 @@ const removeYear = (year: Number) => {
               <div v-if="region !== 0">
                 <div class="flex items-center mb-2 mt-3">
                   <input v-model="municipality" id="municipality-1" type="radio" :value="false" name="municipality"
-                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                  <label for="default-radio-1" class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300">Whole
+                         class="w-4 h-4 text-sky-600 bg-gray-100 border-gray-300 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                  <label for="default-radio-1" class="ml-2 text-xs font-medium text-gray-500 dark:text-gray-300">Whole
                     country</label>
                 </div>
                 <div class="flex items-center">
                   <input v-model="municipality" id="municipality-2" type="radio" :value="true" name="municipality"
-                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                         class="w-4 h-4 text-sky-600 bg-gray-100 border-gray-300 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                   <label for="default-radio-2" class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300">Municipality
                     with <input type="number" id="inhabitants"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-1.5 py-0.5 inline dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 max-w-[85px]"
-                                v-model="inhabitants"> inhabitants</label>
+                                class="bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[80px]"
+                                v-model="inhabitants"> <span v-if="stage === stages.home">inhabitants</span><span v-else>inhab.</span></label>
                 </div>
               </div>
             </div>
@@ -202,9 +229,9 @@ const removeYear = (year: Number) => {
             </span>
           </div>
           <div class="flex flex-wrap">
-            <div v-for="year in years" v-bind:key="year.toString()" class="whitespace-nowrap border-sky-600 mr-4 mb-7">
-              <span class="leading-7 px-2 py-2 rounded-l-full bg-sky-600 text-white text-center">{{ year }}</span>
-              <span class="leading-7 px-2 py-2 rounded-r-full dark:bg-white text-sky-900 text-center">
+            <div v-for="year in years" v-bind:key="year.toString()" class="whitespace-nowrap rounded-full mr-4 mb-7">
+              <span class="px-2 py-2 rounded-l-full bg-sky-600 text-white text-center border-sky-600 border">{{ year }}</span>
+              <span class="px-2 py-2 rounded-r-full dark:bg-white text-sky-900 text-center border-sky-600 border">
                 <TrashIcon
                     @click="removeYear(year)"
                     class="mt-[-3px] h-5 w-5 inline"
@@ -223,12 +250,17 @@ const removeYear = (year: Number) => {
                 class="py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
                 v-model="newYearSelected"
             >
-              <option v-for="newYear in newYears" v-bind:key="newYear.toString()" :value="newYear"
-                      :selected="newYear === newYearSelected">{{ newYear }}
+              <option
+                  v-for="newYear in newYears" v-bind:key="newYear.toString()" :value="newYear"
+                  :selected="newYear === newYearSelected"
+              >
+                {{ newYear }}
               </option>
             </select>
-            <PlusCircleIcon @click="addYear()"
-                            class="h-7 w-7 ml-5 cursor-pointer inline text-sky-700 dark:text-white"></PlusCircleIcon>
+            <PlusCircleIcon
+                @click="addYear()"
+                class="h-7 w-7 ml-5 cursor-pointer inline text-sky-700 dark:text-white"
+            ></PlusCircleIcon>
           </div>
         </div>
       </div>
@@ -236,14 +268,62 @@ const removeYear = (year: Number) => {
           class="col col-span-6"
           v-if="stage === stages.full"
       >
-        <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5">
+        <div
+            class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5"
+            v-for="(program, i) in programs"
+        >
           <div class="absolute top-[-14px] left-0 w-full text-center">
-            <span class="inline-block font-bold italic bg-white dark:bg-blue-950 dark:text-white px-4">Actions</span>
+            <span class="inline-block bg-white dark:bg-blue-950 dark:text-white px-4">
+              <input
+                  type="text"
+                  :id="`program-name-${i}`"
+                  class="bg-gray-50 border border-gray-300 text-sky-900 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[85px]"
+                  v-model="program.name"
+              >
+              <TrashIcon
+                  v-if="programs.length >= 2"
+                  @click="removeProgram(i)"
+                  class="ml-3 h-5 w-5 inline cursor-pointer text-red-700"
+              ></TrashIcon>
+            </span>
           </div>
-          <div class="grid grid-cols-5 items-center">
-
+          <div class="flex items-center gap-8">
+            <div>
+              <label :for="`subsector-${i}`" class="dark:text-white text-sm">Subsector</label>
+              <InformationCircleIcon
+                  @click="openModal('subsector')"
+                  class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+              ></InformationCircleIcon>
+            </div>
+            <div>
+              <select
+                  :id="`subsector-${i}`"
+                  class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                  v-model="program.subsector"
+              >
+                <option v-for="(subsector, i) in subsectors" v-bind:key="`region-${i}`" :value="subsector[0]">{{
+                    subsector[2]
+                  }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
+        <div class="text-center mb-5">
+          <button
+            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
+            @click="addProgram()"
+          >
+            <PlusCircleIcon class="h-5 w-5 mt-[-2px] inline text-sky-700 dark:text-white"></PlusCircleIcon>
+            Add program
+          </button>
+        </div>
+        <button
+            class="bg-amber-300 hover:bg-amber-400 font-bold py-2 px-8 rounded-full uppercase"
+            @click="analyze()"
+        >
+          Analyze
+        </button>
       </div>
     </div>
   </main>

@@ -1,6 +1,9 @@
 export interface RegionsInterface {
     rows: Array<Array<number | string>>;
 }
+export interface SubsectorsInterface {
+    rows: Array<Array<number | string>>;
+}
 export interface HelpTextInterface {
     [key: string]: {
         title: string;
@@ -19,4 +22,9 @@ export interface ModalInjectInterface {
 export interface StageInjectInterface {
     stage: number;
     stages: { [key: string]: number }
+}
+
+export interface ProgramInterface {
+    name: string;
+    subsector: string;
 }

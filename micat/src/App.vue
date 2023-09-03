@@ -25,6 +25,11 @@ const helpTexts: HelpTextInterface = {
     'text': 'tba',
     'type': 'help'
   },
+  'subsector': {
+    'title': 'Subsector',
+    'text': 'tba',
+    'type': 'help'
+  },
 };
 
 const stages = Object.freeze({ home: 1, full: 2 });
