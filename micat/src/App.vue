@@ -4,6 +4,7 @@ import { RouterView } from 'vue-router';
 import NotificationBox from "@/components/NotificationBox.vue";
 import type { HelpTextInterface } from "@/types";
 
+// Variables
 const helpTexts: HelpTextInterface = {
   'timeframe': {
     'title': 'Time frame',
@@ -38,6 +39,8 @@ const showModal = ref<Boolean>(false);
 const modalTitle = ref<String>('');
 const modalText = ref<String>('');
 const modalType = ref<String>('help');
+
+// Functions
 const openModal = (key: string) => {
   modalTitle.value = helpTexts[key].title;
   modalText.value = helpTexts[key].text;
@@ -47,6 +50,8 @@ const openModal = (key: string) => {
 const closeModal = () => {
   showModal.value = false;
 };
+
+// Provide & Inject
 provide('modal', {
   showModal,
   modalTitle,

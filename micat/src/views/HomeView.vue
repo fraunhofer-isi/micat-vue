@@ -11,9 +11,14 @@ import type {
   ModalInjectInterface,
   StageInjectInterface,
   ProgramInterface,
-  SubsectorInterface, ImprovementValueInterface
+  SubsectorInterface,
+  ImprovementValueInterface,
+  PayloadInterface,
+  PayloadMeasureInterface,
+  ResultInterface,
 } from "@/types";
 import {defaultImprovement, defaultModalInject, defaultProgram, defaultStageInject} from "@/defaults";
+import ResultsOverlay from "@/components/ResultsOverlay.vue";
 
 // Injections
 const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
@@ -28,6 +33,36 @@ const units = {
   3: "GJ (Gigajoule)",
   4: "MWh (Energy quantity per hour)",
 }
+const indicatorMapping: { [key: number]: string } = {
+  1: "addedAssetValueOfBuildings",
+  2: "reductionOfEnergyPoverty",
+  3: "",
+  4: "",
+  5: "",
+  6: "",
+  7: "impactOnGrossDomesticProduct",
+  8: "additionalEmployment",
+  9: "",
+  10: "reductionOfEnergyCost",
+  11: "",
+  12: "",
+  13: "energyIntensity",
+  14: "",
+  15: "",
+  16: "",
+  17: "turnoverOfEnergyEfficiencyGoods",
+  18: "",
+  19: "",
+  20: "",
+  21: "changeInSupplierDiversityByEnergyEfficiencyImpact",
+  22: "",
+  23: "reductionOfAdditionalCapacitiesInGrid",
+  24: "energySaving",
+  25: "changeInUnitCostsOfProduction",
+  26: "impactOnResTargetsMonetization",
+  27: "reductionOfGreenHouseGasEmission",
+  28: "reductionOfAirPollution",
+}
 const future = ref<boolean>(false);
 const region = ref<number>(0);
 const municipality = ref<boolean>(false);
@@ -38,6 +73,666 @@ const years = ref<Array<number>>([currentYear - 10, currentYear - 5, currentYear
 const newYears = ref<Array<number>>([...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
 const newYearSelected = ref<number>(newYears.value[0]);
 const programs = ref<Array<ProgramInterface>>([structuredClone(defaultProgram)]);
+const results = ref<ResultInterface>({
+    "addedAssetValueOfBuildings": {
+        "idColumnNames": [
+            "id_measure",
+            "sector"
+        ],
+        "rows": [
+            [
+                1,
+                "Tertiary",
+                0,
+                0,
+                0,
+                0
+            ],
+            [
+                1,
+                "Residential",
+                0,
+                0,
+                0,
+                0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "additionalEmployment": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                23.725163903909092,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "changeInSupplierDiversityByEnergyEfficiencyImpact": {
+        "idColumnNames": [
+            "id_measure",
+            "final_energy_carrier"
+        ],
+        "rows": [
+            [
+                1,
+                "Oil",
+                0.0,
+                2.6054548150494794e-06,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Coal",
+                0.0,
+                1.5728043192553276e-06,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Gas",
+                0.0,
+                1.2019370042429256e-05,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "changeInUnitCostsOfProduction": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                -0.0,
+                -1.4243505212797777e-05,
+                -0.0,
+                -0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "energyIntensity": {
+        "idColumnNames": [
+            "label"
+        ],
+        "rows": [
+            [
+                "Baseline",
+                0.00011372143829867966,
+                9.991245211179177e-05,
+                9.21702962665274e-05,
+                8.464465892756777e-05
+            ],
+            [
+                "Including saving",
+                0.00011372143829867966,
+                9.9863950706836e-05,
+                9.21702962665274e-05,
+                8.464465892756777e-05
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "energySaving": {
+        "idColumnNames": [
+            "id_measure",
+            "primary_energy_carrier"
+        ],
+        "rows": [
+            [
+                1,
+                "Oil",
+                0.0,
+                0.07540942982614976,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Coal",
+                0.0,
+                0.2510678682824773,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Gas",
+                0.0,
+                0.4519737005012384,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Biomass and renewable waste",
+                0.0,
+                0.21818165303252493,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Renewables",
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Other",
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "impactOnGrossDomesticProduct": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                1461648.7574294547,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "impactOnResTargetsMonetization": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                14548.956367881286,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "lifetime": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                8.0
+            ]
+        ],
+        "yearColumnNames": [
+            "value"
+        ]
+    },
+    "reductionOfAdditionalCapacitiesInGrid": {
+        "idColumnNames": [
+            "id_measure",
+            "technology"
+        ],
+        "rows": [
+            [
+                1,
+                "Onshore wind",
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Offshore wind",
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Solar",
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "reductionOfAdditionalCapacitiesInGridMonetization": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "reductionOfAirPollution": {
+        "idColumnNames": [
+            "id_measure",
+            "parameter"
+        ],
+        "rows": [
+            [
+                1,
+                "SO2",
+                0.0,
+                0.0026034263930122398,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "NOX",
+                0.0,
+                0.004076417641690218,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "PM_2_5",
+                0.0,
+                0.00021375500911047864,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "reductionOfEnergyCost": {
+        "idColumnNames": [
+            "id_measure",
+            "final_energy_carrier"
+        ],
+        "rows": [
+            [
+                1,
+                "Electricity",
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Oil",
+                0.0,
+                42512.820158790186,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Coal",
+                0.0,
+                79387.65995091932,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Gas",
+                0.0,
+                270280.27289974055,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Biomass and Waste",
+                0.0,
+                196363.48772927243,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Heat",
+                0.0,
+                2062.7029099373444,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "H2 and e-fuels",
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "reductionOfEnergyPoverty": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "reductionOfGreenHouseGasEmission": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                5.995101207061214,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "reductionOfGreenHouseGasEmissionMonetization": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                1193025.1402051817,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "reductionOfImportDependency": {
+        "idColumnNames": [
+            "id_measure",
+            "primary_energy_carrier"
+        ],
+        "rows": [
+            [
+                1,
+                "Oil",
+                0.0,
+                3.4197586984419104e-08,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Coal",
+                0.0,
+                1.6963827813576415e-06,
+                0.0,
+                0.0
+            ],
+            [
+                1,
+                "Gas",
+                0.0,
+                7.331230109652864e-07,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "reductionOfLostWorkDays": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                28.63653123029293,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "reductionOfLostWorkDaysMonetization": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                5847.229802847885,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "reductionOfMortalityMorbidity": {
+        "idColumnNames": [
+            "id_measure",
+            "parameter"
+        ],
+        "rows": [
+            [
+                1,
+                "Mortality_AP",
+                0.0,
+                0.07286942549236397,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "reductionOfMortalityMorbidityMonetization": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                257012.334026822,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "renewableEnergyDirectiveTargets": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                2.7495753700257364e-07,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "subsidyRate": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                30.0,
+                30.0,
+                30.0,
+                30.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    },
+    "turnoverOfEnergyEfficiencyGoods": {
+        "idColumnNames": [
+            "id_measure"
+        ],
+        "rows": [
+            [
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        ],
+        "yearColumnNames": [
+            "2010",
+            "2015",
+            "2019",
+            "2020"
+        ]
+    }
+});
+const showResults = ref<boolean>(true);
 
 // Watchers
 watch(future, async (newFuture) => {
@@ -147,14 +842,71 @@ const getSubsectorImprovements = (subsectorId: number) => {
   if (!subsectorId) return [];
   return subsectors.value.filter(subsector => subsector.id === subsectorId)[0].improvements;
 }
-const analyze = () => {
-  console.log(programs.value);
+const analyze = async () => {
+  const url = `https://micatool-dev.eu/mica-tool-wGlobal/python/back_end/src/api/indicator_data?id_mode=${future.value ? 4 : 2}&id_region=${region.value}`
+  const payload: PayloadInterface = {
+    "measures": [],
+    "parameters": {}
+  }
+  let i = 1;
+  programs.value.forEach(program => {
+    program.improvements.forEach(improvement => {
+      const improvementData: PayloadMeasureInterface = {
+        "id": i,
+        "savings": {
+          "details": {
+            "parameters": [],
+            "finalParameters": [],
+            "constants": [],
+          },
+          "id_measure": 1,
+          "id_subsector": program.subsector,
+          "id_action_type": improvement.id,
+        },
+        "parameters": {}
+      };
+
+      years.value.forEach(year => {
+        const value = improvement.values[year.toString()];
+        improvementData.savings[year.toString()] = value ? value : 0;
+      });
+      payload.measures.push(improvementData);
+      i++;
+    });
+  });
+  const response = await fetch(url, {
+    method: "POST", // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+    },
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+
+  // id_indicator
+  const responseIndicator: Response = await fetch(`${import.meta.env.VITE_API_URL}id_indicator`);
+  const dataIndicator: { rows: Array<[id: number, title: string, subtitle: string]> } = await responseIndicator.json();
+  dataIndicator.rows.forEach(indicator => {
+    const key: string = indicatorMapping[indicator[0]];
+    if (key.length > 0) {
+      data[key].title = indicator[1];
+      data[key].subtitle = indicator[2];
+    }
+  });
+  results.value = data;
+  showResults.value = true;
 }
 </script>
 
 <template>
   <main>
-    <div class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
+    <ResultsOverlay v-if="showResults" :results="results" @close="showResults = false;"></ResultsOverlay>
+    <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
         <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency
           projects</h1>
@@ -280,9 +1032,9 @@ const analyze = () => {
           </div>
           <div class="flex flex-wrap">
             <div v-for="year in years" v-bind:key="year.toString()" class="whitespace-nowrap rounded-full mr-4 mb-7">
-              <span class="px-2 py-2 rounded-l-full bg-sky-600 text-white text-center border-sky-600 border">{{
-                  year
-                }}</span>
+              <span class="px-2 py-2 rounded-l-full bg-sky-600 text-white text-center border-sky-600 border">
+                {{ year }}
+              </span>
               <span class="px-2 py-2 rounded-r-full dark:bg-white text-sky-900 text-center border-sky-600 border">
                 <TrashIcon
                   @click="removeYear(year)"
@@ -382,7 +1134,9 @@ const analyze = () => {
                   </option>
                 </select>
                 <div v-for="year in years" v-bind:key="year.toString()" class="whitespace-nowrap rounded-full mt-7">
-                  <span class="px-2 py-2 rounded-l-full bg-sky-600 text-white text-center border-sky-600 border">{{ year }}</span>
+                  <span class="px-2 py-2 rounded-l-full bg-sky-600 text-white text-center border-sky-600 border">{{
+                      year
+                    }}</span>
                   <span class="px-2 py-2 rounded-r-full dark:bg-white text-sky-900 text-center border-sky-600 border">
                     <input
                       v-model="improvement.values[year]"
@@ -424,12 +1178,17 @@ const analyze = () => {
             Add program
           </button>
         </div>
-        <button
-          class="bg-amber-300 hover:bg-amber-400 font-bold py-2 px-8 rounded-full uppercase"
-          @click="analyze()"
+        <div
+          class="text-center sticky bottom-3"
         >
-          Analyze
-        </button>
+          <button
+            class="bg-amber-300 hover:bg-amber-400 font-bold py-2 px-8 rounded-full uppercase text-xl"
+            @click="analyze()"
+            ref="analyzeButton"
+          >
+            Analyze
+          </button>
+        </div>
       </div>
     </div>
   </main>

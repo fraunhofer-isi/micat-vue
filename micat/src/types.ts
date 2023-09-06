@@ -39,3 +39,37 @@ export interface SubsectorInterface {
     id: number | string;
     improvements: Array<ImprovementInterface>;
 }
+
+export interface PayloadParameterInterface {
+    [key: string]: number;
+}
+export interface PayloadSavingDetailsInterface {
+    [key: string]: Array<PayloadParameterInterface>;
+}
+export interface PayloadSavingsInterface {
+    [key: string]: number | PayloadSavingDetailsInterface;
+}
+export interface PayloadMeasureInterface {
+    id: number;
+    savings: PayloadSavingsInterface;
+    parameters: PayloadParameterInterface;
+}
+export interface PayloadInterface {
+    measures: Array<PayloadMeasureInterface>;
+    parameters: PayloadParameterInterface;
+}
+export interface ResultInterface {
+    [key: string]: {
+        title?: string;
+        subtitle?: string;
+        idColumnNames: Array<string>;
+        rows: Array<Array<string | number>>;
+        yearColumnNames: Array<string>;
+    }
+}
+export interface MeasurementInterface {
+    [key: string]: string
+}
+export interface CategoryInterface {
+    [key: string]: string | Array<MeasurementInterface>
+}
