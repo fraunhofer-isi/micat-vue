@@ -59,17 +59,30 @@ export interface PayloadInterface {
     parameters: PayloadParameterInterface;
 }
 export interface ResultInterface {
-    [key: string]: {
-        title?: string;
-        subtitle?: string;
-        idColumnNames: Array<string>;
-        rows: Array<Array<string | number>>;
-        yearColumnNames: Array<string>;
-    }
+    title?: string;
+    description?: string;
+    idColumnNames: Array<string>;
+    rows: Array<Array<any>>;
+    yearColumnNames: Array<string>;
+}
+export interface ResultsInterface {
+    [key: string]: ResultInterface
 }
 export interface MeasurementInterface {
-    [key: string]: string
+    [key: string]: string;
 }
 export interface CategoryInterface {
-    [key: string]: string | Array<MeasurementInterface>
+    icon: string;
+    title: string;
+    subtitle: string;
+    measurements: Array<MeasurementInterface>;
+}
+export interface CategoriesInterface {
+    [key: string]: CategoryInterface
+}
+export interface DatasetInterface {
+    label: string;
+    data: Array<any>,
+    borderColor: string;
+    backgroundColor: string;
 }
