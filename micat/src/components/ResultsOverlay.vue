@@ -187,6 +187,34 @@ const categories: CategoriesInterface = {
         identifier: "energySaving",
         yAxis: "Value in €"
       },
+      {
+        subcategory: "Ecologic",
+        title: "Reduction in air pollution",
+        description: "This graph shows the reductions in air pollutants due to energy efficiency measures. The calculation uses coefficients originating from IIASA's GAINS model, taking into account the specific emissions of energy carriers in different sectors and subsectors.",
+        identifier: "reductionOfAirPollution",
+        yAxis: "Reduction in kt"
+      },
+      {
+        subcategory: "Ecologic",
+        title: "Reduction in greenhouse gas emissions",
+        description: "This indicator assesses the greenhouse gas emission reductions entailed by the examined measures. As one of the central drivers for energy efficiency efforts, this indicator is central in the related discussion, supporting the narrative of energy efficiency improvements helping to tackle climate change. Building on IIASA's GAINS model, this indicator merely takes carbon dioxide emissions into account, not considering other greenhouse gases such as methane or nitrous oxide. As such, the result can be considered a conservative approximation for overall greenhouse gas emissions.",
+        identifier: "reductionOfGreenHouseGasEmission",
+        yAxis: "Reduction in ktCO2"
+      },
+      {
+        subcategory: "Ecologic",
+        title: "Impact on RES targets",
+        description: "This indicator examines how energy efficiency can support in achieving the target share of energy originating from renewable energy sources (RES) stated in the Renewable Energy Directive (RED). By reducing the overall energy consumption, the share of renewable energy carriers is increased, assuming the energy savings mainly affect non-renewable energy sources.",
+        identifier: "renewableEnergyDirectiveTargets",
+        yAxis: "Change in share in %-points"
+      },
+      {
+        subcategory: "Ecologic",
+        title: "Reduction of additional capacities in grid",
+        description: "",
+        identifier: "reductionOfAdditionalCapacitiesInGrid",
+        yAxis: "Reduction in ktoe"
+      }
     ],
   },
   "monetization": {
