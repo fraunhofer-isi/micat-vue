@@ -76,6 +76,7 @@ export interface CategoryInterface {
     title: string;
     subtitle: string;
     measurements: Array<MeasurementInterface>;
+    subcategories: Array<string>;
 }
 export interface CategoriesInterface {
     [key: string]: CategoryInterface
@@ -85,4 +86,5 @@ export interface DatasetInterface {
     data: Array<any>,
     borderColor: string;
     backgroundColor: string;
+    stack?: string;
 }

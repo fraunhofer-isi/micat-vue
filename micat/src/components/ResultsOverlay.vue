@@ -9,14 +9,13 @@ import {
   CursorArrowRaysIcon,
   CheckIcon
 } from '@heroicons/vue/24/outline';
-import { Line } from 'vue-chartjs'
+import { Bar, Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
 import type {CategoriesInterface, MeasurementInterface, ResultInterface, DatasetInterface} from "@/types";
 
-const props = defineProps(['results']);
+const props = defineProps(['results', 'years']);
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement);
 
-const data = computed<ResultInterface>(() => JSON.parse(JSON.stringify(props.results[activeMeasurement.value.identifier])))
 const chartColours: Array<string> = [
   "rgb(252,107,32)",
   "rgb(7,89,133)",
@@ -25,72 +24,15 @@ const chartColours: Array<string> = [
   "rgb(244,122,32)",
   "rgb(31,149,178)",
 ];
-const hasMultipleMeasures = computed(() => data.value.idColumnNames.indexOf('id_measure') > -1);
-const chartLabels = computed(() => {
-  // Get labels
-  const labels: Array<string> = [];
-  const identifiers = data.value.idColumnNames.filter(identifier => identifier !== 'id_measure');
-  if (identifiers.length > 0) {
-    data.value.rows.forEach(row => {
-      if (!hasMultipleMeasures.value || row[0] === 1) labels.push(row[hasMultipleMeasures.value ? 1: 0]);
-    });
-  }
-  if (hasMultipleMeasures.value && labels.length === 0) labels.push('id_measure');
-  return labels;
-});
-const chartOptions = computed(() => {
-  return {
-    responsive: true,
-    plugins: {
-      title: {
-        text: 'MICAT',
-        display: false
-      },
-      legend: {
-        display: chartLabels.value.filter(label => label !== 'id_measure').length > 0
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: false,
-          text: 'Years'
-        }
-      },
-      y: {
-        title: {
-          display: true,
-          text: activeMeasurement.value.yAxis
-        }
-      }
-    },
-  };
-})
-const chartData = computed(() => {
-  const datasets: Array<DatasetInterface> = [];
-  chartLabels.value.forEach((label, i) => {
-    const dataset = {
-      label: label === 'id_measure' ? '' : label,
-      data: new Array(data.value.yearColumnNames.length).fill(0),
-      borderColor: chartColours[i],
-      backgroundColor: chartColours[i],
-    };
-    data.value.rows.forEach(row => {
-      if (row[hasMultipleMeasures.value ? 1 : 0] === label || label === 'id_measure') {
-        row.splice(0, hasMultipleMeasures.value && label !== 'id_measure' ? 2 : 1);
-        row.forEach((measure, iM) => {
-          // Sum up measurements and check if it's a percentage value
-          dataset.data[iM] += activeMeasurement.value.yAxis.indexOf('%') > -1 ? measure * 100 : measure;
-        });
-      }
-    });
-    datasets.push(dataset);
-  });
-  return {
-    labels: data.value.yearColumnNames,
-    datasets: datasets
-  };
-})
+const chartColoursAggregation: Array<string> = [
+  "rgb(68,178,47)",
+  "rgb(162,243,149)",
+  "rgb(16,94,0)",
+  "rgb(150,178,47)",
+  "rgb(200,217,136)",
+  "rgb(110,138,8)",
+  "rgb(72,89,9)",
+];
 const icons: any = {
   UserGroupIcon,
   CurrencyEuroIcon,
@@ -102,6 +44,7 @@ const categories: CategoriesInterface = {
     icon: "UserGroupIcon",
     title: "Quantification",
     subtitle: "physical values",
+    subcategories: ["Social", "Economic", "Ecologic"],
     measurements: [
       {
         subcategory: "Social",
@@ -221,23 +164,212 @@ const categories: CategoriesInterface = {
     icon: "CurrencyEuroIcon",
     title: "Monetization",
     subtitle: "monetary values",
-    measurements: []
+    subcategories: [],
+    measurements: [
+      {
+        title: "Reduction of energy costs",
+        description: "This indicator describes the reduction in energy costs for end users to be expected from energy saving measures. It is calculated from final energy savings, differentiating between energy carriers and sectors, taking lower taxes and rates for commerce and industry into account. In case the energy mix has not been specified in the measure specific parameters, it is calculated from Eurostat and PRIMES data, accounting for the higher prevalence of certain energy carriers in specific improvement actions.",
+        identifier: "reductionOfEnergyCost",
+        yAxis: "Savings in M€"
+      },
+      {
+        title: "Premature deaths due to air pollution",
+        description: "This graph shows the monetary impacts of air pollution by attributing cases of premature deaths with statistical costs. As basis for the monetisation, the World Health Organisation's figures for country-specific Value of Statistical Life (VSL) are used.",
+        identifier: "reductionOfMortalityMorbidityMonetization",
+        yAxis: "Value in M€"
+      },
+      {
+        title: "Avoided lost working days due to air pollution",
+        description: "Lost working days can be considered a proxy to examine cases of morbidity (although excluding certain groups, such as children, unemployed, etc.). This indicator shows the reduction of lost working days linked to air pollution. Based on IIASA's GAINS model, it takes air pollution data and societal aspects, such as employment and national health levels, into account.",
+        identifier: "reductionOfLostWorkDays",
+        yAxis: "Value in M€"
+      },
+      {
+        title: "Reduction of greenhouse gas emissions",
+        description: "This graph displays the monetary benefits associated with reduced greenhouse gas emissions. The costs of greenhouse gas emissions can be monetised in several ways, inter alia with the costs of carbon in carbon certificate schemes such as the EU Emission Trading System (ETS), the cost of removal or the cost of avoidance for future generations. The MICATool uses societal costs of carbon as a calculation basis, which are calculated in line with common evaluation methodologies by the German Federal Environmental Agency.",
+        identifier: "reductionOfGreenHouseGasEmissionMonetization",
+        yAxis: "Value in M€"
+      },
+      {
+        title: "Impact on RES targets",
+        description: "This indicator examines how energy efficiency can support in achieving the target share of energy originating from renewable energy sources (RES) stated in the Renewable Energy Directive (RED). By reducing the overall energy consumption, the share of renewable energy carriers is increased, assuming the energy savings mainly affect non-renewable energy sources.",
+        identifier: "impactOnResTargetsMonetization",
+        yAxis: "Value in M€"
+      },
+      {
+        title: "Reduction of additional capacities",
+        description: "As a consequence of energy efficiency measures, fewer new supply-side capacities need to be installed. Assuming that new capacities would alternatively be renewable energies, this indicator assesses the avoided generation capacity.",
+        identifier: "reductionOfAdditionalCapacitiesInGridMonetization",
+        yAxis: "Value in M€"
+      }
+    ]
   },
   "aggregation": {
     icon: "BanknotesIcon",
     title: "Aggregation",
     subtitle: "monetary values per year",
+    subcategories: [],
     measurements: []
   },
   "cba": {
     icon: "PresentationChartBarIcon",
     title: "Cost-benefit analysis",
     subtitle: "cost effectiveness",
+    subcategories: [],
     measurements: []
   }
 };
-const activeCategory = ref<string>(Object.keys(categories)[0]);
+const aggregationChartData: any = computed(() => {
+  const datasets: Array<DatasetInterface> = [];
+  categories.monetization.measurements.forEach((measurement, i) => {
+    const aggregationData: ResultInterface = JSON.parse(JSON.stringify(props.results[measurement.identifier]));
+    if (measurement.identifier === 'reductionOfEnergyCost') {
+      aggregationData.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
+        const values = new Array(props.years.length).fill(0);
+        aggregationData.rows.filter(row => row[1] === label).forEach(row => {
+          row.splice(0, 2);
+          row.forEach((measure, iM) => {
+            // Sum up measurements
+            values[iM] += measure;
+          });
+        });
+        datasets.push({
+          label: label,
+          data: values,
+          borderColor: chartColoursAggregation[iL],
+          backgroundColor: chartColoursAggregation[iL],
+          stack: `stack-reductionOfEnergyCost`,
+        });
+      });
+    } else {
+      const values = new Array(props.years.length).fill(0);
+      aggregationData.rows.forEach(row => {
+        row.splice(0, 1);
+        row.forEach((measure, iM) => {
+          // Sum up measurements
+          values[iM] += measure;
+        });
+      });
+      datasets.push({
+        label: measurement.title,
+        data: values,
+        borderColor: chartColours[i],
+        backgroundColor: chartColours[i],
+        stack: `stack-${i}`,
+      });
+    }
+  });
+  return {
+    labels: props.years,
+    datasets,
+  }
+});
+let formatter = Intl.NumberFormat('de', { notation: 'compact' });
+const aggregationChartOptions: any = {
+  plugins: {
+    title: {
+      display: false,
+      text: 'MICAT - Aggregation'
+    },
+  },
+  responsive: true,
+  interaction: {
+    intersect: false,
+  },
+  scales: {
+    x: {
+      stacked: true,
+    },
+    y: {
+      stacked: true,
+      ticks: {
+        callback: (label: number | string) => typeof label === "number" ? formatter.format(label) : label,
+      },
+    }
+  }
+};
+const data = computed<ResultInterface>(() => JSON.parse(JSON.stringify(props.results[activeMeasurement.value.identifier])))
+const hasMultipleMeasures = computed(() => data.value.idColumnNames.indexOf('id_measure') > -1);
+const chartLabels = computed(() => {
+  // Get labels
+  const labels: Array<string> = [];
+  const identifiers = data.value.idColumnNames.filter(identifier => identifier !== 'id_measure');
+  if (identifiers.length > 0) {
+    data.value.rows.forEach(row => {
+      if (!hasMultipleMeasures.value || row[0] === 1) labels.push(row[hasMultipleMeasures.value ? 1: 0]);
+    });
+  }
+  if (hasMultipleMeasures.value && labels.length === 0) labels.push('id_measure');
+  return labels;
+});
+const chartOptions = computed(() => {
+  return {
+    responsive: true,
+    plugins: {
+      title: {
+        text: 'MICAT',
+        display: false
+      },
+      legend: {
+        display: chartLabels.value.filter(label => label !== 'id_measure').length > 0
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: false,
+          text: 'Years'
+        }
+      },
+      y: {
+        ticks: {
+          callback: (label: number | string) => typeof label === "number" ? formatter.format(label) : label,
+        },
+        title: {
+          display: true,
+          text: activeMeasurement.value.yAxis
+        }
+      }
+    }
+  };
+})
+const chartData = computed(() => {
+  const datasets: Array<DatasetInterface> = [];
+  chartLabels.value.forEach((label, i) => {
+    const dataset = {
+      label: label === 'id_measure' ? '' : label,
+      data: new Array(data.value.yearColumnNames.length).fill(0),
+      borderColor: chartColours[i],
+      backgroundColor: chartColours[i],
+    };
+    data.value.rows.forEach(row => {
+      if (row[hasMultipleMeasures.value ? 1 : 0] === label || label === 'id_measure') {
+        row.splice(0, hasMultipleMeasures.value && label !== 'id_measure' ? 2 : 1);
+        row.forEach((measure, iM) => {
+          // Sum up measurements and check if it's a percentage value
+          dataset.data[iM] += activeMeasurement.value.yAxis.indexOf('%') > -1 ? measure * 100 : measure;
+        });
+      }
+    });
+    datasets.push(dataset);
+  });
+  return {
+    labels: data.value.yearColumnNames,
+    datasets: datasets
+  };
+})
+const activeCategory = ref<string>(Object.keys(categories)[2]);
+const activeSubcategory = ref<string>(Object.values(categories)[0].subcategories[0]);
 const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0].measurements[0]);
+
+const selectCategory = (category: string) => {
+  activeCategory.value = category;
+  activeMeasurement.value = categories[activeCategory.value].measurements.filter(measurement => !measurement.subcategory || measurement.subcategory === activeSubcategory.value)[0];
+};
+const selectSubcategory = (subcategory: string) => {
+  activeSubcategory.value = subcategory;
+  activeMeasurement.value = categories[activeCategory.value].measurements.filter(measurement => !measurement.subcategory || measurement.subcategory === activeSubcategory.value)[0];
+};
 </script>
 
 <template>
@@ -250,14 +382,17 @@ const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0]
       <div class="flex">
         <div class="bg-sky-800 rounded-l-3xl min-w-[325px] self-stretch">
           <div
-            class="flex items-center pl-7 pr-16 py-5 cursor-pointer"
-            @click="activeCategory = key"
+            class="flex items-center pl-7 cursor-pointer"
+            @click="selectCategory(key)"
             :class="{
               'text-white': activeCategory !== key,
               'text-sky-900': activeCategory === key,
               'bg-white': activeCategory === key,
+              'hover:text-sky-700': activeCategory === key,
+              'hover:bg-sky-900': activeCategory !== key,
               'rounded-tl-3xl': activeCategory === key && i === 0,
               'rounded-bl-3xl': activeCategory === key && i === Object.keys(categories).length - 1,
+              'pr-16': !category.subcategories,
             }"
             v-for="([key, category], i) in Object.entries(categories)"
             v-bind:key="`category-${key}`"
@@ -265,13 +400,31 @@ const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0]
             <div>
               <component :is="icons[category.icon]" class="h-5 w-5 mr-5"></component>
             </div>
-            <div>
+            <div class="py-5 grow">
               <span class="font-bold">{{ category.title }}</span><br />
               <span>{{ category.subtitle }}</span>
             </div>
+            <div v-if="category.subcategories">
+              <div
+                v-for="(subcategory, i) in category.subcategories"
+                v-bind:key="`subcategory-${key}-${i}`"
+                class="py-2 px-4 text-sm font-bold"
+                :class="{
+                  'text-white': activeSubcategory !== subcategory,
+                  'text-sky-700': activeSubcategory === subcategory,
+                  'bg-gradient-to-r from-sky-600 to-sky-700 hover:bg-gradient-to-r hover:from-sky-600 hover:to-sky-700': activeSubcategory !== subcategory,
+                  'bg-white hover:bg-sky-100': activeSubcategory === subcategory,
+                  'rounded-tl-2xl': i === 0,
+                  'rounded-bl-2xl': i === category.subcategories.length - 1,
+                }"
+                @click="selectSubcategory(subcategory)"
+              >
+                {{ subcategory }}
+              </div>
+            </div>
           </div>
         </div>
-        <div>
+        <div v-if="['quantification', 'monetization'].indexOf(activeCategory) > -1">
           <div class="flex">
             <div class="bg-orange-600 rounded-br-3xl pl-1 border-l border-white self-start">
               <div
@@ -280,12 +433,13 @@ const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0]
                 :class="{
                   'text-white': activeMeasurement.identifier !== measurement.identifier,
                   'text-orange-800': activeMeasurement.identifier === measurement.identifier,
-                  'bg-white': activeMeasurement.identifier === measurement.identifier
+                  'bg-white': activeMeasurement.identifier === measurement.identifier,
+                  'hover:text-orange-700': activeMeasurement.identifier === measurement.identifier,
+                  'hover:bg-orange-700': activeMeasurement.identifier !== measurement.identifier
                 }"
-                v-for="measurement in categories[activeCategory].measurements"
+                v-for="measurement in categories[activeCategory].measurements.filter(measurement => !measurement.subcategory || measurement.subcategory === activeSubcategory)"
                 v-bind:key="`measurement-${measurement.identifier}`"
               >
-                <span v-if="measurement.subcategory" class="italic mr-3">{{ measurement.subcategory }}</span>
                 <span class="font-bold mr-8 grow whitespace-nowrap">{{ measurement.title }}</span>
                 <CheckIcon v-if="activeMeasurement.identifier === measurement.identifier" class="h-5 w-5"></CheckIcon>
                 <CursorArrowRaysIcon v-else class="h-5 w-5"></CursorArrowRaysIcon>
@@ -306,6 +460,13 @@ const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0]
               :data="chartData"
             />
           </div>
+        </div>
+        <div v-if="activeCategory === 'aggregation'" class="w-full max-w-full p-7">
+          <Bar
+            id="chart-aggregation"
+            :options="aggregationChartOptions"
+            :data="aggregationChartData"
+          />
         </div>
       </div>
     </div>
