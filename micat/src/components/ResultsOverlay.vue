@@ -13,7 +13,7 @@ import { Bar, Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
 import type {CategoriesInterface, MeasurementInterface, ResultInterface, DatasetInterface} from "@/types";
 
-const props = defineProps(['results', 'years']);
+const props = defineProps(['results', 'years', 'factor']);
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement);
 
 const chartColours: Array<string> = [
@@ -23,6 +23,7 @@ const chartColours: Array<string> = [
   "rgb(45,192,204)",
   "rgb(244,122,32)",
   "rgb(31,149,178)",
+  "rgb(255,242,92)",
 ];
 const chartColoursAggregation: Array<string> = [
   "rgb(68,178,47)",
@@ -221,7 +222,9 @@ const categories: CategoriesInterface = {
 };
 const aggregationChartData: any = computed(() => {
   const datasets: Array<DatasetInterface> = [];
-  categories.monetization.measurements.forEach((measurement, i) => {
+  let measurements = categories.monetization.measurements
+  measurements = measurements.concat(categories.quantification.measurements.filter(measurement => measurement.identifier === "impactOnGrossDomesticProduct"));
+  measurements.forEach((measurement, i) => {
     const aggregationData: ResultInterface = JSON.parse(JSON.stringify(props.results[measurement.identifier]));
     if (measurement.identifier === 'reductionOfEnergyCost') {
       aggregationData.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
@@ -358,9 +361,10 @@ const chartData = computed(() => {
     datasets: datasets
   };
 })
-const activeCategory = ref<string>(Object.keys(categories)[2]);
+const activeCategory = ref<string>(Object.keys(categories)[0]);
 const activeSubcategory = ref<string>(Object.values(categories)[0].subcategories[0]);
 const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0].measurements[0]);
+const activeIndicators = ref<Array<string>>(categories.monetization.measurements.map(measurement => measurement.identifier));
 
 const selectCategory = (category: string) => {
   activeCategory.value = category;
@@ -370,11 +374,19 @@ const selectSubcategory = (subcategory: string) => {
   activeSubcategory.value = subcategory;
   activeMeasurement.value = categories[activeCategory.value].measurements.filter(measurement => !measurement.subcategory || measurement.subcategory === activeSubcategory.value)[0];
 };
+const toggleIndicator = (identifier: string) => {
+  const index = activeIndicators.value.indexOf(identifier);
+  if (index === -1) {
+    activeIndicators.value.push(identifier);
+  } else {
+    activeIndicators.value.splice(index, 1);
+  }
+}
 </script>
 
 <template>
   <div class="max-w-screen-xl mx-auto pt-5 pb-10">
-    <a href="#" @click="$emit('close')" class="text-sm text-sky-700 dark:text-sky-300">zurück zu den Eingaben</a>
+    <a href="#" @click="$emit('close')" class="text-sm text-sky-700 dark:text-sky-300">back to the entries</a>
     <div class="rounded-3xl border border-gray-300 my-3 relative bg-white">
       <div @click="$emit('close')" class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-10px] cursor-pointer">
         <XCircleIcon class="text-sky-700 dark:text-sky-300 h-9 w-9"></XCircleIcon>
@@ -435,7 +447,8 @@ const selectSubcategory = (subcategory: string) => {
                   'text-orange-800': activeMeasurement.identifier === measurement.identifier,
                   'bg-white': activeMeasurement.identifier === measurement.identifier,
                   'hover:text-orange-700': activeMeasurement.identifier === measurement.identifier,
-                  'hover:bg-orange-700': activeMeasurement.identifier !== measurement.identifier
+                  'hover:bg-orange-700': activeMeasurement.identifier !== measurement.identifier,
+                  'hover:rounded-br-3xl': activeMeasurement.identifier !== measurement.identifier
                 }"
                 v-for="measurement in categories[activeCategory].measurements.filter(measurement => !measurement.subcategory || measurement.subcategory === activeSubcategory)"
                 v-bind:key="`measurement-${measurement.identifier}`"
@@ -461,12 +474,51 @@ const selectSubcategory = (subcategory: string) => {
             />
           </div>
         </div>
-        <div v-if="activeCategory === 'aggregation'" class="w-full max-w-full p-7">
+        <div v-else-if="activeCategory === 'aggregation'" class="w-full max-w-full p-7">
           <Bar
             id="chart-aggregation"
             :options="aggregationChartOptions"
             :data="aggregationChartData"
           />
+        </div>
+        <div v-if="activeCategory === 'cba'">
+          <div class="flex">
+            <div class="bg-sky-600 rounded-br-3xl pl-1 border-l border-white self-start">
+              <h3 class="bg-white font-bold p-2 text-sky-600">Indicators</h3>
+              <div
+                class="flex items-center pl-5 pr-3 py-4 cursor-pointer text-sm"
+                @click="toggleIndicator(measurement.identifier)"
+                :class="{
+                  'text-white': activeIndicators.indexOf(measurement.identifier) === -1,
+                  'text-sky-800': activeIndicators.indexOf(measurement.identifier) > -1,
+                  'bg-white': activeIndicators.indexOf(measurement.identifier) > -1,
+                  'hover:text-sky-700': activeIndicators.indexOf(measurement.identifier) > -1,
+                  'hover:bg-sky-700': activeIndicators.indexOf(measurement.identifier) === -1,
+                  'rounded-br-3xl': activeIndicators.indexOf(measurement.identifier) === -1
+                }"
+                v-for="measurement in categories['monetization'].measurements"
+                v-bind:key="`measurement-cba-${measurement.identifier}`"
+              >
+                <span class="font-bold mr-8 grow whitespace-nowrap">{{ measurement.title }}</span>
+                <CheckIcon v-if="activeIndicators.indexOf(measurement.identifier) > -1" class="h-5 w-5"></CheckIcon>
+                <CursorArrowRaysIcon v-else class="h-5 w-5"></CursorArrowRaysIcon>
+              </div>
+            </div>
+            <div>
+              <div class="bg-orange-600 text-white mx-7 my-7 p-4 text-sm rounded-lg">
+                <h3 class="font-bold mb-2">Parameters</h3>
+                <div></div>
+              </div>
+            </div>
+          </div>
+          <div class="px-10 py-5">
+            <Line
+              class="w-full max-w-[100%]"
+              id="chart"
+              :options="chartOptions"
+              :data="chartData"
+            />
+          </div>
         </div>
       </div>
     </div>

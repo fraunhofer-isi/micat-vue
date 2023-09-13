@@ -5,7 +5,8 @@ import {
   InformationCircleIcon,
   TrashIcon,
   PlusCircleIcon,
-  DocumentDuplicateIcon
+  DocumentDuplicateIcon,
+  ExclamationCircleIcon
 } from '@heroicons/vue/24/outline';
 import type {
   ModalInjectInterface,
@@ -15,7 +16,7 @@ import type {
   ImprovementValueInterface,
   PayloadInterface,
   PayloadMeasureInterface,
-  ResultsInterface,
+  ResultsInterface, UnitInterface,
 } from "@/types";
 import {defaultImprovement, defaultModalInject, defaultProgram, defaultStageInject} from "@/defaults";
 import ResultsOverlay from "@/components/ResultsOverlay.vue";
@@ -27,11 +28,24 @@ const {stage, stages} = inject<StageInjectInterface>('stage') || defaultStageInj
 // Variables
 let regions: Ref<Array<Array<number | string>>> = ref([]);
 let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
-const units = {
-  1: "ktoe (tonne of oil equivalent)",
-  2: "MJ (Megajoule)",
-  3: "GJ (Gigajoule)",
-  4: "MWh (Energy quantity per hour)",
+const units: UnitInterface = {
+  1: {
+    name: "ktoe (tonne of oil equivalent)",
+    factor: 1
+  },
+  2: {
+    name: "MJ (Megajoule)",
+    factor: 41868000
+
+  },
+  3: {
+    name: "GJ (Gigajoule)",
+    factor: 41868
+  },
+  4: {
+    name: "MWh (Energy quantity per hour)",
+    factor: 11630
+  },
 }
 const future = ref<boolean>(false);
 const region = ref<number>(0);
@@ -1203,13 +1217,14 @@ const results = ref<ResultsInterface>({
         ]
     }
 });
-const showResults = ref<boolean>(true);
+const showResults = ref<boolean>(false);
+const error = ref<string>("");
 
 // Watchers
-watch(future, async (newFuture) => {
+watch(future, async () => {
   // Check if there are valid years defined. If not add default ones.
   currentYear = new Date().getFullYear();
-  if (newFuture) {
+  if (future.value) {
     // Filter out years from the past
     years.value = years.value.filter(year => year >= currentYear);
     if (years.value.length == 0) {
@@ -1228,6 +1243,7 @@ watch(future, async (newFuture) => {
       newYears.value = [...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1);
     }
   }
+  newYearSelected.value = newYears.value[0];
 })
 
 // Lifecycle
@@ -1319,6 +1335,7 @@ const analyze = async () => {
     "measures": [],
     "parameters": {}
   }
+  if (municipality.value) payload["population"] = inhabitants.value;
   let i = 1;
   programs.value.forEach(program => {
     program.improvements.forEach(improvement => {
@@ -1339,7 +1356,8 @@ const analyze = async () => {
 
       years.value.forEach(year => {
         const value = improvement.values[year.toString()];
-        improvementData.savings[year.toString()] = value ? value : 0;
+        const factor = units[unit.value].factor
+        improvementData.savings[year.toString()] = value ? value * 1 / factor : 0;
       });
       payload.measures.push(improvementData);
       i++;
@@ -1357,14 +1375,19 @@ const analyze = async () => {
     referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     body: JSON.stringify(payload),
   });
-  results.value = await response.json();
-  showResults.value = true;
+  const data = await response.json();
+  if (Object.prototype.hasOwnProperty.call(data, 'error')) {
+    error.value = data.error.arg0;
+  } else {
+    results.value = data;
+    showResults.value = true;
+  }
 }
 </script>
 
 <template>
   <main>
-    <ResultsOverlay v-if="showResults" :results="results" :years="years" @close="showResults = false;"></ResultsOverlay>
+    <ResultsOverlay v-if="showResults" :results="results" :years="years" :factor="units[unit].factor" @close="showResults = false;"></ResultsOverlay>
     <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
         <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency
@@ -1394,14 +1417,16 @@ const analyze = async () => {
                                      class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"></InformationCircleIcon>
             </div>
             <div class="col-span-3">
-              <label for="timeframe"
-                     class="inline-flex items-center rounded-full cursor-pointer dark:text-gray-800 border border-sky-600 dark:border-0">
+              <label
+                for="timeframe"
+                class="inline-flex items-center rounded-full cursor-pointer dark:text-gray-800 border border-sky-600 dark:border-0"
+              >
                 <input id="timeframe" type="checkbox" class="hidden peer" v-model="future">
                 <span
-                  class="leading-3 pl-8 pr-7 pt-4 pb-3 rounded-l-full bg-sky-600 text-white peer-checked:text-sky-900 peer-checked:bg-white text-center"><span
+                  class="leading-3 pl-8 pr-7 pt-4 pb-3 rounded-l-full bg-sky-600 text-white peer-checked:text-gray-400 peer-checked:bg-white text-center"><span
                   class="uppercase font-bold">past</span><br><span class="text-sm">(ex-post)</span></span>
                 <span
-                  class="leading-3 pl-7 pr-8 pt-4 pb-3 rounded-r-full dark:bg-white text-sky-900 peer-checked:bg-sky-600 peer-checked:text-white text-center"><span
+                  class="leading-3 pl-7 pr-8 pt-4 pb-3 rounded-r-full dark:bg-white text-gray-400 peer-checked:bg-sky-600 peer-checked:text-white text-center"><span
                   class="uppercase font-bold">future</span><br><span class="text-sm">(ex-ante)</span></span>
               </label>
             </div>
@@ -1409,8 +1434,10 @@ const analyze = async () => {
             <!-- region -->
             <div class="mt-8 col-span-2">
               <label for="region" class="dark:text-white text-sm">Region</label>
-              <InformationCircleIcon @click="openModal('region')"
-                                     class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"></InformationCircleIcon>
+              <InformationCircleIcon
+                @click="openModal('region')"
+                class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+              ></InformationCircleIcon>
             </div>
             <div class="mt-8 col-span-3">
               <select
@@ -1427,13 +1454,13 @@ const analyze = async () => {
                 <div class="flex items-center mb-2 mt-3">
                   <input v-model="municipality" id="municipality-1" type="radio" :value="false" name="municipality"
                          class="w-4 h-4 text-sky-600 bg-gray-100 border-gray-300 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                  <label for="default-radio-1" class="ml-2 text-xs font-medium text-gray-500 dark:text-gray-300">Whole
+                  <label for="municipality-1" class="ml-2 text-xs font-medium text-gray-500 dark:text-gray-300">Whole
                     country</label>
                 </div>
                 <div class="flex items-center">
                   <input v-model="municipality" id="municipality-2" type="radio" :value="true" name="municipality"
                          class="w-4 h-4 text-sky-600 bg-gray-100 border-gray-300 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                  <label for="default-radio-2" class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300">Municipality
+                  <label for="municipality-2" class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300">Municipality
                     with <input type="number" id="inhabitants"
                                 class="bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[80px]"
                                 v-model="inhabitants"> <span v-if="stage === stages.home">inhabitants</span><span
@@ -1451,11 +1478,11 @@ const analyze = async () => {
             <div class="mt-8 col-span-3">
               <select
                 id="unit"
-                class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                 v-model="unit"
               >
                 <option v-for="[key, value] in Object.entries(units)" v-bind:key="`unit-${key}`" :value="key">{{
-                    value
+                    value.name
                   }}
                 </option>
               </select>
@@ -1531,6 +1558,40 @@ const analyze = async () => {
         class="col col-span-6"
         v-if="stage === stages.full"
       >
+        <div
+          v-if="error"
+          class="flex p-4 mb-7 text-red-800 border-t-4 border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800 rounded-2xl"
+          role="alert"
+        >
+          <ExclamationCircleIcon class="h-8 w-8"></ExclamationCircleIcon>
+          <div class="ml-3 font-medium">
+            <h2 class="font-bold mt-1">We are sorry. Your request could not be processed.</h2>
+            <p class="text-sm"><span class="italic">Details</span>: {{ error }}</p>
+          </div>
+          <button
+            type="button"
+            class="ml-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"
+            aria-label="Close"
+            @click="error = '';"
+          >
+            <span class="sr-only">Dismiss</span>
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+          </button>
+        </div>
+<!--        <div-->
+<!--          v-if="results"-->
+<!--          class="flex p-4 mb-7 text-green-800 border-t-4 border-green-300 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800 rounded-2xl cursor-pointer"-->
+<!--          role="alert"-->
+<!--          @click="showResults = true;"-->
+<!--        >-->
+<!--          <PresentationChartBarIcon class="h-8 w-8"></PresentationChartBarIcon>-->
+<!--          <div class="ml-3 font-medium">-->
+<!--            <h2 class="font-bold mt-1">Results are ready.</h2>-->
+<!--            <p class="text-sm">Click here to open the results again.</p>-->
+<!--          </div>-->
+<!--        </div>-->
         <div
           class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5"
           v-for="(program, i) in programs"

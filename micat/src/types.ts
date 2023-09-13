@@ -21,11 +21,17 @@ export interface StageInjectInterface {
 export interface ImprovementValueInterface {
     [key: string]: number;
 }
-
 export interface ImprovementInterface {
     id: number;
     name?: string;
     values: ImprovementValueInterface;
+}
+
+export interface UnitInterface {
+    [key: number]: {
+        name: string;
+        factor: number;
+    }
 }
 
 export interface ProgramInterface {
@@ -57,6 +63,7 @@ export interface PayloadMeasureInterface {
 export interface PayloadInterface {
     measures: Array<PayloadMeasureInterface>;
     parameters: PayloadParameterInterface;
+    population?: number;
 }
 export interface ResultInterface {
     title?: string;
