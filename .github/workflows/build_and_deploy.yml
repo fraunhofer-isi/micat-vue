@@ -38,7 +38,11 @@ jobs:
         cd micat
         npm run build --if-present
     - name: deploy
-      uses: Atyn/Simple-SFTP
-      with:
-        url: ${{ format('sftp://{0}:{1}@{2}:{3}', secrets.SFTP_USER, secrets.SFTP_PASSWORD, secrets.SFTP_URL, secrets.SFTP_PORT)}}
-        local-directory: ./micat/dist/
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+            username: ${{ secrets.SFTP_USER }}
+            server: ${{ secrets.SFTP_SERVER }}
+            port: ${{ secrets.SFTP_PORT }}
+            local_path: './micat/dist/*'
+            remote_path: './foo/'   
+            password: ${{ secrets.FTP_PASSWORD }}
