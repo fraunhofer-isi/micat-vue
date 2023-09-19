@@ -40,5 +40,5 @@ jobs:
     - name: deploy
       uses: Atyn/Simple-SFTP
       with:
-        url: 'sftp://' + ${{ secrets.SFTP_USER }} + ':' + ${{ secrets.SFTP_PASSWORD }} + '@' + ${{ secrets.SFTP_URL }} + ':' + ${{ secrets.SFTP_PORT }}
+        url: ${{ format('sftp://{0}:{1}@{2}:{3}', secrets.SFTP_USER, secrets.SFTP_PASSWORD, secrets.SFTP_URL, secrets.SFTP_PORT)}}
         local-directory: ./micat/dist/
