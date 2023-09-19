@@ -38,12 +38,7 @@ jobs:
         cd micat
         npm run build --if-present
     - name: deploy
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      uses: Atyn/Simple-SFTP
       with:
-        server: ${{ secrets.SFTP_URL }}
-        port: ${{ secrets.SFTP_PORT }}
-        protocol: ftps
-        username: ${{ secrets.SFTP_USER }}
-        password: ${{ secrets.SFTP_PASSWORD }}
-        local-dir: ./micat/dist/
-
+        url: 'sftp://' + ${{ secrets.SFTP_USER }} + ':' + ${{ secrets.SFTP_PASSWORD }} + '@' + ${{ secrets.SFTP_URL }} + ':' + ${{ secrets.SFTP_PORT }}
+        local-directory: ./micat/dist/
