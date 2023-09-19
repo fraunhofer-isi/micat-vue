@@ -38,13 +38,13 @@ jobs:
         cd micat
         npm run build --if-present
     - name: deploy
-      uses: easingthemes/ssh-deploy@main
-      with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "micat/dist/"
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+            username: ${{ secrets.SFTP_USER }}
+            server: ${{ secrets.SFTP_URL }}
+            port: ${{ secrets.SFTP_PORT }}
+            local_path: '.micat/dist/*'
+            remote_path: '.'
+            sftp_only: true
+            password: ${{ secrets.SFTP_PASSWORD }}
 
