@@ -45,4 +45,4 @@ jobs:
         port: ${{ secrets.SFTP_PORT }}
         local_path: './micat/dist/*'
         remote_path: './foo/'   
-        password: ${{ secrets.FTP_PASSWORD }}
+        password: ${{ secrets.SFTP_PASSWORD }}
