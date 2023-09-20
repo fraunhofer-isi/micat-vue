@@ -40,19 +40,11 @@ jobs:
     - name: deploy
       uses: pressidium/lftp-mirror-action@v1
       with:
-        # SFTP credentials
-        # sshpass -p <password> sftp user@host
         host: ${{ secrets.SFTP_URL }}
         port: ${{ secrets.SFTP_PORT }}
         user: ${{ secrets.SFTP_USER }}
         pass: ${{ secrets.SFTP_PASSWORD }}
-        # lftp settings
-        #onlyNewer: true
-        #settings: 'sftp:auto-confirm=yes'
-        # Mirror command options
         localDir: './micat/dist'
-        remoteDir: '.' #/var/www/html/example.com/public'
-        reverse: true
-        #ignoreFile: '.lftp_ignore'
-        options: '--verbose'
+        remoteDir: '.'
+        reverse: true       
         
