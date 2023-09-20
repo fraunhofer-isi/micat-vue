@@ -43,4 +43,4 @@ jobs:
         server: ${{ secrets.SFTP_URL }}
         username: ${{ secrets.SFTP_USER }}
         password: ${{ secrets.SFTP_PASSWORD }}
-        local-dir: micat/dist
+        local-dir: micat/dist/
