@@ -1,5 +1,7 @@
 import type {ImprovementInterface, ModalInjectInterface, ProgramInterface, StageInjectInterface} from "@/types";
 
+
+export const stages = Object.freeze({ home: 1, full: 2 });
 export const defaultModalInject: ModalInjectInterface = {
     showModal: false,
     modalTitle: '',

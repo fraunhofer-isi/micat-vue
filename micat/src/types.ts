@@ -1,3 +1,5 @@
+import type {DebuggerEvent, DebuggerEventExtraInfo} from "vue";
+
 export interface HelpTextInterface {
     [key: string]: {
         title: string;
@@ -94,4 +96,26 @@ export interface DatasetInterface {
     borderColor: string;
     backgroundColor: string;
     stack?: string;
+}
+
+export interface ISessionState {
+  currentYear: number;
+  stage: number;
+  future: boolean;
+  region: number;
+  municipality: boolean;
+  unit: number;
+  inhabitants: number;
+  years: Array<number>;
+  programs: Array<ProgramInterface>;
+}
+export interface ISessionStateFunctions {
+    updateStage: (stage: number) => void;
+    updateFuture: (future: boolean) => void;
+    updateRegion: (region: number) => void;
+    updateMunicipality: (municipality: boolean) => void;
+    updateInhabitants: (inhabitants: number) => void;
+    updateUnit: (unit: number) => void;
+    updateYears: (years: Array<number>) => void;
+    updatePrograms: (programs: Array<ProgramInterface>) => void;
 }

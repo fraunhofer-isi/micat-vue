@@ -1,5 +1,5 @@
 <script setup async lang="ts">
-import {inject, onMounted, ref, watch} from 'vue';
+import {inject, onMounted, reactive, ref, watch} from 'vue';
 import type {Ref} from 'vue';
 import {
   InformationCircleIcon,
@@ -10,20 +10,23 @@ import {
 } from '@heroicons/vue/24/outline';
 import type {
   ModalInjectInterface,
-  StageInjectInterface,
   ProgramInterface,
   SubsectorInterface,
   ImprovementValueInterface,
   PayloadInterface,
   PayloadMeasureInterface,
-  ResultsInterface, UnitInterface,
+  ResultsInterface,
+  UnitInterface,
+  ISessionState,
 } from "@/types";
-import {defaultImprovement, defaultModalInject, defaultProgram, defaultStageInject} from "@/defaults";
+import { defaultImprovement, defaultModalInject, defaultProgram, stages } from "@/defaults";
+import { useSessionStore } from "@/stores/session";
 import ResultsOverlay from "@/components/ResultsOverlay.vue";
+
+const session = useSessionStore();
 
 // Injections
 const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
-const {stage, stages} = inject<StageInjectInterface>('stage') || defaultStageInject
 
 // Variables
 let regions: Ref<Array<Array<number | string>>> = ref([]);
@@ -47,16 +50,20 @@ const units: UnitInterface = {
     factor: 11630
   },
 }
-const future = ref<boolean>(false);
-const region = ref<number>(0);
-const municipality = ref<boolean>(false);
-const inhabitants = ref<number>(100000);
-const unit = ref<number>(1);
-let currentYear = Math.floor(new Date().getFullYear() / 5) * 5;
-const years = ref<Array<number>>([currentYear - 10, currentYear - 5, currentYear]);
-const newYears = ref<Array<number>>([...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
+
+// Session
+const future = ref<boolean>(session.future);
+const stage = ref<number>(session.stage);
+const region = ref<number>(session.region);
+const municipality = ref<boolean>(session.municipality);
+const unit = ref<number>(session.unit);
+const inhabitants = ref<number>(session.inhabitants);
+const years = ref<Array<number>>(session.years);
+const programs = reactive<Array<ProgramInterface>>(session.programs);
+
+// Refs
+const newYears = ref<Array<number>>([...Array(30).keys()].map(delta => session.currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
 const newYearSelected = ref<number>(newYears.value[0]);
-const programs = ref<Array<ProgramInterface>>([structuredClone(defaultProgram)]);
 const results = ref<ResultsInterface>({
     "addedAssetValueOfBuildings": {
         "idColumnNames": [
@@ -1221,10 +1228,13 @@ const showResults = ref<boolean>(false);
 const error = ref<string>("");
 
 // Watchers
-watch(future, async () => {
+watch(programs, (programs) => {
+  session.updatePrograms(programs);
+});
+watch(() => session.future, (future) => {
   // Check if there are valid years defined. If not add default ones.
-  currentYear = new Date().getFullYear();
-  if (future.value) {
+  const currentYear = new Date().getFullYear();
+  if (future) {
     // Filter out years from the past
     years.value = years.value.filter(year => year >= currentYear);
     if (years.value.length == 0) {
@@ -1243,8 +1253,24 @@ watch(future, async () => {
       newYears.value = [...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1);
     }
   }
-  newYearSelected.value = newYears.value[0];
-})
+  session.updateFuture(future);
+  session.updateYears(years.value);
+});
+watch(() => session.region, (region) => {
+  session.updateRegion(region);
+});
+watch(() => session.municipality, (municipality) => {
+  session.updateMunicipality(municipality);
+});
+watch(() => session.inhabitants, (inhabitants) => {
+  session.updateInhabitants(inhabitants);
+});
+watch(() => session.unit, (unit) => {
+ session.updateUnit(unit);
+});
+watch(() => session.inhabitants, (inhabitants) => {
+  session.updateInhabitants(inhabitants);
+});
 
 // Lifecycle
 onMounted(async () => {
@@ -1293,6 +1319,7 @@ onMounted(async () => {
 const addYear = () => {
   years.value.push(newYearSelected.value);
   years.value.sort();
+  session.updateYears(years.value);
   newYears.value = newYears.value.filter(newYear => newYear !== newYearSelected.value);
   newYearSelected.value = newYears.value[0];
 };
@@ -1300,18 +1327,21 @@ const removeYear = (year: number) => {
   if (years.value.length > 2) {
     // Keep at least two years
     years.value = years.value.filter(x => x !== year);
+    session.updateYears(years.value);
     newYears.value.push(year);
     newYears.value.sort();
   }
 };
 const addProgram = () => {
   const clone = JSON.parse(JSON.stringify(defaultProgram));
-  clone.name = `Program ${programs.value.length + 1}`
-  programs.value.push(clone);
+  clone.name = `Program ${programs.length + 1}`
+  programs.push(clone);
+  session.updatePrograms(programs);
 }
 const removeProgram = (i: number) => {
-  if (programs.value.length >= 2) {
-    programs.value.splice(i, 1);
+  if (programs.length >= 2) {
+    programs.splice(i, 1);
+    session.updatePrograms(programs);
   }
 }
 const copyImprovement = (program: ProgramInterface, i: number) => {
@@ -1326,7 +1356,7 @@ const removeImprovement = (program: ProgramInterface, i: number) => {
   }
 }
 const getSubsectorImprovements = (subsectorId: number) => {
-  if (!subsectorId) return [];
+  if (!subsectorId || subsectors.value.length === 0) return [];
   return subsectors.value.filter(subsector => subsector.id === subsectorId)[0].improvements;
 }
 const analyze = async () => {
@@ -1337,7 +1367,7 @@ const analyze = async () => {
   }
   if (municipality.value) payload["population"] = inhabitants.value;
   let i = 1;
-  programs.value.forEach(program => {
+  programs.forEach(program => {
     program.improvements.forEach(improvement => {
       const improvementData: PayloadMeasureInterface = {
         "id": i,
@@ -1421,7 +1451,7 @@ const analyze = async () => {
                 for="timeframe"
                 class="inline-flex items-center rounded-full cursor-pointer dark:text-gray-800 border border-sky-600 dark:border-0"
               >
-                <input id="timeframe" type="checkbox" class="hidden peer" v-model="future">
+                <input id="timeframe" type="checkbox" class="hidden peer" v-model="session.future">
                 <span
                   class="leading-3 pl-8 pr-7 pt-4 pb-3 rounded-l-full bg-sky-600 text-white peer-checked:text-gray-400 peer-checked:bg-white text-center"><span
                   class="uppercase font-bold">past</span><br><span class="text-sm">(ex-post)</span></span>
@@ -1443,27 +1473,27 @@ const analyze = async () => {
               <select
                 id="region"
                 class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-                v-model="region"
+                v-model="session.region"
               >
                 <option v-for="(region, i) in regions" v-bind:key="`region-${i}`" :value="region[0]">{{
                     region[1]
                   }}
                 </option>
               </select>
-              <div v-if="region !== 0">
+              <div v-if="session.region !== 0">
                 <div class="flex items-center mb-2 mt-3">
-                  <input v-model="municipality" id="municipality-1" type="radio" :value="false" name="municipality"
+                  <input v-model="session.municipality" id="municipality-1" type="radio" :value="false" name="municipality"
                          class="w-4 h-4 text-sky-600 bg-gray-100 border-gray-300 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                   <label for="municipality-1" class="ml-2 text-xs font-medium text-gray-500 dark:text-gray-300">Whole
                     country</label>
                 </div>
                 <div class="flex items-center">
-                  <input v-model="municipality" id="municipality-2" type="radio" :value="true" name="municipality"
+                  <input v-model="session.municipality" id="municipality-2" type="radio" :value="true" name="municipality"
                          class="w-4 h-4 text-sky-600 bg-gray-100 border-gray-300 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                   <label for="municipality-2" class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300">Municipality
                     with <input type="number" id="inhabitants"
                                 class="bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[80px]"
-                                v-model="inhabitants"> <span v-if="stage === stages.home">inhabitants</span><span
+                                v-model="session.inhabitants"> <span v-if="stage === stages.home">inhabitants</span><span
                       v-else>inhab.</span></label>
                 </div>
               </div>
@@ -1472,14 +1502,16 @@ const analyze = async () => {
             <!-- unit -->
             <div class="mt-8 col-span-2">
               <label for="unit" class="dark:text-white text-sm">Unit</label>
-              <InformationCircleIcon @click="openModal('unit')"
-                                     class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"></InformationCircleIcon>
+              <InformationCircleIcon
+                @click="openModal('unit')"
+                class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+              ></InformationCircleIcon>
             </div>
             <div class="mt-8 col-span-3">
               <select
                 id="unit"
                 class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-                v-model="unit"
+                v-model="session.unit"
               >
                 <option v-for="[key, value] in Object.entries(units)" v-bind:key="`unit-${key}`" :value="key">{{
                     value.name
@@ -1492,7 +1524,7 @@ const analyze = async () => {
         </div>
         <button
           class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full uppercase"
-          @click="stage = stages.full"
+          @click="stage = stages.full; session.updateStage(stage);"
           v-if="stage === stages.home"
         >
           Start
