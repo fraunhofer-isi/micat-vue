@@ -38,12 +38,10 @@ jobs:
         cd micat
         npm run build --if-present
     - name: deploy
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
       with:
-        server: ${{ secrets.SFTP_URL }}
-        port: 22
-        timeout: 60000
-        username: ${{ secrets.SFTP_USER }}
-        password: ${{ secrets.SFTP_PASSWORD }}
+        ftp-server: ${{ secrets.SFTP_URL }}
+        ftp-username: ${{ secrets.SFTP_USER }}
+        ftp-password: ${{ secrets.SFTP_PASSWORD }}
         local-dir: micat/dist/
         
