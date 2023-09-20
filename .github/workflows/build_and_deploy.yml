@@ -44,6 +44,6 @@ jobs:
         server: ${{ secrets.SFTP_URL }}
         port: ${{ secrets.SFTP_PORT }}
         local_path: './micat/dist/*'
-        remote_path: ${{ format('/usr/www/users/{0}/', secrets.SFTP_USER) }}   
+        remote_path: ${{ format('/usr/www/users/{0}', secrets.SFTP_USER) }}   
         sftp_only: true
         password: ${{ secrets.SFTP_PASSWORD }}
