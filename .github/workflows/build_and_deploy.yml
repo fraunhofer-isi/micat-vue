@@ -45,4 +45,5 @@ jobs:
         username: ${{ secrets.SFTP_USER }}
         password: ${{ secrets.SFTP_PASSWORD }}        
         local-dir: micat/dist/
+        timeout: 100000
         
