@@ -51,7 +51,7 @@ jobs:
         #settings: 'sftp:auto-confirm=yes'
         # Mirror command options
         localDir: './micat/dist'
-        #remoteDir: '.' #/var/www/html/example.com/public'
+        remoteDir: '.' #/var/www/html/example.com/public'
         reverse: true
         #ignoreFile: '.lftp_ignore'
         options: '--verbose'
