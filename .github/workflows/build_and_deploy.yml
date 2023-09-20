@@ -38,7 +38,7 @@ jobs:
         cd micat
         npm run build --if-present
     - name: deploy
-      uses: SamKirkland/FTP-Deploy-Action@3.1.1
+      uses: SamKirkland/FTP-Deploy-Action@4.0.0
       with:
         ftp-server: ${{ secrets.SFTP_URL }}
         ftp-port: 22
