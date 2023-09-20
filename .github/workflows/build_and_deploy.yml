@@ -38,12 +38,9 @@ jobs:
         cd micat
         npm run build --if-present
     - name: deploy
-      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
-        username: ${{ secrets.SFTP_USER }}
         server: ${{ secrets.SFTP_URL }}
-        port: ${{ secrets.SFTP_PORT }}
-        local_path: './micat/dist/*'
-        remote_path: '/foo' 
-        sftp_only: true
+        username: ${{ secrets.SFTP_USER }}
         password: ${{ secrets.SFTP_PASSWORD }}
+        local-dir: micat/dist
