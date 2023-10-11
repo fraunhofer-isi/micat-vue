@@ -1375,7 +1375,7 @@ const getSubsectorImprovements = (subsectorId: number) => {
   return subsectors.value.filter(subsector => subsector.id === subsectorId)[0].improvements;
 }
 const analyze = async () => {
-  const url = `https://micatool-dev.eu/mica-tool-wGlobal/python/back_end/src/api/indicator_data?id_mode=${future.value ? 4 : 2}&id_region=${region.value}`
+  const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${future.value ? 4 : 2}&id_region=${region.value}`
   const payload: PayloadInterface = {
     "measures": [],
     "parameters": {

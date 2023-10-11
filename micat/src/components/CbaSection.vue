@@ -74,7 +74,6 @@ const chartData = computed(() => {
       });
     });
   });
-  console.log(categories)
   return categories;
 })
 </script>
