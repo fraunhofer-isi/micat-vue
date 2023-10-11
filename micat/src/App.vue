@@ -31,6 +31,31 @@ const helpTexts: HelpTextInterface = {
     'text': 'tba',
     'type': 'help'
   },
+  'improvement': {
+    'title': 'Improvement',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'energy-price-sensitivity': {
+    'title': 'Energy price sensitivity',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'investments-sensitivity': {
+    'title': 'Investments sensitivity',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'discount-rate': {
+    'title': 'Discount rate',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'cba-year': {
+    'title': 'Year',
+    'text': 'tba',
+    'type': 'help'
+  },
 };
 
 const showModal = ref<Boolean>(false);

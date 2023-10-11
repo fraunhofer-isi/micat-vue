@@ -1,4 +1,4 @@
-import type {DebuggerEvent, DebuggerEventExtraInfo} from "vue";
+import {chartColours} from "@/defaults";
 
 export interface HelpTextInterface {
     [key: string]: {
@@ -48,11 +48,17 @@ export interface SubsectorInterface {
     improvements: Array<ImprovementInterface>;
 }
 
+export interface PayloadParameterEntryInterface {
+    [key: string]: number;
+}
 export interface PayloadParameterInterface {
+    [key: string]: Array<PayloadParameterEntryInterface>;
+}
+export interface PayloadSavingParameterInterface {
     [key: string]: number;
 }
 export interface PayloadSavingDetailsInterface {
-    [key: string]: Array<PayloadParameterInterface>;
+    [key: string]: Array<PayloadSavingParameterInterface>;
 }
 export interface PayloadSavingsInterface {
     [key: string]: number | PayloadSavingDetailsInterface;
@@ -92,7 +98,7 @@ export interface CategoriesInterface {
 }
 export interface DatasetInterface {
     label: string;
-    data: Array<any>,
+    data: Array<number | Datum>,
     borderColor: string;
     backgroundColor: string;
     stack?: string;
@@ -108,6 +114,7 @@ export interface ISessionState {
   inhabitants: number;
   years: Array<number>;
   programs: Array<ProgramInterface>;
+  payload: PayloadInterface;
 }
 export interface ISessionStateFunctions {
     updateStage: (stage: number) => void;
@@ -118,4 +125,75 @@ export interface ISessionStateFunctions {
     updateUnit: (unit: number) => void;
     updateYears: (years: Array<number>) => void;
     updatePrograms: (programs: Array<ProgramInterface>) => void;
+}
+export interface CbaResultInterface {
+    title: string;
+    slug: string;
+}
+export interface CbaData {
+    years:                       string[];
+    supportingYears:             number[];
+    costBenefitAnalysisFacility: CostBenefitAnalysisFacility;
+    netPresentValue:             NetPresentValue;
+    costBenefitRatio:            CostBenefitRatio;
+    levelisedCosts:              LevelisedCosts;
+    marginalCostCurves:          MarginalCostCurves;
+    fundingEfficiency:           FundingEfficiency;
+}
+
+export interface CostBenefitAnalysisFacility {
+    newEnergySavings: NewEnergySaving[];
+    newInvestments:   NewEnergySaving[];
+}
+
+export interface NewEnergySaving {
+    id_measure: number;
+    data:       { [key: string]: number };
+}
+
+export interface CostBenefitRatio {
+    costBenefitRatios: NewEnergySaving[];
+    benefitCostRatios: NewEnergySaving[];
+}
+
+export interface FundingEfficiency {
+    fundingEfficiencyOfEnergySavings: NewEnergySaving[];
+    fundingEfficiencyOfCo2Reductions: NewEnergySaving[];
+}
+
+export interface LevelisedCosts {
+    levelisedCostsOfSavedEnergies: NewEnergySaving[];
+    levelisedCostsOfSavedCo2:      NewEnergySaving[];
+    annuatisedCo2Emissions:        NewEnergySaving[];
+}
+
+export interface MarginalCostCurves {
+    marginalEnergySavingsCostCurves: MarginalSavingsCostCurve[];
+    marginalCo2SavingsCostCurves:    MarginalSavingsCostCurve[];
+}
+
+export interface MarginalSavingsCostCurve {
+    id_measure: number;
+    data:       { [key: string]: Datum };
+}
+
+export interface Datum {
+    barWidth:  number;
+    barHeight: number;
+}
+
+export interface NetPresentValue {
+    annuatisedEnergyCosts:     NewEnergySaving[];
+    annuatisedMultipleImpacts: NewEnergySaving[];
+    netPresentValues:          NewEnergySaving[];
+}
+export interface CbaCategoryInterface {
+    title: string;
+    data: {
+        labels: Array<string>;
+        datasets: Array<DatasetInterface>;
+    }
+}
+export interface CbaCategoriesInterface {
+    [key: string]: Array<CbaCategoryInterface>;
 }
