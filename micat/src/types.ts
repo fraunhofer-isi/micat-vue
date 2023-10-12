@@ -1,5 +1,3 @@
-import {chartColours} from "@/defaults";
-
 export interface HelpTextInterface {
     [key: string]: {
         title: string;
@@ -96,9 +94,12 @@ export interface CategoryInterface {
 export interface CategoriesInterface {
     [key: string]: CategoryInterface
 }
+export interface DataInterface {
+    [key: string]: any
+}
 export interface DatasetInterface {
     label: string;
-    data: Array<number | Datum>,
+    data: DataInterface,
     borderColor: string;
     backgroundColor: string;
     stack?: string;
@@ -148,7 +149,7 @@ export interface CostBenefitAnalysisFacility {
 
 export interface NewEnergySaving {
     id_measure: number;
-    data:       { [key: string]: number };
+    data: {[key: string]: number};
 }
 
 export interface CostBenefitRatio {
@@ -174,12 +175,12 @@ export interface MarginalCostCurves {
 
 export interface MarginalSavingsCostCurve {
     id_measure: number;
-    data:       { [key: string]: Datum };
+    data: {[key: string]: {[key: string]: number}};
 }
 
 export interface Datum {
-    barWidth:  number;
-    barHeight: number;
+    x:  number;
+    y: number;
 }
 
 export interface NetPresentValue {
@@ -187,12 +188,13 @@ export interface NetPresentValue {
     annuatisedMultipleImpacts: NewEnergySaving[];
     netPresentValues:          NewEnergySaving[];
 }
+export interface CbaDataInterface {
+    labels: Array<string>;
+    datasets: Array<DatasetInterface>;
+}
 export interface CbaCategoryInterface {
     title: string;
-    data: {
-        labels: Array<string>;
-        datasets: Array<DatasetInterface>;
-    }
+    data: CbaDataInterface;
 }
 export interface CbaCategoriesInterface {
     [key: string]: Array<CbaCategoryInterface>;

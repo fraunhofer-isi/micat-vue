@@ -1156,8 +1156,8 @@ export class MarginalCostCurves {
     lifetime
   ) {
     const marginalEnergySavingsCostCurve = {
-      barWidth: newEnergySaving * lifetime,
-      barHeight: levelisedCostsOfSavedEnergy
+      x: newEnergySaving * lifetime,
+      y: levelisedCostsOfSavedEnergy
     };
     return marginalEnergySavingsCostCurve;
   }
@@ -1167,8 +1167,8 @@ export class MarginalCostCurves {
     annuatisedCo2Emission
   ) {
     const co2SavingsCostCurve = {
-      barWidth: annuatisedCo2Emission,
-      barHeight: levelisedCostsOfSavedEnergy
+      x: annuatisedCo2Emission,
+      y: levelisedCostsOfSavedEnergy
     };
     return co2SavingsCostCurve;
   }

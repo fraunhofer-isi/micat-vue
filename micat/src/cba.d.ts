@@ -181,11 +181,11 @@ export class FundingEfficiency {
 export class MarginalCostCurves {
     static calculateMarginalCostCurves(measureSpecificParameters: any, annualMeasureSpecificParameters: any, measureSpecificResults: any, _userOptions: any): void;
     static _calculateMarginalEnergySavingsCostCurve(levelisedCostsOfSavedEnergy: any, newEnergySaving: any, lifetime: any): {
-        barWidth: number;
-        barHeight: any;
+        x: number;
+        y: any;
     };
     static _calculateCo2SavingsCostCurve(levelisedCostsOfSavedEnergy: any, annuatisedCo2Emission: any): {
-        barWidth: any;
-        barHeight: any;
+        x: any;
+        y: any;
     };
 }

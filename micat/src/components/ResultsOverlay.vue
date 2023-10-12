@@ -423,6 +423,12 @@ const chartData = computed(() => {
     datasets: datasets
   };
 });
+const interpolatedSavingsData = computed(() => {
+  return SavingsInterpolation.annualSavingsInterpolation(session.payload);
+});
+const interpolatedYears = computed(() => {
+  return Parameters.yearsFromSavingsData(interpolatedSavingsData.value);
+});
 const cbaData = computed(() => {
   const indicators: {[key: string]: boolean} = {};
   for (const measurement of categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === "reductionOfAirPollution"))) {
@@ -441,11 +447,9 @@ const cbaData = computed(() => {
   const results: CbaData = DataStructures.prepareResultDataStructure();
   const indicatorData = convert(props.results);
   results.supportingYears = props.years;
-  const interpolatedSavingsData = SavingsInterpolation.annualSavingsInterpolation(session.payload);
-  const years = Parameters.yearsFromSavingsData(interpolatedSavingsData);
-  results.years = years;
+  results.years = interpolatedYears.value;
 
-  for (const measure of interpolatedSavingsData.measures) {
+  for (const measure of interpolatedSavingsData.value.measures) {
     const measureSpecificResults = DataStructures.prepareMeasureSpecificResultsDataStructure(measure.id);
     const measureSpecificParameters = Parameters.measureSpecificParameters(
       measure,
@@ -454,7 +458,7 @@ const cbaData = computed(() => {
     );
     measureSpecificParameters.subsidyRate = Interpolation.annualLinearInterpolation(measureSpecificParameters.subsidyRate);
 
-    for (const year of years) {
+    for (const year of results.years) {
       const annualMeasureSpecificParameters =
         Parameters.annualMeasureSpecificParameters(year, measure);
       // Do not change the calculation order, because a calculation depends on the results of the previous one(s)!
@@ -722,29 +726,6 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     <div class="text-sm text-orange-300">{{ discountRate }}%</div>
                   </div>
                 </div>
-                <div class="flex gap-5 items-center">
-                  <div>
-                    <label for="cba-year" class="dark:text-white text-sm">Year</label>
-                    <InformationCircleIcon
-                      @click="openModal('cba-year')"
-                      class="h-6 w-6 ml-2 cursor-pointer inline"
-                    ></InformationCircleIcon>
-                  </div>
-                  <div class="grow">
-                    <select
-                      id="cba-year"
-                      class="py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
-                      v-model="cbaYear"
-                    >
-                      <option
-                        v-for="i in ['2023', '2024', '2025']" v-bind:key="i" :value="i"
-                        :selected="i === cbaYear"
-                      >
-                        {{ i }}
-                      </option>
-                    </select>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -778,9 +759,33 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   </div>
                 </div>
                 <div class="grow p-5">
+                  <div class="flex gap-5 items-center mb-6" v-if="activeCbaResult === 'marginalCostCurves'">
+                    <div>
+                      <label for="cba-year" class="dark:text-white text-sm">Year</label>
+                      <InformationCircleIcon
+                        @click="openModal('cba-year')"
+                        class="h-6 w-6 ml-2 cursor-pointer inline"
+                      ></InformationCircleIcon>
+                    </div>
+                    <div class="grow">
+                      <select
+                        id="cba-year"
+                        class="py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
+                        v-model="cbaYear"
+                      >
+                        <option
+                          v-for="year in interpolatedYears" v-bind:key="year" :value="year"
+                          :selected="year == cbaYear"
+                        >
+                          {{ year }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
                   <CbaSection
                     :activeCbaResult="activeCbaResult"
                     :data="cbaData"
+                    :year="cbaYear"
                   ></CbaSection>
                 </div>
               </div>
