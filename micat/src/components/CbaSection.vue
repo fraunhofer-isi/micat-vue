@@ -66,6 +66,13 @@ const chartOptions = computed(() => {
     }
   };
 });
+let chartUpdateTimeout: any;
+const updateChart = (chart: any, timeout: number) => {
+  clearTimeout(chartUpdateTimeout);
+  chartUpdateTimeout = setTimeout(() => {
+    chart.update();
+  }, timeout);
+};
 const MarginalCostCurvesChartOptions = (data: CbaDataInterface, title: string) => {
   const annotations: Array<{x: number; y: number; label: string}> = [];
   let sumX: number = 0;
@@ -131,11 +138,11 @@ const MarginalCostCurvesChartOptions = (data: CbaDataInterface, title: string) =
               },
               enter(ctx: any) {
                 ctx.chart.options.plugins.annotation.annotations[`label${idx}`].display = true;
-                ctx.chart.update();
+                updateChart(ctx.chart, 50);
               },
               leave(ctx: any) {
                 ctx.chart.options.plugins.annotation.annotations[`label${idx}`].display = false;
-                ctx.chart.update();
+                updateChart(ctx.chart, 1000);
               }
             };
             // Construct the line & label

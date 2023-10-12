@@ -87,6 +87,13 @@ const categories: CategoriesInterface = {
         yAxis: "People lifted out of energy poverty"
       },
       {
+        subcategory: "Social",
+        title: "Health indoor climate (Asthma)",
+        description: "",
+        identifier: "reductionInDisabilityAdjustedLifeYears",
+        yAxis: "Reduction in disability adjusted life years"
+      },
+      {
         subcategory: "Economic",
         title: "Impact on energy intensity",
         description: "Energy intensity describes the amount of energy necessary to generate a unit of gross domestic product (GDP) in a given economy. This graph shows the effect energy efficiency has in reducing it. It is calculated by dividing gross available energy by GDP. The scenario with measures is compared to a scenario populated with past data from Eurostat and projections from PRIMES.",
@@ -266,14 +273,14 @@ const cbaResults: Array<CbaResultInterface> = [
 ];
 
 // Refs
-const activeCategory = ref<string>(Object.keys(categories)[3]);
+const activeCategory = ref<string>(Object.keys(categories)[0]);
 const activeSubcategory = ref<string>(Object.values(categories)[0].subcategories[0]);
 const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0].measurements[0]);
 const activeIndicators = ref<Array<string>>(categories.monetization.measurements.map(measurement => measurement.identifier));
 const energyPriceSensitivity = ref<number>(100);
 const investmentsSensitivity = ref<number>(100);
 const discountRate = ref<number>(3);
-const cbaYear = ref<string>("2023");
+const cbaYear = ref<string>(props.years[0].toString());
 const activeCbaResult = ref<string>(cbaResults[0].slug);
 
 // Variables
@@ -669,8 +676,8 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     <input
                       type="range"
                       class="w-full h-1 bg-orange-200 rounded-lg appearance-none cursor-pointer"
-                      min="0"
-                      max="100"
+                      min="50"
+                      max="200"
                       step="1"
                       v-model="energyPriceSensitivity"
                       id="energy-price-sensitivity"
@@ -692,8 +699,8 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     <input
                       type="range"
                       class="w-full h-1 bg-orange-200 rounded-lg appearance-none cursor-pointer"
-                      min="0"
-                      max="100"
+                      min="50"
+                      max="200"
                       step="1"
                       v-model="investmentsSensitivity"
                       id="investments-sensitivity"
@@ -716,7 +723,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                       type="range"
                       class="w-full h-1 bg-orange-200 rounded-lg appearance-none cursor-pointer"
                       min="0"
-                      max="100"
+                      max="20"
                       step="1"
                       v-model="discountRate"
                       id="discount-rate"
