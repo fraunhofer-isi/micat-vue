@@ -75,26 +75,29 @@ watch(programs, (programs) => {
 });
 watch(() => session.future, (future) => {
   // Check if there are valid years defined. If not add default ones.
-  const currentYear = new Date().getFullYear();
+  let currentYear = new Date().getFullYear();
   if (future) {
+    // We allow to let users test with already running actions
+    currentYear -= 8;
     // Filter out years from the past
     years.value = years.value.filter(year => year >= currentYear);
     if (years.value.length == 0) {
       // Round up to nearest 5
       const nextValidYear = Math.ceil(currentYear / 5) * 5;
       years.value = [nextValidYear, nextValidYear + 5, nextValidYear + 10];
-      newYears.value = [...Array(30).keys()].map(delta => currentYear + delta).filter(newYear => years.value.indexOf(newYear) == -1);
     }
+    newYears.value = [...Array(30).keys()].map(delta => currentYear + delta).filter(newYear => years.value.indexOf(newYear) == -1);
   } else {
-    // Filter out years from the past
+    // Filter out years from the future
     years.value = years.value.filter(year => year <= currentYear);
     if (years.value.length == 0) {
       // Round down to nearest 5
       const nextValidYear = Math.floor(currentYear / 5) * 5;
       years.value = [nextValidYear - 10, nextValidYear - 5, nextValidYear];
-      newYears.value = [...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1);
     }
+    newYears.value = [...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1);
   }
+  newYearSelected.value = newYears.value[0];
   session.updateFuture(future);
   session.updateYears(years.value);
 });

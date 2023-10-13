@@ -34,7 +34,7 @@ const { showModal, modalTitle, modalText, modalType, closeModal } = inject<Modal
                   <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">{{ modalTitle }}</DialogTitle>
                     <div class="mt-2">
-                      <p class="text-sm text-gray-500">{{ modalText }}</p>
+                      <p class="text-sm text-gray-500" v-html="modalText"></p>
                     </div>
                   </div>
                 </div>

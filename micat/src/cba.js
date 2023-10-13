@@ -564,6 +564,17 @@ export class Parameters {
       'reductionOfAirPollution'
     );
 
+    const reductionInDisabilityAdjustedLifeYearsMonetization =
+      Parameters._aggregateAndInterpolateParameters(
+        indicatorData.costBenefitAnalysisData.reductionInDisabilityAdjustedLifeYearsMonetization,
+        'reductionInDisabilityAdjustedLifeYearsMonetization'
+      );
+    const reductionInDisabilityAdjustedLifeYearsMonetizationForMeasure = Parameters.annualValuesForMeasure(
+      reductionInDisabilityAdjustedLifeYearsMonetization,
+      measure.id,
+      'reductionInDisabilityAdjustedLifeYearsMonetization'
+    );
+
     const monetisedMultipleImpacts = {
       reductionOfEnergyCost: reductionOfEnergyCostForMeasure,
       reductionOfMortalityMorbidityMonetization:
@@ -575,7 +586,8 @@ export class Parameters {
       impactOnResTargetsMonetization: impactOnResTargetsMonetizationForMeasure,
       reductionOfAdditionalCapacitiesInGridMonetization:
         reductionOfAdditionalCapacitiesInGridMonetizationForMeasure,
-      reductionOfAirPollution: reductionOfAirPollutionForMeasure
+      reductionOfAirPollution: reductionOfAirPollutionForMeasure,
+      reductionInDisabilityAdjustedLifeYearsMonetization: reductionInDisabilityAdjustedLifeYearsMonetizationForMeasure,
     };
     Parameters._checkIfParametersAreEmpty(monetisedMultipleImpacts);
     Parameters._checkIfSelectableIndicatorsArePresent(

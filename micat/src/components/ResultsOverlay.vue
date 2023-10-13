@@ -227,6 +227,12 @@ const categories: CategoriesInterface = {
         description: "As a consequence of energy efficiency measures, fewer new supply-side capacities need to be installed. Assuming that new capacities would alternatively be renewable energies, this indicator assesses the avoided generation capacity.",
         identifier: "reductionOfAdditionalCapacitiesInGridMonetization",
         yAxis: "Value in M€"
+      },
+      {
+        title: "Reduction in disability adjusted life years",
+        description: "",
+        identifier: "reductionInDisabilityAdjustedLifeYearsMonetization",
+        yAxis: "Value in M€"
       }
     ]
   },
@@ -276,7 +282,7 @@ const cbaResults: Array<CbaResultInterface> = [
 const activeCategory = ref<string>(Object.keys(categories)[0]);
 const activeSubcategory = ref<string>(Object.values(categories)[0].subcategories[0]);
 const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0].measurements[0]);
-const activeIndicators = ref<Array<string>>(categories.monetization.measurements.map(measurement => measurement.identifier));
+const activeIndicators = ref<Array<string>>(categories.monetization.measurements.concat(categories.quantification.measurements.filter(m => m.identifier === 'reductionOfAirPollution')).map(measurement => measurement.identifier));
 const energyPriceSensitivity = ref<number>(100);
 const investmentsSensitivity = ref<number>(100);
 const discountRate = ref<number>(3);
@@ -651,7 +657,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   'bg-sky-100': activeIndicators.indexOf(measurement.identifier) > -1,
                   'hover:text-sky-600': activeIndicators.indexOf(measurement.identifier) > -1,
                   'hover:bg-sky-700': activeIndicators.indexOf(measurement.identifier) === -1,
-                  'rounded-br-3xl': i === categories['monetization'].measurements.length -1 || activeIndicators.indexOf(measurement.identifier) === -1
+                  'rounded-br-3xl': i === categories['monetization'].measurements.length || activeIndicators.indexOf(measurement.identifier) === -1
                 }"
                 v-for="(measurement, i) in categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === 'reductionOfAirPollution'))"
                 v-bind:key="`measurement-cba-${measurement.identifier}`"

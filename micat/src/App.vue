@@ -8,47 +8,49 @@ import type { HelpTextInterface } from "@/types";
 const helpTexts: HelpTextInterface = {
   'timeframe': {
     'title': 'Time frame',
-    'text': 'tba',
+    'text': 'This relates to when the measure is implemented and also affects which data is used.<br />' +
+      'For completed programs, please use <strong>PAST</strong>. Thereby, the calculations mainly rely on measured values from the past, predominantly stemming from Eurostat.<br />' +
+      'For current or future programs, please use <strong>FUTURE</strong>. As a result, data from PRIMES\' EU Reference Scenario 2020 is used, which constitute projected values.',
     'type': 'help'
   },
   'region': {
     'title': 'Region',
-    'text': 'tba',
+    'text': 'This selects which Member State\'s (or EU27) default values are used in calculations. In case of a country, it is also possible to merely assess a region or municipality in it. Then, absolute default values (i.e. GDP, energy consumption) are scaled using population data.',
     'type': 'help'
   },
   'unit': {
     'title': 'Unit',
-    'text': 'tba',
+    'text': 'This allows to input the energy savings in different units. This does not have an effect on the result\'s units. Moreover, changing this setting after entering values does not convert them.',
     'type': 'help'
   },
   'years': {
     'title': 'Time frame',
-    'text': 'tba',
+    'text': 'Here, you can select the years for which you want to provide data. Between these, the tool calculates linear interpolations.',
     'type': 'help'
   },
   'subsector': {
     'title': 'Subsector',
-    'text': 'tba',
+    'text': 'This determines the sector or subsector, the program is carried out in. More details about the available (sub-)sectors are available <a class="font-bold" href="https://fraunhofer-isi.github.io/micat/indices/indices_description.html#id-sector-and-id-subsector" target="_blank">here</a>.',
     'type': 'help'
   },
   'improvement': {
     'title': 'Improvement',
-    'text': 'tba',
+    'text': 'This specifies which improvements are part of the program. Each improvement type bundles measures that similarly affect multiple impacts (i.e. building envelope encompasses window replacements as well as wall or roof insulations). More details about the available improvements are available <a class="font-bold" href="https://fraunhofer-isi.github.io/micat/indices/indices_description.html#id-action-type" target="_blank"></a>',
     'type': 'help'
   },
   'energy-price-sensitivity': {
     'title': 'Energy price sensitivity',
-    'text': 'tba',
+    'text': 'This setting allows to apply a multiplier to all energy costs calculated within the tool. As price shocks tend to come unannounced, this can help to simply counteract inaccurate price projections.',
     'type': 'help'
   },
   'investments-sensitivity': {
     'title': 'Investments sensitivity',
-    'text': 'tba',
+    'text': 'This setting allows to apply a multiplier to the investment costs used in the cost-benefit analysis. However, this does not affect the prior calculation of multiple impacts scaling with investments (i.e. GDP, employments, and energy poverty in case the number of affected dwellings has not been specified).',
     'type': 'help'
   },
   'discount-rate': {
     'title': 'Discount rate',
-    'text': 'tba',
+    'text': 'This allows to adjust the discount rate in the cost-benefit analysis, which specifies what interest rate is assumed for alternative investment possibilities. Thus, it allows to compare the expected return on investment of energy efficiency with the default expected across the economy. However, this setting does not affect indicator calculations which might have some underlying discount rate assumptions (i.e. capitalisation rate for asset values or coefficients for GDP).',
     'type': 'help'
   },
   'cba-year': {
