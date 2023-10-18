@@ -8,7 +8,8 @@ import {
   PlusCircleIcon,
   DocumentDuplicateIcon,
   ExclamationCircleIcon,
-  BackspaceIcon
+  BackspaceIcon,
+  AdjustmentsVerticalIcon
 } from '@heroicons/vue/24/outline';
 import type {
   ModalInjectInterface,
@@ -23,6 +24,7 @@ import type {
 import { defaultImprovement, defaultModalInject, defaultProgram, stages } from "@/defaults";
 import { useSessionStore } from "@/stores/session";
 import ResultsOverlay from "@/components/ResultsOverlay.vue";
+import ParametersOverlay from "@/components/ParametersOverlay.vue";
 
 const session = useSessionStore();
 
@@ -67,6 +69,7 @@ const newYears = ref<Array<number>>([...Array(30).keys()].map(delta => session.c
 const newYearSelected = ref<number>(newYears.value[0]);
 const results = ref<ResultsInterface>({});
 const showResults = ref<boolean>(false);
+const showParametersOverlay = ref<boolean>(false);
 const error = ref<string>("");
 
 // Watchers
@@ -715,6 +718,7 @@ const analyze = async () => {
 <template>
   <main>
     <ResultsOverlay v-if="showResults" :results="results" :years="years" :factor="units[unit].factor" @close="showResults = false;"></ResultsOverlay>
+    <ParametersOverlay v-if="!showResults && showParametersOverlay" @close="showParametersOverlay = false;"></ParametersOverlay>
     <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
         <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency
@@ -886,12 +890,23 @@ const analyze = async () => {
         </div>
         <div class="mt-5" v-if="!session.resetted && stage !== stages.home">
           <button
-            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
+            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs mr-3"
             @click="reset()"
           >
             <BackspaceIcon class="h-5 w-5 mt-[-3px] inline text-white"></BackspaceIcon>
             Reset
           </button>
+          <button
+            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
+            @click="showParametersOverlay = true;"
+          >
+            <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
+            Global parameters
+          </button>
+           <InformationCircleIcon
+              @click="openModal('global-parameters')"
+              class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+            ></InformationCircleIcon>
         </div>
       </div>
       <div
@@ -920,18 +935,18 @@ const analyze = async () => {
             </svg>
           </button>
         </div>
-<!--        <div-->
-<!--          v-if="results"-->
-<!--          class="flex p-4 mb-7 text-green-800 border-t-4 border-green-300 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800 rounded-2xl cursor-pointer"-->
-<!--          role="alert"-->
-<!--          @click="showResults = true;"-->
-<!--        >-->
-<!--          <PresentationChartBarIcon class="h-8 w-8"></PresentationChartBarIcon>-->
-<!--          <div class="ml-3 font-medium">-->
-<!--            <h2 class="font-bold mt-1">Results are ready.</h2>-->
-<!--            <p class="text-sm">Click here to open the results again.</p>-->
-<!--          </div>-->
-<!--        </div>-->
+        <div
+          v-if="Object.keys(results).length > 0"
+          class="flex p-4 mb-7 text-green-800 border-t-4 border-green-300 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800 rounded-2xl cursor-pointer"
+          role="alert"
+          @click="showResults = true;"
+        >
+          <PresentationChartBarIcon class="h-8 w-8"></PresentationChartBarIcon>
+          <div class="ml-3 font-medium">
+            <h2 class="font-bold mt-1">Results are ready.</h2>
+            <p class="text-sm">Click here to open the results again.</p>
+          </div>
+        </div>
         <div
           class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5"
           v-for="(program, i) in programs"
