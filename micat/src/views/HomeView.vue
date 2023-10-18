@@ -9,7 +9,8 @@ import {
   DocumentDuplicateIcon,
   ExclamationCircleIcon,
   BackspaceIcon,
-  PresentationChartBarIcon
+  PresentationChartBarIcon,
+  AdjustmentsVerticalIcon
 } from '@heroicons/vue/24/outline';
 import type {
   ModalInjectInterface,
@@ -38,6 +39,7 @@ let regions: Ref<Array<Array<number | string>>> = ref([]);
 let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
 const newYears = ref<Array<number>>([...Array(35).keys()].map(delta => session.future ? session.currentYear + delta : session.currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
 const newYearSelected = ref<number>(newYears.value[0]);
+const showParametersOverlay = ref<boolean>(false);
 const error = ref<string>("");
 
 // Watchers
@@ -706,6 +708,7 @@ const analyze = async () => {
 
 <template>
   <main>
+    <ParametersOverlay v-if="!showResults && showParametersOverlay" @close="showParametersOverlay = false;"></ParametersOverlay>
     <div class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
         <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency
@@ -877,12 +880,23 @@ const analyze = async () => {
         </div>
         <div class="mt-5" v-if="!session.resetted && stage !== stages.home">
           <button
-            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
+            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs mr-3"
             @click="reset()"
           >
             <BackspaceIcon class="h-5 w-5 mt-[-3px] inline text-white"></BackspaceIcon>
             Reset
           </button>
+          <button
+            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
+            @click="showParametersOverlay = true;"
+          >
+            <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
+            Global parameters
+          </button>
+           <InformationCircleIcon
+              @click="openModal('global-parameters')"
+              class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+            ></InformationCircleIcon>
         </div>
       </div>
       <div

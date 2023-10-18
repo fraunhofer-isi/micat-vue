@@ -64,6 +64,16 @@ const helpTexts: HelpTextInterface = {
     'text': 'This is an early version of the MICAT tool. Accordingly, errors may still occur due to unforeseen events, which will be corrected as soon as possible. For questions and comments, please send us an email to <a href="mailto:frederic.berger@isi.fraunhofer.de" class="font-bold">frederic.berger@isi.fraunhofer.de</a>.',
     'type': 'help'
   },
+  'global-parameters': {
+    'title': 'Global parameters',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'parameters': {
+    'title': 'Advanced parameters',
+    'text': 'tba',
+    'type': 'help'
+  },
 };
 
 const showModal = ref<Boolean>(false);
