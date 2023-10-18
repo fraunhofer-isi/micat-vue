@@ -15,7 +15,10 @@
 # apply corresponding values
 name: build_and_deploy
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build_and_deploy:
@@ -47,4 +50,3 @@ jobs:
         localDir: './micat/dist'
         remoteDir: '.'
         reverse: true       
-        
