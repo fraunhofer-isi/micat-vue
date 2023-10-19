@@ -94,6 +94,13 @@ const categories: CategoriesInterface = {
         yAxis: "Reduction in disability adjusted life years"
       },
       {
+        subcategory: "Social",
+        title: "Indoor health II",
+        description: "",
+        identifier: "avoidedExcessColdWeatherMortality",
+        yAxis: "Avoided excess cold weather mortality"
+      },
+      {
         subcategory: "Economic",
         title: "Impact on energy intensity",
         description: "Energy intensity describes the amount of energy necessary to generate a unit of gross domestic product (GDP) in a given economy. This graph shows the effect energy efficiency has in reducing it. It is calculated by dividing gross available energy by GDP. The scenario with measures is compared to a scenario populated with past data from Eurostat and projections from PRIMES.",
@@ -229,9 +236,15 @@ const categories: CategoriesInterface = {
         yAxis: "Value in M€"
       },
       {
-        title: "Reduction in disability adjusted life years",
+        title: "Health indoor climate (Asthma)",
         description: "",
         identifier: "reductionInDisabilityAdjustedLifeYearsMonetization",
+        yAxis: "Value in M€"
+      },
+      {
+        title: "Indoor health II",
+        description: "",
+        identifier: "avoidedExcessColdWeatherMortalityMonetization",
         yAxis: "Value in M€"
       }
     ]

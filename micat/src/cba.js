@@ -575,6 +575,17 @@ export class Parameters {
       'reductionInDisabilityAdjustedLifeYearsMonetization'
     );
 
+    const avoidedExcessColdWeatherMortalityMonetization =
+      Parameters._aggregateAndInterpolateParameters(
+        indicatorData.costBenefitAnalysisData.avoidedExcessColdWeatherMortalityMonetization,
+        'avoidedExcessColdWeatherMortalityMonetization'
+      );
+    const avoidedExcessColdWeatherMortalityMonetizationForMeasure = Parameters.annualValuesForMeasure(
+      avoidedExcessColdWeatherMortalityMonetization,
+      measure.id,
+      'avoidedExcessColdWeatherMortalityMonetization'
+    );
+
     const monetisedMultipleImpacts = {
       reductionOfEnergyCost: reductionOfEnergyCostForMeasure,
       reductionOfMortalityMorbidityMonetization:
@@ -588,6 +599,7 @@ export class Parameters {
         reductionOfAdditionalCapacitiesInGridMonetizationForMeasure,
       reductionOfAirPollution: reductionOfAirPollutionForMeasure,
       reductionInDisabilityAdjustedLifeYearsMonetization: reductionInDisabilityAdjustedLifeYearsMonetizationForMeasure,
+      avoidedExcessColdWeatherMortalityMonetization: avoidedExcessColdWeatherMortalityMonetizationForMeasure,
     };
     Parameters._checkIfParametersAreEmpty(monetisedMultipleImpacts);
     Parameters._checkIfSelectableIndicatorsArePresent(
