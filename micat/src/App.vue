@@ -119,4 +119,5 @@ provide('modal', {
 
     <NotificationBox></NotificationBox>
   </div>
+  <div class="text-center bg-blue-900 text-xs text-blue-500 p-2">© 2023 Fraunhofer-Gesellschaft e.V., München &middot; SPDX-License-Identifier: AGPL-3.0-or-later</div>
 </template>
