@@ -31,12 +31,12 @@ const helpTexts: HelpTextInterface = {
   },
   'subsector': {
     'title': 'Subsector',
-    'text': 'This determines the sector or subsector, the program is carried out in. More details about the available (sub-)sectors are available <a class="font-bold" href="https://fraunhofer-isi.github.io/micat/indices/indices_description.html#id-sector-and-id-subsector" target="_blank">here</a>.',
+    'text': 'This determines the sector or subsector, the program is carried out in. More details about the available (sub-)sectors are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-sector-and-id-subsector" target="_blank">here</a>.',
     'type': 'help'
   },
   'improvement': {
     'title': 'Improvement',
-    'text': 'This specifies which improvements are part of the program. Each improvement type bundles measures that similarly affect multiple impacts (i.e. building envelope encompasses window replacements as well as wall or roof insulations). More details about the available improvements are available <a class="font-bold" href="https://fraunhofer-isi.github.io/micat/indices/indices_description.html#id-action-type" target="_blank"></a>',
+    'text': 'This specifies which improvements are part of the program. Each improvement type bundles measures that similarly affect multiple impacts (i.e. building envelope encompasses window replacements as well as wall or roof insulations). More details about the available improvements are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-action-type" target="_blank"></a>',
     'type': 'help'
   },
   'energy-price-sensitivity': {
@@ -116,7 +116,7 @@ provide('modal', {
                 <a href="https://micatool.eu/" target="_blank" class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent">Project</a>
               </li>
               <li>
-                <a href="https://fraunhofer-isi.github.io/micat" target="_blank" class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent">Documentation</a>
+                <a href="https://doc.micatool.eu/" target="_blank" class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent">Documentation</a>
               </li>
               <li>
                 <a href="https://micatool.eu/micat-project-en/data-protection/" target="_blank" class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent">Data protection</a>

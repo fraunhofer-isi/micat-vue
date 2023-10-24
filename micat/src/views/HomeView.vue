@@ -829,7 +829,7 @@ const analyze = async () => {
         </button>
         <a
           class="border border-sky-500 text-sky-500 hover:border-sky-600 hover:text-sky-600  hover:dark:border-sky-400 hover:dark:text-sky-400 font-bold py-2 px-8 rounded-full uppercase ml-3"
-          href="https://fraunhofer-isi.github.io/micat"
+          href="https://doc.micatool.eu"
           target="_blank"
           v-if="stage === stages.home"
         >
