@@ -1,9 +1,7 @@
-export const formatter = Intl.NumberFormat('de', {
+export const formatter = Intl.NumberFormat('en', {
     notation: 'compact',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
 })
-export const labelFormatter = Intl.NumberFormat('de', {
+export const labelFormatter = Intl.NumberFormat('en', {
     notation: 'standard',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,

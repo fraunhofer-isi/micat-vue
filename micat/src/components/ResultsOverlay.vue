@@ -733,7 +733,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     />
                   </div>
                   <div>
-                    <div class="text-sm text-orange-300">{{ energyPriceSensitivity }}%</div>
+                    <div class="text-sm text-orange-300">{{ energyPriceSensitivity }} %</div>
                   </div>
                 </div>
                 <div class="flex mt-2 gap-5">
@@ -756,7 +756,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     />
                   </div>
                   <div>
-                    <div class="text-sm text-orange-300">{{ investmentsSensitivity }}%</div>
+                    <div class="text-sm text-orange-300">{{ investmentsSensitivity }} %</div>
                   </div>
                 </div>
                 <div class="flex mt-2 gap-5">
@@ -779,7 +779,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     />
                   </div>
                   <div>
-                    <div class="text-sm text-orange-300">{{ discountRate }}%</div>
+                    <div class="text-sm text-orange-300">{{ discountRate }} %</div>
                   </div>
                 </div>
               </div>
