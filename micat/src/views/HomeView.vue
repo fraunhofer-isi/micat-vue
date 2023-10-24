@@ -977,7 +977,7 @@ const analyze = async () => {
               </select>
             </div>
           </div>
-          <div class="grid grid-cols-2 mt-8 gap-5 items-center">
+          <div class="grid grid-cols-2 mt-8 gap-5 items-center" v-if="program.subsector">
             <div
               class="rounded-3xl border border-gray-300 dark:border-gray-400 relative mb-2"
               v-for="(improvement, improvementIndex) in program.improvements"
