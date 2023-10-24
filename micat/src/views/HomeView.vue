@@ -134,11 +134,12 @@ onMounted(async () => {
   } = await responseMapping.json();
 
   const improvements: {
-    [key: number]: { id: number, subsectors: Array<number>, name: string, values: ImprovementValueInterface }
+    [key: number]: { id: number, subsectors: Array<number>, name: string, label: string, values: ImprovementValueInterface }
   } = {};
   dataImprovements.rows.forEach(improvement => {
     improvements[improvement[0]] = {
       id: improvement[0],
+      label: improvement[1],
       name: improvement[2],
       values: {},
       subsectors: []
@@ -986,14 +987,17 @@ const analyze = async () => {
                 <div class="flex items-center">
                   <select
                     :id="`improvement-${i}-${improvement.id}`"
-                    class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                    class="block py-2.5 pl-0 pr-8 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                     v-model="improvement.id"
                   >
                     <option value="0" selected disabled>Select improvement</option>
-                    <option v-for="improvementSelection in getSubsectorImprovements(program.subsector)"
-                            v-bind:key="`improvement-selection-${i}-${improvementSelection.id}`"
-                            :value="improvementSelection.id">
-                      {{ improvementSelection.name }}
+                    <option
+                      v-for="improvementSelection in getSubsectorImprovements(program.subsector)"
+                      v-bind:key="`improvement-selection-${i}-${improvementSelection.id}`"
+                      :value="improvementSelection.id"
+                      :title="improvementSelection.name"
+                    >
+                      {{ improvementSelection.label }}
                     </option>
                   </select>
                   <InformationCircleIcon

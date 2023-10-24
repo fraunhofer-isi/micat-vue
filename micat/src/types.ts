@@ -24,6 +24,7 @@ export interface ImprovementValueInterface {
 export interface ImprovementInterface {
     id: number;
     name?: string;
+    label?: string;
     values: ImprovementValueInterface;
 }
 
