@@ -23,7 +23,7 @@ import type {
 } from "@/types";
 import { defaultModalInject, chartColours } from "@/defaults";
 import CbaSection from "@/components/CbaSection.vue";
-import { formatter } from "@/helpers";
+import { formatter, labelFormatter } from "@/helpers";
 import {
   DataStructures,
   Parameters,
@@ -309,6 +309,21 @@ const aggregationChartOptions: any = {
       display: false,
       text: 'MICAT - Aggregation'
     },
+    tooltip: {
+      callbacks: {
+        label: function(context: any) {
+          let label = context.dataset.label || '';
+
+          if (label) {
+              label += ': ';
+          }
+          if (context.parsed.y !== null) {
+            label += labelFormatter.format(context.parsed.y);
+          }
+          return label;
+        },
+      },
+    },
   },
   responsive: true,
   interaction: {
@@ -403,6 +418,21 @@ const chartOptions = computed(() => {
       },
       legend: {
         display: chartLabels.value.filter(label => label !== 'id_measure').length > 0
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context: any) {
+            let label = context.dataset.label || '';
+
+            if (label) {
+                label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += labelFormatter.format(context.parsed.y);
+            }
+            return label;
+          },
+        },
       },
     },
     scales: {
