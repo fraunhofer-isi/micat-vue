@@ -932,23 +932,26 @@ const analyze = async () => {
 <!--          </div>-->
 <!--        </div>-->
         <div
-          class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5"
+          class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-8"
           v-for="(program, i) in programs"
           v-bind:key="`program-${i}`"
         >
           <div class="absolute top-[-14px] left-0 w-full text-center">
-            <span class="inline-block bg-white dark:bg-blue-950 dark:text-white px-4">
-              <input
-                type="text"
-                :id="`program-name-${i}`"
-                class="bg-gray-50 border border-gray-300 text-sky-900 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[85px]"
-                v-model="program.name"
-              >
-              <TrashIcon
-                v-if="programs.length >= 2"
-                @click="removeProgram(i)"
-                class="ml-3 h-5 w-5 inline cursor-pointer text-red-700"
-              ></TrashIcon>
+            <span class="inline-block bg-white dark:bg-blue-950 dark:text-white pl-4 pr-3">
+              <div class="flex items-center">
+                <input
+                  type="text"
+                  :id="`program-name-${i}`"
+                  class="bg-gray-50 border border-gray-300 text-sky-900 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[185px]"
+                  v-model="program.name"
+                  maxlength="25"
+                >
+                <TrashIcon
+                  v-if="programs.length >= 2"
+                  @click="removeProgram(i)"
+                  class="ml-3 h-5 w-5 inline cursor-pointer text-red-700"
+                ></TrashIcon>
+              </div>
             </span>
           </div>
           <div class="flex items-center gap-8">
