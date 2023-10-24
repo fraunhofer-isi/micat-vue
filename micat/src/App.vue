@@ -3,6 +3,7 @@ import { ref, provide } from 'vue';
 import { RouterView } from 'vue-router';
 import NotificationBox from "@/components/NotificationBox.vue";
 import type { HelpTextInterface } from "@/types";
+import {InformationCircleIcon} from "@heroicons/vue/24/outline";
 
 // Variables
 const helpTexts: HelpTextInterface = {
@@ -58,6 +59,11 @@ const helpTexts: HelpTextInterface = {
     'text': 'tba',
     'type': 'help'
   },
+  'beta': {
+    'title': 'Beta version',
+    'text': 'This is an early version of the MICAT tool. Accordingly, errors may still occur due to unforeseen events, which will be corrected as soon as possible. For questions and comments, please send us an email to <a href="mailto:frederic.berger@isi.fraunhofer.de" class="font-bold">frederic.berger@isi.fraunhofer.de</a>.',
+    'type': 'help'
+  },
 };
 
 const showModal = ref<Boolean>(false);
@@ -92,9 +98,18 @@ provide('modal', {
     <header>
       <nav>
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto py-4">
-          <a href="/" class="flex items-center">
+          <div class="flex items-center">
+            <a href="/">
               <img src="@/assets/logo_sm.png" class="h-10 mr-3" alt="MICAT Logo" />
-          </a>
+            </a>
+            <button
+              class="rounded-full bg-sky-800 text-white text-sm px-2 py-1 font-bold"
+              @click="openModal('beta')"
+            >
+              beta
+              <InformationCircleIcon class="h-5 w-5 ml-1 inline mt-[-2px]"></InformationCircleIcon>
+            </button>
+          </div>
           <div class="w-full md:w-auto">
             <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-blue-900 md:dark:bg-blue-950">
               <li>
