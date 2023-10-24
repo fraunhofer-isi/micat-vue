@@ -51,12 +51,7 @@ const units: UnitInterface = {
 }
 
 // Session
-const future = ref<boolean>(session.future);
 const stage = ref<number>(session.stage);
-const region = ref<number>(session.region);
-const municipality = ref<boolean>(session.municipality);
-const unit = ref<number>(session.unit);
-const inhabitants = ref<number>(session.inhabitants);
 const years = ref<Array<number>>(session.years);
 const programs = reactive<Array<ProgramInterface>>(session.programs);
 
@@ -211,7 +206,7 @@ const getSubsectorImprovements = (subsectorId: number) => {
 }
 const analyze = async () => {
   loading.value = true;
-  const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${future.value ? 4 : 2}&id_region=${region.value}`
+  const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${session.future ? 4 : 2}&id_region=${session.region}`
   const payload: PayloadInterface = {
     "measures": [],
     "parameters": {
@@ -233,7 +228,7 @@ const analyze = async () => {
       // "HeatGeneration": []
     }
   }
-  if (municipality.value) payload["population"] = inhabitants.value;
+  if (session.municipality) payload["population"] = session.inhabitants;
   let i = 1;
   programs.forEach(program => {
     program.improvements.forEach(improvement => {
@@ -681,9 +676,9 @@ const analyze = async () => {
         "parameters": {}
       };
 
-      years.value.forEach(year => {
+      session.years.forEach(year => {
         const value = improvement.values[year.toString()];
-        const factor = units[unit.value].factor
+        const factor = units[session.unit].factor
         improvementData.savings[year.toString()] = value ? value * 1 / factor : 0;
       });
       payload.measures.push(improvementData);
@@ -718,7 +713,7 @@ const analyze = async () => {
 
 <template>
   <main>
-    <ResultsOverlay v-if="showResults" :results="results" :years="years" :factor="units[unit].factor" @close="showResults = false;"></ResultsOverlay>
+    <ResultsOverlay v-if="showResults" :results="results" :years="years" :factor="units[session.unit].factor" @close="showResults = false;"></ResultsOverlay>
     <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
         <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency
