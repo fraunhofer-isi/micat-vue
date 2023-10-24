@@ -23,7 +23,7 @@ import type {
 } from "@/types";
 import { defaultModalInject, chartColours } from "@/defaults";
 import CbaSection from "@/components/CbaSection.vue";
-import { formatter, labelFormatter } from "@/helpers";
+import { formatter, labelFormatter, scientificFormatter } from "@/helpers";
 import {
   DataStructures,
   Parameters,
@@ -318,7 +318,7 @@ const aggregationChartOptions: any = {
               label += ': ';
           }
           if (context.parsed.y !== null) {
-            label += labelFormatter.format(context.parsed.y);
+            label += context.parsed.y < 1 && context.parsed.y >= 0 ? scientificFormatter.format(context.parsed.y) : labelFormatter.format(context.parsed.y);
           }
           return label;
         },
@@ -336,7 +336,7 @@ const aggregationChartOptions: any = {
     y: {
       stacked: true,
       ticks: {
-        callback: (label: number | string) => typeof label === "number" ? formatter.format(label) : label,
+        callback: (label: number | string) => typeof label === "number" ? label < 1 && label >= 0 ? formatter.format(label) : formatter.format(label) : label,
       },
     }
   }
@@ -428,7 +428,7 @@ const chartOptions = computed(() => {
                 label += ': ';
             }
             if (context.parsed.y !== null) {
-              label += labelFormatter.format(context.parsed.y);
+              label += context.parsed.y < 1 && context.parsed.y >= 0 ? scientificFormatter.format(context.parsed.y) : labelFormatter.format(context.parsed.y);
             }
             return label;
           },
@@ -444,7 +444,7 @@ const chartOptions = computed(() => {
       },
       y: {
         ticks: {
-          callback: (label: number | string) => typeof label === "number" ? formatter.format(label) : label,
+          callback: (label: number | string) => typeof label === "number" ? label < 1 && label >= 0 ? scientificFormatter.format(label) : formatter.format(label) : label,
         },
         title: {
           display: true,
