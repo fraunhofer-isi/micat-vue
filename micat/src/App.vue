@@ -56,7 +56,7 @@ const helpTexts: HelpTextInterface = {
   },
   'cba-year': {
     'title': 'Year',
-    'text': 'tba',
+    'text': 'Please select the desired year for which the calculation of the marginal cost curves is to be carried out.',
     'type': 'help'
   },
   'beta': {
