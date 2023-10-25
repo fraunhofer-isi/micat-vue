@@ -36,7 +36,7 @@ const programs = reactive<Array<ProgramInterface>>(session.programs);
 const loading = ref<boolean>(false);
 let regions: Ref<Array<Array<number | string>>> = ref([]);
 let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
-const newYears = ref<Array<number>>([...Array(30).keys()].map(delta => session.currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
+const newYears = ref<Array<number>>([...Array(30).keys()].map(delta => session.future ? session.currentYear + delta : session.currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
 const newYearSelected = ref<number>(newYears.value[0]);
 const error = ref<string>("");
 
@@ -206,8 +206,14 @@ const analyze = async () => {
   }
   if (session.municipality) payload["population"] = session.inhabitants;
   let i = 1;
+  let errors = '';
   programs.forEach(program => {
+    if (!program.subsector) {
+      errors += `Please select a subsector for <em>${program.name}</em>.<br />`;
+      return;
+    }
     program.improvements.forEach(improvement => {
+      if (!improvement.id) errors += `<em>${program.name}</em> has invalid improvements.<br />`;
       const improvementData: PayloadMeasureInterface = {
         "id": i,
         "savings": {
@@ -662,6 +668,14 @@ const analyze = async () => {
     });
   });
 
+  if (errors.length > 0) {
+    session.results = {};
+    error.value = `<h2 class="font-bold mt-1">We are sorry. Your inputs are invalid.</h2><p class="text-sm">${errors}</p>`;
+    loading.value = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
   const response = await fetch(url, {
     method: "POST", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
@@ -677,9 +691,12 @@ const analyze = async () => {
   session.updatePayload(payload);
   const data = await response.json();
   if (Object.prototype.hasOwnProperty.call(data, 'error')) {
-    error.value = data.error.arg0;
+    session.results = {};
+    error.value = `<h2 class="font-bold mt-1">We are sorry. Your request could not be processed.</h2><p class="text-sm"><em>Details:</em> ${data.error.arg0}<br />Please get in touch.</p>`;
     loading.value = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
+    error.value = '';
     session.results = data;
     loading.value = false;
     router.push({ name: 'results' });
@@ -879,8 +896,7 @@ const analyze = async () => {
         >
           <ExclamationCircleIcon class="h-8 w-8"></ExclamationCircleIcon>
           <div class="ml-3 font-medium">
-            <h2 class="font-bold mt-1">We are sorry. Your request could not be processed.</h2>
-            <p class="text-sm"><span class="italic">Details</span>: {{ error }}</p>
+            <div v-html="error"></div>
           </div>
           <button
             type="button"
@@ -953,7 +969,13 @@ const analyze = async () => {
           </div>
           <div class="grid grid-cols-2 mt-8 gap-5 items-center" v-if="program.subsector">
             <div
-              class="rounded-3xl border border-gray-300 dark:border-gray-400 relative mb-2"
+              class="rounded-3xl border relative mb-2"
+              :class="{
+                'border-gray-300': improvement.id,
+                'dark:border-gray-400': improvement.id,
+                'border-red-300': !improvement.id,
+                'dark:border-red-400': !improvement.id,
+              }"
               v-for="(improvement, improvementIndex) in program.improvements"
               v-bind:key="`improvement-${i}-${improvement.id}`"
             >
@@ -961,7 +983,15 @@ const analyze = async () => {
                 <div class="flex items-center">
                   <select
                     :id="`improvement-${i}-${improvement.id}`"
-                    class="block py-2.5 pl-0 pr-8 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                    class="block py-2.5 pl-0 pr-8 w-full text-sm bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                    :class="{
+                      'border-gray-200': improvement.id,
+                      'dark:text-gray-200': improvement.id,
+                      'dark:border-gray-200': improvement.id,
+                      'border-red-400': !improvement.id,
+                      'dark:text-red-400': !improvement.id,
+                      'dark:border-red-200': !improvement.id,
+                    }"
                     v-model="improvement.id"
                   >
                     <option value="0" selected disabled>Select improvement</option>
