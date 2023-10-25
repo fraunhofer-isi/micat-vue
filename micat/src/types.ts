@@ -118,6 +118,7 @@ export interface ISessionState {
   programs: Array<ProgramInterface>;
   payload: PayloadInterface;
   resetted: boolean;
+  results: ResultsInterface;
 }
 export interface ISessionStateFunctions {
     updateStage: (stage: number) => void;

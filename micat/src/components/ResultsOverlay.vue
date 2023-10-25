@@ -38,9 +38,9 @@ import {
   Interpolation,
 } from "@/cba.js";
 import { useSessionStore } from "@/stores/session";
+import router from "@/router";
 
 const session = useSessionStore();
-const props = defineProps(['results', 'years', 'factor']);
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement);
 
 const chartColoursAggregation: Array<string> = [
@@ -299,7 +299,7 @@ const activeIndicators = ref<Array<string>>(categories.monetization.measurements
 const energyPriceSensitivity = ref<number>(100);
 const investmentsSensitivity = ref<number>(100);
 const discountRate = ref<number>(3);
-const cbaYear = ref<string>(props.years[0].toString());
+const cbaYear = ref<string>(session.years[0].toString());
 const activeCbaResult = ref<string>(cbaResults[0].slug);
 
 // Variables
@@ -348,10 +348,10 @@ const aggregationChartData: any = computed(() => {
   let measurements = categories.monetization.measurements
   measurements = measurements.concat(categories.quantification.measurements.filter(measurement => measurement.identifier === "impactOnGrossDomesticProduct"));
   measurements.forEach((measurement, i) => {
-    const aggregationData: ResultInterface = JSON.parse(JSON.stringify(props.results[measurement.identifier]));
+    const aggregationData: ResultInterface = JSON.parse(JSON.stringify(session.results[measurement.identifier]));
     if (measurement.identifier === 'reductionOfEnergyCost') {
       aggregationData.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
-        const values = new Array(props.years.length).fill(0);
+        const values = new Array(session.years.length).fill(0);
         aggregationData.rows.filter(row => row[1] === label).forEach(row => {
           row.splice(0, 2);
           row.forEach((measure, iM) => {
@@ -368,7 +368,7 @@ const aggregationChartData: any = computed(() => {
         });
       });
     } else {
-      const values = new Array(props.years.length).fill(0);
+      const values = new Array(session.years.length).fill(0);
       aggregationData.rows.forEach(row => {
         row.splice(0, 1);
         row.forEach((measure, iM) => {
@@ -386,12 +386,12 @@ const aggregationChartData: any = computed(() => {
     }
   });
   return {
-    labels: props.years,
+    labels: session.years,
     datasets,
   }
 });
 const data = computed<ResultInterface>(() => {
-  return activeMeasurement.value ? JSON.parse(JSON.stringify(props.results[activeMeasurement.value.identifier])) : {};
+  return activeMeasurement.value ? JSON.parse(JSON.stringify(session.results[activeMeasurement.value.identifier])) : {};
 });
 const hasMultipleMeasures = computed(() => data.value.idColumnNames.indexOf('id_measure') > -1);
 const chartLabels = computed(() => {
@@ -501,8 +501,8 @@ const cbaData = computed(() => {
     indicators
   }
   const results: CbaData = DataStructures.prepareResultDataStructure();
-  const indicatorData = convert(props.results);
-  results.supportingYears = props.years;
+  const indicatorData = convert(session.results);
+  results.supportingYears = session.years;
   results.years = interpolatedYears.value;
 
   for (const measure of interpolatedSavingsData.value.measures) {
@@ -591,9 +591,9 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
 
 <template>
   <div class="max-w-screen-xl mx-auto pt-5 pb-10">
-    <a href="#" @click="$emit('close')" class="text-sm text-sky-700 dark:text-sky-300">back to the entries</a>
+    <a href="#" @click="router.push({ name: 'home' });" class="text-sm text-sky-700 dark:text-sky-300">back to the entries</a>
     <div class="rounded-3xl border border-gray-300 my-3 relative bg-white">
-      <div @click="$emit('close')" class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-10px] cursor-pointer">
+      <div @click="router.push({ name: 'home' });" class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-10px] cursor-pointer">
         <XCircleIcon class="text-sky-700 dark:text-sky-300 h-9 w-9"></XCircleIcon>
       </div>
       <div class="flex">

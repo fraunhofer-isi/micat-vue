@@ -1,4 +1,4 @@
-import type {ImprovementInterface, ModalInjectInterface, ProgramInterface, StageInjectInterface} from "@/types";
+import type {ImprovementInterface, ModalInjectInterface, ProgramInterface, UnitInterface} from "@/types";
 
 
 export const stages = Object.freeze({ home: 1, full: 2 });
@@ -9,10 +9,6 @@ export const defaultModalInject: ModalInjectInterface = {
     modalType: '',
     openModal: () => null,
     closeModal: () => null
-}
-export const defaultStageInject: StageInjectInterface = {
-    stage: 1,
-    stages: {}
 }
 export const defaultImprovement: ImprovementInterface = {
     id: 0,
@@ -32,3 +28,22 @@ export const chartColours: Array<string> = [
   "rgb(31,149,178)",
   "rgb(255,242,92)",
 ];
+export const units: UnitInterface = {
+  1: {
+    name: "ktoe (tonne of oil equivalent)",
+    factor: 1
+  },
+  2: {
+    name: "MJ (Megajoule)",
+    factor: 41868000
+
+  },
+  3: {
+    name: "GJ (Gigajoule)",
+    factor: 41868
+  },
+  4: {
+    name: "MWh (Energy quantity per hour)",
+    factor: 11630
+  },
+}

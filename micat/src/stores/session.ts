@@ -19,6 +19,7 @@ export const useSessionStore = defineStore({
       programs: JSON.parse(localStorage.getItem("programs") || JSON.stringify([structuredClone(defaultProgram)])),
       payload: {"measures": [], "parameters": {}},
       resetted: false,
+      results: {},
     }
   },
   actions: {
