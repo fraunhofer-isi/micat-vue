@@ -89,14 +89,18 @@ const categories: CategoriesInterface = {
       {
         subcategory: "Social",
         title: "Health indoor climate (Asthma)",
-        description: "",
+        description: '<p class="mb-2">For now, health impacts linked to improved indoor climate are assessed by looking at the reduction in asthma cases.\n' +
+          'To do so, assumptions regarding the share of renovations occurring in damp and mouldy buildings as well as the share\n' +
+          'of renovations constituting medium and deep renovations. As defaults, the projected rates in PRIMES and the current\n' +
+          'national prevalence of damp and mould buildings are being used. Finally, a national coefficient describing the number of\n' +
+          'disability-adjusted life years lost per damp or mould building has been calculated from past data as impact factor.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/micat-project-wAssets/docs/publications/factsheets/Social-impact-Avoided-burden-of-Asthma.pdf">PDF</a>.</p>',
         identifier: "reductionInDisabilityAdjustedLifeYears",
         yAxis: "Reduction in disability adjusted life years"
       },
       {
         subcategory: "Social",
         title: "Indoor health II",
-        description: "",
+        description: "More information will follow shortly.",
         identifier: "avoidedExcessColdWeatherMortality",
         yAxis: "Avoided excess cold weather mortality"
       },
@@ -152,7 +156,11 @@ const categories: CategoriesInterface = {
       {
         subcategory: "Economic",
         title: "Change in supplier diversity by energy efficiency impact",
-        description: "",
+        description: '<p class="mb-2">This indicator relies on the <a class="font-bold" target="_blank" href="https://en.wikipedia.org/wiki/Herfindahl%E2%80%93Hirschman_index">Herfindahl-Hirschman index</a>,\n' +
+          'a measure of market concentration. Since PRIMES does not provide any projections for the future supplier landscape of\n' +
+          'fossil fuels, current Eurostat values since the invasion of Ukraine are used for the calculation of ex-ante results,\n' +
+          'whereas past Eurostat figures are used for ex-post examination. Furthermore, the assumption is that energy savings\n' +
+          'result in a lower import from the largest supplier.</p><p>More details on the methodology are shown on the related <a class="font-bold" target="_blank" href="https://doc.micatool.eu/economic_indicators/supplier_diversity.html">equations page</a> and the <a class="font-bold" target="_blank" href="https://micatool.eu/micat-project-wAssets/docs/publications/factsheets/Economic-impacts-Aggregated-energy-security-supply-diversity.pdf">fact sheet</a>.</p>',
         identifier: "changeInSupplierDiversityByEnergyEfficiencyImpact",
         yAxis: "Value in €"
       },
@@ -187,7 +195,7 @@ const categories: CategoriesInterface = {
       {
         subcategory: "Ecologic",
         title: "Reduction of additional capacities in grid",
-        description: "",
+        description: "More information will follow shortly.",
         identifier: "reductionOfAdditionalCapacitiesInGrid",
         yAxis: "Reduction in ktoe"
       }
@@ -237,13 +245,17 @@ const categories: CategoriesInterface = {
       },
       {
         title: "Health indoor climate (Asthma)",
-        description: "",
+        description: '<p class="mb-2">For now, health impacts linked to improved indoor climate are assessed by looking at the reduction in asthma cases.\n' +
+          'To do so, assumptions regarding the share of renovations occurring in damp and mouldy buildings as well as the share\n' +
+          'of renovations constituting medium and deep renovations. As defaults, the projected rates in PRIMES and the current\n' +
+          'national prevalence of damp and mould buildings are being used. Finally, a national coefficient describing the number of\n' +
+          'disability-adjusted life years lost per damp or mould building has been calculated from past data as impact factor.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/micat-project-wAssets/docs/publications/factsheets/Social-impact-Avoided-burden-of-Asthma.pdf">PDF</a>.</p>',
         identifier: "reductionInDisabilityAdjustedLifeYearsMonetization",
         yAxis: "Value in M€"
       },
       {
         title: "Indoor health II",
-        description: "",
+        description: "More information will follow shortly.",
         identifier: "avoidedExcessColdWeatherMortalityMonetization",
         yAxis: "Value in M€"
       }
@@ -296,6 +308,7 @@ const activeCategory = ref<string>(Object.keys(categories)[0]);
 const activeSubcategory = ref<string>(Object.values(categories)[0].subcategories[0]);
 const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0].measurements[0]);
 const activeIndicators = ref<Array<string>>(categories.monetization.measurements.concat(categories.quantification.measurements.filter(m => m.identifier === 'reductionOfAirPollution')).map(measurement => measurement.identifier));
+const indicatorInfo = ref<string>('');
 const energyPriceSensitivity = ref<number>(100);
 const investmentsSensitivity = ref<number>(100);
 const discountRate = ref<number>(3);
@@ -664,9 +677,9 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               </div>
             </div>
             <div>
-              <div class="bg-sky-600 text-white mx-7 my-7 p-4 text-sm rounded-lg">
-                <h3 class="font-bold mb-2">{{ activeMeasurement.title }}</h3>
-                <p>{{ activeMeasurement.description }}</p>
+              <div class="bg-sky-600 text-white mx-7 my-7 p-4 rounded-lg">
+                <h3 class="font-bold text-md mb-2">{{ activeMeasurement.title }}</h3>
+                <div class="text-sm text-sky-200" v-html="activeMeasurement.description"></div>
               </div>
             </div>
           </div>
@@ -694,6 +707,8 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               <div
                 class="flex items-center pl-5 pr-3 py-4 cursor-pointer text-sm"
                 @click="toggleIndicator(measurement.identifier)"
+                @mouseover="indicatorInfo = measurement.description;"
+                @mouseleave="indicatorInfo = '';"
                 :class="{
                   'text-white': activeIndicators.indexOf(measurement.identifier) === -1,
                   'text-sky-800': activeIndicators.indexOf(measurement.identifier) > -1,
@@ -783,6 +798,13 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   </div>
                 </div>
               </div>
+              <div
+                v-html="indicatorInfo"
+                class="bg-sky-600 text-white mx-7 my-7 p-4 text-sm rounded-lg"
+                :class="{
+                  'hidden': !indicatorInfo,
+                }"
+              ></div>
             </div>
           </div>
           <div class="px-10 py-5">
