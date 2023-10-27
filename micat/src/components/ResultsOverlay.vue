@@ -81,9 +81,16 @@ const categories: CategoriesInterface = {
       },
       {
         subcategory: "Social",
-        title: "Energy poverty",
+        title: "Alleviation of energy poverty (2M)",
         description: "This indicator shows how energy efficiency improvement actions in the residential sector can help lift people out of energy poverty. In order to calculate it, national energy poverty gaps for affected deciles (gap between the energy expenses of the decile and the energy poverty threshold) are compared to the expected energy cost savings, taking lifetimes, subsidy rates, average rent of energy poor households, and many more parameters into account.",
-        identifier: "reductionOfEnergyPoverty",
+        identifier: "alleviationOfEnergyPoverty2M",
+        yAxis: "People lifted out of energy poverty"
+      },
+      {
+        subcategory: "Social",
+        title: "Alleviation of energy poverty (2/M)",
+        description: "This indicator shows how energy efficiency improvement actions in the residential sector can help lift people out of energy poverty. In order to calculate it, national energy poverty gaps for affected deciles (gap between the energy expenses of the decile and the energy poverty threshold) are compared to the expected energy cost savings, taking lifetimes, subsidy rates, average rent of energy poor households, and many more parameters into account.",
+        identifier: "alleviationOfEnergyPovertyM2",
         yAxis: "People lifted out of energy poverty"
       },
       {
