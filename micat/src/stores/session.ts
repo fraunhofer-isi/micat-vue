@@ -2,20 +2,30 @@ import { defineStore } from "pinia";
 import {defaultProgram, stages} from '@/defaults';
 import type {ProgramInterface, ISessionState, PayloadInterface} from "@/types";
 
-const currentYear = Math.floor(new Date().getFullYear() / 5) * 5;
+const currentYear = new Date().getFullYear();
+const nextValidYearPast = Math.floor( currentYear / 5) * 5;
+const nextValidYearFuture = Math.ceil( currentYear / 5) * 5;
+
+const getCurrentYear = (future: boolean) => {
+  return future ? currentYear : nextValidYearPast;
+};
+const getYears = (future: boolean) => {
+  if (future) return [currentYear, nextValidYearFuture + 5, nextValidYearFuture + 10];
+  return [nextValidYearPast - 10, nextValidYearPast - 5, nextValidYearPast];
+};
 
 export const useSessionStore = defineStore({
   id: "session",
   state: (): ISessionState => {
     return {
-      currentYear: parseInt(localStorage.getItem("currentYear") || currentYear.toString()),
+      currentYear: parseInt(localStorage.getItem("currentYear") || getCurrentYear(String(localStorage.getItem("future") || "false").toLowerCase() === "true").toString()),
       stage: parseInt(localStorage.getItem("stage") || stages.home.toString()),
       future: String(localStorage.getItem("future") || "false").toLowerCase() === "true",
       region: parseInt(localStorage.getItem("region") || "0"),
       municipality: String(localStorage.getItem("municipality") || "false").toLowerCase() === "true",
       unit: parseInt(localStorage.getItem("unit") || "1"),
       inhabitants: parseInt(localStorage.getItem("inhabitants") || "100000"),
-      years: JSON.parse(localStorage.getItem("years") || JSON.stringify([currentYear - 10, currentYear - 5, currentYear])),
+      years: JSON.parse(localStorage.getItem("years") || JSON.stringify(getYears(String(localStorage.getItem("future") || "false").toLowerCase() === "true"))),
       programs: JSON.parse(localStorage.getItem("programs") || JSON.stringify([structuredClone(defaultProgram)])),
       payload: {"measures": [], "parameters": {}},
       resetted: false,
@@ -51,6 +61,11 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       localStorage.setItem("years", JSON.stringify(years));
     },
+    resetYears(future: boolean) {
+      const years = getYears(future);
+      this.updateYears(years, false);
+      return years;
+    },
     updatePrograms(programs: Array<ProgramInterface>, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("programs", JSON.stringify(programs));
@@ -67,7 +82,7 @@ export const useSessionStore = defineStore({
       this.updateMunicipality(false, false);
       this.updateUnit(1, false);
       this.updateInhabitants(100000, false);
-      this.updateYears([currentYear - 10, currentYear - 5, currentYear], false);
+      this.updateYears(getYears(false), false);
       this.updatePrograms([structuredClone(defaultProgram)], false);
       this.updatePayload({"measures": [], "parameters": {}}, false);
     },

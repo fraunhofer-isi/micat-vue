@@ -36,7 +36,7 @@ const programs = reactive<Array<ProgramInterface>>(session.programs);
 const loading = ref<boolean>(false);
 let regions: Ref<Array<Array<number | string>>> = ref([]);
 let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
-const newYears = ref<Array<number>>([...Array(30).keys()].map(delta => session.future ? session.currentYear + delta : session.currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
+const newYears = ref<Array<number>>([...Array(35).keys()].map(delta => session.future ? session.currentYear + delta : session.currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
 const newYearSelected = ref<number>(newYears.value[0]);
 const error = ref<string>("");
 
@@ -814,7 +814,7 @@ const analyze = async () => {
         </div>
         <button
           class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full uppercase"
-          @click="stage = stages.full; session.updateStage(stage);"
+          @click="stage = stages.full; session.updateStage(stage); years = session.resetYears(session.future);"
           v-if="stage === stages.home"
         >
           Start
