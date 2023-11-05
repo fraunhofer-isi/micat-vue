@@ -22,6 +22,8 @@ import type {
 } from "@/types";
 import { defaultImprovement, defaultModalInject, defaultProgram, stages, units } from "@/defaults";
 import { useSessionStore } from "@/stores/session";
+import ResultsOverlay from "@/components/ResultsOverlay.vue";
+import ParametersOverlay from "@/components/ParametersOverlay.vue";
 
 const session = useSessionStore();
 
