@@ -8,7 +8,7 @@ import {
   PlusCircleIcon,
   DocumentDuplicateIcon,
   ExclamationCircleIcon,
-  BackspaceIcon,
+  XCircleIcon,
   PresentationChartBarIcon,
   AdjustmentsVerticalIcon
 } from '@heroicons/vue/24/outline';
@@ -22,7 +22,6 @@ import type {
 } from "@/types";
 import { defaultImprovement, defaultModalInject, defaultProgram, stages, units } from "@/defaults";
 import { useSessionStore } from "@/stores/session";
-import ResultsOverlay from "@/components/ResultsOverlay.vue";
 import ParametersOverlay from "@/components/ParametersOverlay.vue";
 
 const session = useSessionStore();
@@ -186,6 +185,7 @@ const getSubsectorImprovements = (subsectorId: number) => {
 }
 const analyze = async () => {
   loading.value = true;
+  console.log(session.globalParameters)
   const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${session.future ? 4 : 2}&id_region=${session.region}`
   const payload: PayloadInterface = {
     "measures": [],
@@ -710,8 +710,8 @@ const analyze = async () => {
 
 <template>
   <main>
-    <ParametersOverlay v-if="!showResults && showParametersOverlay" @close="showParametersOverlay = false;"></ParametersOverlay>
-    <div class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
+    <ParametersOverlay v-if="showParametersOverlay" @close="showParametersOverlay = false;"></ParametersOverlay>
+    <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
         <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency
           projects</h1>
@@ -885,7 +885,7 @@ const analyze = async () => {
             class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs mr-3"
             @click="reset()"
           >
-            <BackspaceIcon class="h-5 w-5 mt-[-3px] inline text-white"></BackspaceIcon>
+            <XCircleIcon class="h-5 w-5 mt-[-3px] inline text-white"></XCircleIcon>
             Reset
           </button>
           <button

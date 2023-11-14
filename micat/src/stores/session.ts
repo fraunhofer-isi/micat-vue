@@ -30,6 +30,7 @@ export const useSessionStore = defineStore({
       payload: {"measures": [], "parameters": {}},
       resetted: false,
       results: {},
+      globalParameters: {},
     }
   },
   actions: {

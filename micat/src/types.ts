@@ -119,6 +119,7 @@ export interface ISessionState {
   payload: PayloadInterface;
   resetted: boolean;
   results: ResultsInterface;
+  globalParameters: GlobalParameters;
 }
 export interface ISessionStateFunctions {
     updateStage: (stage: number) => void;
@@ -201,4 +202,35 @@ export interface CbaCategoryInterface {
 }
 export interface CbaCategoriesInterface {
     [key: string]: Array<CbaCategoryInterface>;
+}
+export interface OriginalGlobalParameterSubcategory {
+    "2015":                 number;
+    "2016":                 number;
+    "2017":                 number;
+    "2018":                 number;
+    "2019":                 number;
+    "2020":                 number;
+    "2021":                 number;
+    Subsector:              string;
+    "Final energy carrier": string;
+    "Primary energy carrier": string;
+    "Monetisation factor": string;
+    "Value": number;
+}
+export interface OriginalGlobalParameters {
+    [key: string]: Array<OriginalGlobalParameterSubcategory>
+}
+export interface GlobalParameterValue {
+    key: string;
+    value: number;
+}
+export interface GlobalParameters {
+    // Categories
+    [key: string]: {
+        // Subsectors
+        [key: string]: {
+            // Years
+            [key: string]: Array<GlobalParameterValue>;
+        }
+    }
 }

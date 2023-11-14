@@ -74,16 +74,6 @@ const helpTexts: HelpTextInterface = {
     'text': 'tba',
     'type': 'help'
   },
-  'global-parameters': {
-    'title': 'Global parameters',
-    'text': 'tba',
-    'type': 'help'
-  },
-  'parameters': {
-    'title': 'Advanced parameters',
-    'text': 'tba',
-    'type': 'help'
-  },
 };
 
 const showModal = ref<Boolean>(false);
