@@ -48,7 +48,16 @@ export interface SubsectorInterface {
 }
 
 export interface PayloadParameterEntryInterface {
-    [key: string]: number;
+    [key: string]: number | string | undefined;
+    id_subsector?: number;
+    Subsector?: string;
+    index?: number;
+    "Monetisation factor"?: string;
+    Value?: number;
+    id_final_energy_carrier?: number;
+    id_primary_energy_carrier?: number;
+    "Final energy carrier"?: string;
+    "Primary energy carrier"?: string;
 }
 export interface PayloadParameterInterface {
     [key: string]: Array<PayloadParameterEntryInterface>;
@@ -120,6 +129,9 @@ export interface ISessionState {
   resetted: boolean;
   results: ResultsInterface;
   globalParameters: GlobalParameters;
+  subsectorMapping: {[key: number]: string};
+  carrierMapping: {[key: number]: string};
+  monetisationFactorMapping: {[key: number]: string};
 }
 export interface ISessionStateFunctions {
     updateStage: (stage: number) => void;
@@ -203,33 +215,16 @@ export interface CbaCategoryInterface {
 export interface CbaCategoriesInterface {
     [key: string]: Array<CbaCategoryInterface>;
 }
-export interface OriginalGlobalParameterSubcategory {
-    "2015":                 number;
-    "2016":                 number;
-    "2017":                 number;
-    "2018":                 number;
-    "2019":                 number;
-    "2020":                 number;
-    "2021":                 number;
-    Subsector:              string;
-    "Final energy carrier": string;
-    "Primary energy carrier": string;
-    "Monetisation factor": string;
-    "Value": number;
-}
-export interface OriginalGlobalParameters {
-    [key: string]: Array<OriginalGlobalParameterSubcategory>
-}
 export interface GlobalParameterValue {
-    key: string;
+    key: number;
     value: number;
 }
 export interface GlobalParameters {
     // Categories
     [key: string]: {
-        // Subsectors
-        [key: string]: {
-            // Years
+        // Subsector IDs
+        [key: number]: {
+            // Years / factors
             [key: string]: Array<GlobalParameterValue>;
         }
     }

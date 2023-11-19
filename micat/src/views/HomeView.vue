@@ -19,6 +19,8 @@ import type {
   ImprovementValueInterface,
   PayloadInterface,
   PayloadMeasureInterface,
+  PayloadParameterInterface,
+  PayloadParameterEntryInterface,
 } from "@/types";
 import { defaultImprovement, defaultModalInject, defaultProgram, stages, units } from "@/defaults";
 import { useSessionStore } from "@/stores/session";
@@ -183,30 +185,62 @@ const getSubsectorImprovements = (subsectorId: number) => {
   if (!subsectorId || subsectors.value.length === 0) return [];
   return subsectors.value.filter(subsector => subsector.id === subsectorId)[0].improvements;
 }
+const getGlobalParametersPayload = () => {
+  const results: PayloadParameterInterface = {};
+  // const unitFactor = units[session.unit].factor;
+  for (const [category, subsectors] of Object.entries(session.globalParameters)) {
+    results[category] = [];
+    for (const [subsector, factors] of Object.entries(subsectors)) {
+      for (const [factor, values] of Object.entries(factors)) {
+        for (const value of values) {
+          if (category === 'MonetisationFactors') {
+            const existingResult: PayloadParameterEntryInterface | undefined = results[category].find(result => {
+              return result['index'] === parseInt(factor);
+            });
+            if (existingResult) {
+              existingResult[value.key] = value.value;
+            } else {
+              const data = {
+                'index': parseInt(factor),
+                [value.key === 0 ? 'Value' : value.key]: value.value
+              }
+              results[category].push(data);
+            }
+          } else {
+            const carrierKey = ['ElectricityGeneration', 'HeatGeneration'].indexOf(category) > -1 ? 'id_primary_energy_carrier' : 'id_final_energy_carrier';
+            const existingResult: PayloadParameterEntryInterface | undefined = results[category].find(result => {
+              if (['ElectricityGeneration', 'HeatGeneration'].indexOf(category) === -1) {
+                return result['id_subsector'] === parseInt(subsector) && result[carrierKey] === value.key;
+              } else {
+                return result[carrierKey] === value.key;
+              }
+            });
+            if (existingResult) {
+              existingResult[factor] = value.value;
+            } else {
+              const data = {
+                [carrierKey]: value.key,
+                [factor]: value.value
+              }
+              if (['ElectricityGeneration', 'HeatGeneration'].indexOf(category) === -1) data['id_subsector'] = parseInt(subsector);
+              results[category].push(data);
+            }
+          }
+        }
+      }
+    }
+  }
+  delete results['ElectricityGeneration'];
+  delete results['HeatGeneration'];
+  delete results['MonetisationFactors'];
+  return results;
+}
 const analyze = async () => {
   loading.value = true;
-  console.log(session.globalParameters)
   const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${session.future ? 4 : 2}&id_region=${session.region}`
   const payload: PayloadInterface = {
     "measures": [],
-    "parameters": {
-      // "FuelSplitCoefficient": [
-      //   {
-      //     "2015": 0.179977880752083,
-      //     "2016": 0.1766937246663977,
-      //     "2017": 0.1778916566397054,
-      //     "2018": 0.1641509666185604,
-      //     "2019": 0.167171489435066,
-      //     "2020": 0.1605908655931988,
-      //     "2021": 0.1601777340493887,
-      //     "id_subsector": 1,
-      //     "id_final_energy_carrier": 1
-      //   },
-      // ],
-      // "EnergyPrice": [],
-      // "ElectricityGeneration": [],
-      // "HeatGeneration": []
-    }
+    "parameters": getGlobalParametersPayload(),
   }
   if (session.municipality) payload["population"] = session.inhabitants;
   let i = 1;
@@ -664,7 +698,7 @@ const analyze = async () => {
 
       session.years.forEach(year => {
         const value = improvement.values[year.toString()];
-        const factor = units[session.unit].factor
+        const factor = units[session.unit].factor;
         improvementData.savings[year.toString()] = value ? value * 1 / factor : 0;
       });
       payload.measures.push(improvementData);

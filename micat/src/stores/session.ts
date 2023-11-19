@@ -31,6 +31,9 @@ export const useSessionStore = defineStore({
       resetted: false,
       results: {},
       globalParameters: {},
+      subsectorMapping: {},
+      carrierMapping: {},
+      monetisationFactorMapping: {},
     }
   },
   actions: {
