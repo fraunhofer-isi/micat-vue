@@ -19,64 +19,66 @@ const rangeIndex: {[key: string]: number} = {};
 // Lifecycle
 onMounted(async () => {
   if (Object.keys(session.globalParameters).length == 0) {
-    // Global parameters
-    const responseGlobalParameters: Response = await fetch(`${import.meta.env.VITE_API_URL}json_parameters?id_mode=${session.future ? 4 : 2}&id_region=${session.region}&orient=records`);
-    const results = await responseGlobalParameters.json();
-    // Re-structure parameters
-    const restructuredResults: GlobalParameters = {};
-    const yearRegex = /^[0-9]+$/;
-    for (const [category, dataSet] of Object.entries(results)) {
-      if (category === 'Options') continue;
-      // Add category key, if it doesn't exist yet
-      if (!restructuredResults[category]) restructuredResults[category] = {};
-      for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
-        // Add subsector key, if it doesn't exist yet
-        let subsectorId = data['id_subsector'] ? data['id_subsector'] : 0;
-        session.subsectorMapping[subsectorId] = data['Subsector'] ? data['Subsector'] : 'General';
-        if (!restructuredResults[category][subsectorId]) restructuredResults[category][subsectorId] = {};
-
-        if (category === 'MonetisationFactors') {
-          if (!data['Monetisation factor'] || typeof data['Value'] === 'undefined' || !data['index']) continue;
-          session.monetisationFactorMapping[data['index']] = data['Monetisation factor'];
-          restructuredResults[category][subsectorId][data['index']] = [];
-          if (data['Value'] !== null) {
-            // monetisation factors might have one value only
-            restructuredResults[category][subsectorId][data['index']].push({
-              key: 0,
-              value: data['Value'],
-            });
-            continue
-          }
-        }
-
-        for (const [key, value] of Object.entries(data)) {
-          if (yearRegex.test(key)) {
-            if (category === 'MonetisationFactors') {
-              // monetisation factors are handled differently
-              if (value === null || !data['index']) continue;
-              restructuredResults[category][subsectorId][data['index']].push({key: parseInt((key as string)), value: (value as number)});
-            } else if (data['id_final_energy_carrier'] || data['id_primary_energy_carrier']) {
-              // Add year key, if it doesn't exist yet
-              if (!restructuredResults[category][subsectorId][key]) restructuredResults[category][subsectorId][key] = [];
-              // Map carrier data
-              if (data['id_final_energy_carrier'] && data['Final energy carrier']) session.carrierMapping[data['id_final_energy_carrier']] = data['Final energy carrier'];
-              if (data['id_primary_energy_carrier'] && data['Primary energy carrier']) session.carrierMapping[data['id_primary_energy_carrier']] = data['Primary energy carrier'];
-              restructuredResults[category][subsectorId][key].push({
-                key: data['id_final_energy_carrier'] ? data['id_final_energy_carrier'] : data['id_primary_energy_carrier'] ? data['id_primary_energy_carrier'] : 0,
-                value: (value as number),
-              });
-            }
-          }
-        }
-      }
-    }
-    session.globalParameters = restructuredResults;
+    await getAndStructureGlobalParameters();
   }
   activeCategory.value = Object.keys(session.globalParameters)[0];
   activeSubsector.value = Number(Object.keys(session.globalParameters[activeCategory.value])[0]);
 });
 
 // Functions
+const getAndStructureGlobalParameters = async () => {
+  const responseGlobalParameters: Response = await fetch(`${import.meta.env.VITE_API_URL}json_parameters?id_mode=${session.future ? 4 : 2}&id_region=${session.region}&orient=records`);
+  const results = await responseGlobalParameters.json();
+  // Re-structure parameters
+  const restructuredResults: GlobalParameters = {};
+  const yearRegex = /^[0-9]+$/;
+  for (const [category, dataSet] of Object.entries(results)) {
+    if (category === 'Options') continue;
+    // Add category key, if it doesn't exist yet
+    if (!restructuredResults[category]) restructuredResults[category] = {};
+    for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
+      // Add subsector key, if it doesn't exist yet
+      let subsectorId = data['id_subsector'] ? data['id_subsector'] : 0;
+      session.subsectorMapping[subsectorId] = data['Subsector'] ? data['Subsector'] : 'General';
+      if (!restructuredResults[category][subsectorId]) restructuredResults[category][subsectorId] = {};
+
+      if (category === 'MonetisationFactors') {
+        if (!data['Monetisation factor'] || typeof data['Value'] === 'undefined' || !data['index']) continue;
+        session.monetisationFactorMapping[data['index']] = data['Monetisation factor'];
+        restructuredResults[category][subsectorId][data['index']] = [];
+        if (data['Value'] !== null) {
+          // monetisation factors might have one value only
+          restructuredResults[category][subsectorId][data['index']].push({
+            key: 0,
+            value: data['Value'],
+          });
+          continue
+        }
+      }
+
+      for (const [key, value] of Object.entries(data)) {
+        if (yearRegex.test(key)) {
+          if (category === 'MonetisationFactors') {
+            // monetisation factors are handled differently
+            if (value === null || !data['index']) continue;
+            restructuredResults[category][subsectorId][data['index']].push({key: parseInt((key as string)), value: (value as number)});
+          } else if (data['id_final_energy_carrier'] || data['id_primary_energy_carrier']) {
+            // Add year key, if it doesn't exist yet
+            if (!restructuredResults[category][subsectorId][key]) restructuredResults[category][subsectorId][key] = [];
+            // Map carrier data
+            if (data['id_final_energy_carrier'] && data['Final energy carrier']) session.carrierMapping[data['id_final_energy_carrier']] = data['Final energy carrier'];
+            if (data['id_primary_energy_carrier'] && data['Primary energy carrier']) session.carrierMapping[data['id_primary_energy_carrier']] = data['Primary energy carrier'];
+            restructuredResults[category][subsectorId][key].push({
+              key: data['id_final_energy_carrier'] ? data['id_final_energy_carrier'] : data['id_primary_energy_carrier'] ? data['id_primary_energy_carrier'] : 0,
+              value: (value as number),
+            });
+          }
+        }
+      }
+    }
+  }
+  session.globalParameters = restructuredResults;
+}
 const selectCategory = (category: string) => {
   activeCategory.value = category;
   activeSubsector.value = Number(Object.keys(session.globalParameters[activeCategory.value])[0]);
@@ -88,11 +90,25 @@ const roundNumber = (value: number, id: string) => {
   }
   return rangeIndex[id];
 };
+const reset = () => {
+  getAndStructureGlobalParameters();
+  activeCategory.value = Object.keys(session.globalParameters)[0];
+  activeSubsector.value = Number(Object.keys(session.globalParameters[activeCategory.value])[0]);
+}
 </script>
 
 <template>
   <div class="max-w-screen-xl mx-auto pt-5 pb-10">
-    <a href="#" @click="$emit('close')" class="text-sm text-orange-700 dark:text-orange-300">back to the entries</a>
+    <div class="flex items-center gap-2 justify-between pb-2">
+      <a href="#" @click="$emit('close')" class="text-sm text-orange-700 dark:text-orange-300">back to the entries</a>
+      <button
+        class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs mr-3"
+        @click="reset()"
+      >
+        <XCircleIcon class="h-5 w-5 mt-[-3px] inline text-white"></XCircleIcon>
+        Reset to defaults
+      </button>
+    </div>
     <div class="rounded-3xl border border-gray-300 my-3 relative bg-white">
       <div @click="$emit('close')"
            class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-10px] cursor-pointer">
