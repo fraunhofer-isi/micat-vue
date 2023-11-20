@@ -2,10 +2,10 @@
 import {onMounted, ref} from "vue";
 import {
   XCircleIcon,
-  CheckIcon,
+  CheckIcon, ExclamationCircleIcon,
 } from '@heroicons/vue/24/outline';
 import {useSessionStore} from "@/stores/session";
-import type {GlobalParameters, PayloadParameterEntryInterface} from "@/types";
+import type {GlobalParameters, GlobalParameterValue, PayloadParameterEntryInterface} from "@/types";
 
 const session = useSessionStore();
 
@@ -97,7 +97,12 @@ const reset = () => {
   getAndStructureGlobalParameters();
   activeCategory.value = Object.keys(session.globalParameters)[0];
   activeSubsector.value = Number(Object.keys(session.globalParameters[activeCategory.value])[0]);
+  loading.value = false;
 }
+const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
+  // Check if all entries sum up to (almost) 1
+  return Math.abs(entries.map((entry) => entry.value).reduce((a, b) => a + b) - 1) < 0.1;
+};
 </script>
 
 <template>
@@ -136,7 +141,7 @@ const reset = () => {
               'bg-white': activeCategory === categoryName,
               'hover:text-orange-700': activeCategory === categoryName,
               'hover:bg-orange-900': activeCategory !== categoryName,
-              'rounded-tl-3xl': activeCategory === categoryName && i === 0,
+              'rounded-tl-3xl': i === 0,
               'rounded-bl-3xl': activeCategory === categoryName && i === Object.keys(session.globalParameters).length - 1,
             }"
             v-for="(categoryName, i) in Object.keys(session.globalParameters)"
@@ -202,6 +207,16 @@ const reset = () => {
                       class="bg-orange-50 border border-orange-300 text-orange-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
                       v-model.number="entry.value"
                     >
+                  </div>
+                </div>
+                <div
+                  v-if="activeCategory !== 'MonetisationFactors' && !entriesAreValid(entries)"
+                  class="flex p-4 mt-5 text-yellow-800 border-t-4 border-yellow-300 bg-yellow-50 rounded-2xl text-sm"
+                  role="alert"
+                >
+                  <ExclamationCircleIcon class="h-7 w-7"></ExclamationCircleIcon>
+                  <div class="ml-3 font-medium">
+                    The values of all energy carriers should normally sum up to 1.
                   </div>
                 </div>
               </div>
