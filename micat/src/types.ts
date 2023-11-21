@@ -132,6 +132,7 @@ export interface ISessionState {
   subsectorMapping: {[key: number]: string};
   carrierMapping: {[key: number]: string};
   monetisationFactorMapping: {[key: number]: string};
+  parameters: Parameters;
 }
 export interface ISessionStateFunctions {
     updateStage: (stage: number) => void;
@@ -226,6 +227,20 @@ export interface GlobalParameters {
         [key: number]: {
             // Years / factors
             [key: string]: Array<GlobalParameterValue>;
+        }
+    }
+}
+export interface ParameterValue {
+    key: number;
+    value: number;
+}
+export interface Parameters {
+    // Categories
+    [key: string]: {
+        // Subsector IDs
+        [key: number]: {
+            // Years / factors
+            [key: string]: Array<ParameterValue>;
         }
     }
 }

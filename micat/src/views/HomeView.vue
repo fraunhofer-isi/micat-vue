@@ -24,6 +24,7 @@ import type {
 } from "@/types";
 import { defaultImprovement, defaultModalInject, defaultProgram, stages, units } from "@/defaults";
 import { useSessionStore } from "@/stores/session";
+import GlobalParametersOverlay from "@/components/GlobalParametersOverlay.vue";
 import ParametersOverlay from "@/components/ParametersOverlay.vue";
 
 const session = useSessionStore();
@@ -42,6 +43,7 @@ let regions: Ref<Array<Array<number | string>>> = ref([]);
 let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
 const newYears = ref<Array<number>>([...Array(35).keys()].map(delta => session.future ? session.currentYear + delta : session.currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
 const newYearSelected = ref<number>(newYears.value[0]);
+const showGlobalParametersOverlay = ref<boolean>(false);
 const showParametersOverlay = ref<boolean>(false);
 const error = ref<string>("");
 
@@ -744,6 +746,7 @@ const analyze = async () => {
 
 <template>
   <main>
+    <GlobalParametersOverlay v-if="showGlobalParametersOverlay" @close="showGlobalParametersOverlay = false;"></GlobalParametersOverlay>
     <ParametersOverlay v-if="showParametersOverlay" @close="showParametersOverlay = false;"></ParametersOverlay>
     <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
@@ -924,7 +927,7 @@ const analyze = async () => {
           </button>
           <button
             class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
-            @click="showParametersOverlay = true;"
+            @click="showGlobalParametersOverlay = true;"
           >
             <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
             Global parameters
@@ -1006,7 +1009,7 @@ const analyze = async () => {
             <div>
               <select
                 :id="`subsector-${i}`"
-                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                 v-model="program.subsector"
               >
                 <option value="0" selected disabled>Select subsector</option>
@@ -1075,8 +1078,21 @@ const analyze = async () => {
                   </span>
                 </div>
               </div>
+              <div class="border-t border-gray-200 px-6 py-3 text-center bg-orange-200 dark:bg-sky-200">
+                <button
+                  class="bg-orange-400 hover:bg-orange-500 dark:bg-sky-400 dark:hover:bg-sky-500 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
+                  @click="showParametersOverlay = true;"
+                >
+                  <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
+                  Advanced
+                </button>
+                 <InformationCircleIcon
+                    @click="openModal('parameters')"
+                    class="h-6 w-6 ml-2 cursor-pointer inline dark:text-sky-400 text-orange-400"
+                 ></InformationCircleIcon>
+              </div>
               <div
-                class="border-t border-gray-300 dark:border-gray-400 px-6 py-3 text-center bg-blue-50 dark:bg-blue-900 rounded-b-3xl"
+                class="border-t border-gray-200 px-6 py-3 text-center bg-blue-50 dark:bg-blue-900 rounded-b-3xl"
               >
                 <DocumentDuplicateIcon
                   @click="copyImprovement(program, improvementIndex)"

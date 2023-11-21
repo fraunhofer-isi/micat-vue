@@ -34,6 +34,7 @@ export const useSessionStore = defineStore({
       subsectorMapping: {},
       carrierMapping: {},
       monetisationFactorMapping: {},
+      parameters: {},
     }
   },
   actions: {
