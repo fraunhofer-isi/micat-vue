@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
-import {
-  XCircleIcon,
-  CheckIcon, ExclamationCircleIcon,
-} from '@heroicons/vue/24/outline';
+import { XCircleIcon } from '@heroicons/vue/24/outline';
 import {useSessionStore} from "@/stores/session";
-import type {Parameters, ParameterValue, ParameterValue, PayloadParameterEntryInterface} from "@/types";
+import type {ParameterEntry, Parameters, PayloadParameterEntryInterface} from "@/types";
 
 const session = useSessionStore();
 
 // Refs
 const activeCategory = ref<string>("");
-const activeSubsector = ref<number>(0);
 const loading = ref<boolean>(true);
 
 // Variables
@@ -20,15 +16,14 @@ const rangeIndex: {[key: string]: number} = {};
 // Lifecycle
 onMounted(async () => {
   if (Object.keys(session.parameters).length == 0) {
-    await getAndStructureParameters();
+    await getParameters();
   }
   activeCategory.value = Object.keys(session.parameters)[0];
-  activeSubsector.value = Number(Object.keys(session.parameters[activeCategory.value])[0]);
   loading.value = false;
 });
 
 // Functions
-const getAndStructureParameters = async () => {
+const getParameters = async () => {
   loading.value = true;
   const responseParameters: Response = await fetch(
     `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 4 : 2}&id_region=${session.region}`,
@@ -67,6 +62,26 @@ const getAndStructureParameters = async () => {
     },
   );
   const results = await responseParameters.json();
+  const restructuredResults: Parameters = {};
+  const yearRegex = /^[0-9]+$/;
+  for (const [category, dataSet] of Object.entries(results)) {
+    if (category === 'context') continue;
+    // Add category key, if it doesn't exist yet
+    if (!restructuredResults[category]) restructuredResults[category] = [];
+    for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
+      const entry: ParameterEntry = {years: [], parameters: {}};
+      for (const [key, v] of Object.entries((data as {[key: string]: number | string}))) {
+        const value: number = (v as number);
+        if (yearRegex.test(key)) {
+          entry.years.push({key, value});
+        } else {
+          entry.parameters[key] = value;
+        }
+      }
+      restructuredResults[category].push(entry);
+    }
+  }
+  session.parameters = restructuredResults;
   /*
   {
     "main": [
@@ -676,94 +691,25 @@ const getAndStructureParameters = async () => {
             "unit": "% of rent",
             "importance": "optional"
         }
-    ],
-    "context": [
-        {
-            "0": 1,
-            "id_region": "id_subsector"
-        },
-        {
-            "0": 8,
-            "id_region": "id_action_type"
-        },
-        {
-            "0": null,
-            "id_region": "population"
-        }
     ]
 }
   * */
-  // Re-structure parameters
-  const restructuredResults: Parameters = {};
-  const yearRegex = /^[0-9]+$/;
-  for (const [category, dataSet] of Object.entries(results)) {
-    if (category === 'Options') continue;
-    // Add category key, if it doesn't exist yet
-    if (!restructuredResults[category]) restructuredResults[category] = {};
-    for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
-      // Add subsector key, if it doesn't exist yet
-      let subsectorId = data['id_subsector'] ? data['id_subsector'] : 0;
-      session.subsectorMapping[subsectorId] = data['Subsector'] ? data['Subsector'] : 'General';
-      if (!restructuredResults[category][subsectorId]) restructuredResults[category][subsectorId] = {};
-
-      if (category === 'MonetisationFactors') {
-        if (!data['Monetisation factor'] || typeof data['Value'] === 'undefined' || !data['index']) continue;
-        session.monetisationFactorMapping[data['index']] = data['Monetisation factor'];
-        restructuredResults[category][subsectorId][data['index']] = [];
-        if (data['Value'] !== null) {
-          // monetisation factors might have one value only
-          restructuredResults[category][subsectorId][data['index']].push({
-            key: 0,
-            value: data['Value'],
-          });
-          continue
-        }
-      }
-
-      for (const [key, value] of Object.entries(data)) {
-        if (yearRegex.test(key)) {
-          if (category === 'MonetisationFactors') {
-            // monetisation factors are handled differently
-            if (value === null || !data['index']) continue;
-            restructuredResults[category][subsectorId][data['index']].push({key: parseInt((key as string)), value: (value as number)});
-          } else if (data['id_final_energy_carrier'] || data['id_primary_energy_carrier']) {
-            // Add year key, if it doesn't exist yet
-            if (!restructuredResults[category][subsectorId][key]) restructuredResults[category][subsectorId][key] = [];
-            // Map carrier data
-            if (data['id_final_energy_carrier'] && data['Final energy carrier']) session.carrierMapping[data['id_final_energy_carrier']] = data['Final energy carrier'];
-            if (data['id_primary_energy_carrier'] && data['Primary energy carrier']) session.carrierMapping[data['id_primary_energy_carrier']] = data['Primary energy carrier'];
-            restructuredResults[category][subsectorId][key].push({
-              key: data['id_final_energy_carrier'] ? data['id_final_energy_carrier'] : data['id_primary_energy_carrier'] ? data['id_primary_energy_carrier'] : 0,
-              value: (value as number),
-            });
-          }
-        }
-      }
-    }
-  }
-  session.parameters = restructuredResults;
 }
 const selectCategory = (category: string) => {
   activeCategory.value = category;
-  activeSubsector.value = Number(Object.keys(session.parameters[activeCategory.value])[0]);
 };
 const roundNumber = (value: number, id: string) => {
   // round to next one, hundred, thousand, million, billion, etc.
   if (!rangeIndex[id]) {
-    rangeIndex[id] = Math.max(1, 10 ** (Math.ceil(Math.log10(value))));
+    rangeIndex[id] = Math.max(100, 10 ** (Math.ceil(Math.log10(value))) * 2);
   }
   return rangeIndex[id];
 };
 const reset = () => {
-  getAndStructureParameters();
+  getParameters();
   activeCategory.value = Object.keys(session.parameters)[0];
-  activeSubsector.value = Number(Object.keys(session.parameters[activeCategory.value])[0]);
   loading.value = false;
 }
-const entriesAreValid = (entries: Array<ParameterValue>) => {
-  // Check if all entries sum up to (almost) 1
-  return Math.abs(entries.map((entry) => entry.value).reduce((a, b) => a + b) - 1) < 0.1;
-};
 </script>
 
 <template>
@@ -808,77 +754,43 @@ const entriesAreValid = (entries: Array<ParameterValue>) => {
             v-for="(categoryName, i) in Object.keys(session.parameters)"
             v-bind:key="`parameter-${i}`"
           >
-            <div class="py-3 grow font-bold capitalize">{{ categoryName.replace(/([A-Z])/g, ' $1') }}</div>
+            <div class="py-3 grow font-bold capitalize whitespace-nowrap">{{ categoryName.replace(/([A-Z])/g, ' $1') }}</div>
           </div>
         </div>
-        <div class="flex" v-if="activeCategory">
-          <div class="bg-orange-500 self-start" v-if="Object.keys(session.parameters[activeCategory]).length > 1">
+        <div class="grid grid-cols-2 px-5 py-2" v-if="activeCategory">
+          <div
+            v-for="parameter in session.parameters[activeCategory]"
+            v-bind:key="`parameter-${parameter.parameters.id_parameter}`"
+            class="block rounded-xl bg-white border border-orange-600 m-5 max-w-[450px]">
             <div
-              class="flex items-center px-3 py-3 cursor-pointer text-sm"
-              @click="activeSubsector = Number(subsector)"
-              :class="{
-                'text-white': activeSubsector !== Number(subsector),
-                'text-orange-700': activeSubsector === Number(subsector),
-                'bg-white': activeSubsector === Number(subsector),
-                'hover:text-orange-600': activeSubsector === Number(subsector),
-                'hover:bg-orange-600': activeSubsector !== Number(subsector),
-              }"
-              v-for="(subsector, i) in Object.keys(session.parameters[activeCategory])"
-              v-bind:key="`parameters-subcategory-${i}`"
-            >
-              <span class="font-bold mr-8 grow whitespace-nowrap">{{ session.subsectorMapping[Number(subsector)] }}</span>
-              <CheckIcon v-if="activeSubsector === Number(subsector)" class="h-5 w-5"></CheckIcon>
+              class="bg-orange-600 rounded-t-xl text-white px-4 py-2">
+              {{ parameter.parameters.label }}
             </div>
-          </div>
-          <div class="px-5 py-3">
-            <div
-              v-for="[yearOrFactor, entries] in Object.entries(session.parameters[activeCategory][activeSubsector])"
-              v-bind:key="`parameters-years-${yearOrFactor}`"
-              class="block rounded-xl bg-white border border-orange-600 m-5 max-w-[450px]">
+            <div class="p-4">
               <div
-                class="bg-orange-600 rounded-t-xl text-white px-4 py-2">
-                {{ activeCategory === 'MonetisationFactors' ? session.monetisationFactorMapping[Number(yearOrFactor)] : yearOrFactor }}
-              </div>
-              <div class="p-4">
-                <div
-                  v-for="(entry, i) in entries"
-                  v-bind:key="`parameters-years-${yearOrFactor}-${i}`"
-                  class="grid gap-2 py-1 items-center"
-                  :class="{
-                    'grid-cols-3': entries.length > 1,
-                    'grid-cols-2': entries.length == 1,
-                  }"
-                >
-                  <div class="text-orange-600 font-bold text-xs" v-if="entries.length > 1">{{ activeCategory === 'MonetisationFactors' ? entry.key : session.carrierMapping[entry.key] }}</div>
-                  <div>
-                    <input
-                      :id="`parameters-years-${yearOrFactor}-${i}-range`"
-                      type="range"
-                      class="w-full h-1 bg-orange-200 rounded-lg appearance-none cursor-pointer"
-                      min="0"
-                      :max="roundNumber(entry.value, `parameters-years-${yearOrFactor}-${i}-range`)"
-                      :step="roundNumber(entry.value, `parameters-years-${yearOrFactor}-${i}-range`) / 100"
-                      v-model.number="entry.value"
-                    />
-                  </div>
-                  <div>
-                    <input
-                      :id="`parameters-years-${yearOrFactor}-${i}-input`"
-                      type="number"
-                      class="bg-orange-50 border border-orange-300 text-orange-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
-                      v-model.number="entry.value"
-                    >
-                  </div>
+                v-for="year in parameter.years"
+                v-bind:key="`parameter-${parameter.parameters.id_parameter}-${year.key}`"
+                class="grid gap-2 py-1 items-center grid-cols-3"
+              >
+                <div class="text-orange-600 font-bold text-xs">{{ year.key }}</div>
+                <div>
+                  <input
+                    :id="`parameter-${parameter.parameters.id_parameter}-${year.key}-range`"
+                    type="range"
+                    class="w-full h-1 bg-orange-200 rounded-lg appearance-none cursor-pointer"
+                    min="0"
+                    :max="roundNumber(year.value, `parameter-${parameter.parameters.id_parameter}-${year.key}-range`)"
+                    :step="roundNumber(year.value, `parameter-${parameter.parameters.id_parameter}-${year.key}-range`) / 100"
+                    v-model.number="year.value"
+                  />
                 </div>
-                <div
-                  v-if="activeCategory !== 'MonetisationFactors' && !entriesAreValid(entries)"
-                  class="flex p-4 mt-5 text-yellow-800 border-t-4 border-yellow-300 bg-yellow-50 rounded-2xl text-sm"
-                  role="alert"
-                >
-                  <ExclamationCircleIcon class="h-7 w-7"></ExclamationCircleIcon>
-                  <div class="ml-3 font-medium">
-                    The values of all energy carriers should normally sum up to 1.
-                  </div>
+                <div>
+                  <input
+                    :id="`parameter-${parameter.parameters.id_parameter}-${year.key}-input`"
+                    type="number"
+                    class="bg-orange-50 border border-orange-300 text-orange-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
+                    v-model.number="year.value"
+                  >
                 </div>
               </div>
             </div>

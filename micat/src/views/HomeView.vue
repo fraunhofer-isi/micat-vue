@@ -747,7 +747,7 @@ const analyze = async () => {
 <template>
   <main>
     <GlobalParametersOverlay v-if="showGlobalParametersOverlay" @close="showGlobalParametersOverlay = false;"></GlobalParametersOverlay>
-    <ParametersOverlay v-if="showParametersOverlay" @close="showParametersOverlay = false;"></ParametersOverlay>
+    <ParametersOverlay v-else-if="showParametersOverlay" @close="showParametersOverlay = false;"></ParametersOverlay>
     <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
         <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency

@@ -231,16 +231,16 @@ export interface GlobalParameters {
     }
 }
 export interface ParameterValue {
-    key: number;
+    key: string;
     value: number;
+}
+export interface ParameterEntry {
+    years: Array<ParameterValue>;
+    parameters: {
+        [key: string]: string | number;
+    }
 }
 export interface Parameters {
     // Categories
-    [key: string]: {
-        // Subsector IDs
-        [key: number]: {
-            // Years / factors
-            [key: string]: Array<ParameterValue>;
-        }
-    }
+    [key: string]: Array<ParameterEntry>
 }

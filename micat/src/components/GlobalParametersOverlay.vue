@@ -89,7 +89,7 @@ const selectCategory = (category: string) => {
 const roundNumber = (value: number, id: string) => {
   // round to next one, hundred, thousand, million, billion, etc.
   if (!rangeIndex[id]) {
-    rangeIndex[id] = Math.max(1, 10 ** (Math.ceil(Math.log10(value))));
+    rangeIndex[id] = Math.max(1, 10 ** (Math.ceil(Math.log10(value))) * 2);
   }
   return rangeIndex[id];
 };
