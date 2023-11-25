@@ -238,7 +238,7 @@ export interface ParameterEntry {
     years: Array<ParameterValue>;
     parameters: {
         [key: string]: string | number;
-    }
+    };
 }
 export interface Parameters {
     // Categories
