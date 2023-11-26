@@ -21,6 +21,7 @@ import type {
   PayloadMeasureInterface,
   PayloadParameterInterface,
   PayloadParameterEntryInterface,
+  SelectedImprovementInterface,
 } from "@/types";
 import { defaultImprovement, defaultModalInject, defaultProgram, stages, units } from "@/defaults";
 import { useSessionStore } from "@/stores/session";
@@ -45,6 +46,7 @@ const newYears = ref<Array<number>>([...Array(35).keys()].map(delta => session.f
 const newYearSelected = ref<number>(newYears.value[0]);
 const showGlobalParametersOverlay = ref<boolean>(false);
 const showParametersOverlay = ref<boolean>(false);
+const selectedImprovement = ref<SelectedImprovementInterface>({});
 const error = ref<string>("");
 
 // Watchers
@@ -237,6 +239,16 @@ const getGlobalParametersPayload = () => {
   delete results['MonetisationFactors'];
   return results;
 }
+const showParameters = (elementId: string, id: number, subsectorId: string, program: string) => {
+  const element = document.getElementById(elementId) as HTMLElement;
+  const name = element.options[element.options.selectedIndex].text;
+  const subsectorElement = document.getElementById(subsectorId) as HTMLElement;
+  const subsector = subsectorElement.options[subsectorElement.options.selectedIndex].text;
+  selectedImprovement.value = {
+    name, id, subsector, program
+  };
+  showParametersOverlay.value = true;
+};
 const analyze = async () => {
   loading.value = true;
   const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${session.future ? 4 : 2}&id_region=${session.region}`
@@ -747,7 +759,7 @@ const analyze = async () => {
 <template>
   <main>
     <GlobalParametersOverlay v-if="showGlobalParametersOverlay" @close="showGlobalParametersOverlay = false;"></GlobalParametersOverlay>
-    <ParametersOverlay v-else-if="showParametersOverlay" @close="showParametersOverlay = false;"></ParametersOverlay>
+    <ParametersOverlay v-else-if="showParametersOverlay" :improvement="selectedImprovement" @close="showParametersOverlay = false;"></ParametersOverlay>
     <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
         <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency
@@ -1013,8 +1025,10 @@ const analyze = async () => {
                 v-model="program.subsector"
               >
                 <option value="0" selected disabled>Select subsector</option>
-                <option v-for="subsector in subsectors" v-bind:key="`subsector-${i}-${subsector.id}`"
-                        :value="subsector.id">
+                <option
+                  v-for="subsector in subsectors" v-bind:key="`subsector-${i}-${subsector.id}`"
+                  :value="subsector.id"
+                >
                   {{ subsector.name }}
                 </option>
               </select>
@@ -1081,7 +1095,7 @@ const analyze = async () => {
               <div class="border-t border-gray-200 px-6 py-3 text-center bg-orange-200 dark:bg-sky-200">
                 <button
                   class="bg-orange-400 hover:bg-orange-500 dark:bg-sky-400 dark:hover:bg-sky-500 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
-                  @click="showParametersOverlay = true;"
+                  @click="showParameters(`improvement-${i}-${improvement.id}`, improvement.id, `subsector-${i}`, program.name)"
                 >
                   <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
                   Advanced

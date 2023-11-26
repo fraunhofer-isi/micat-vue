@@ -2,7 +2,12 @@
 import {onMounted, ref} from "vue";
 import { XCircleIcon } from '@heroicons/vue/24/outline';
 import {useSessionStore} from "@/stores/session";
-import type {ParameterEntry, Parameters, PayloadParameterEntryInterface} from "@/types";
+import type {ImprovementValueInterface, ParameterEntry, Parameters, PayloadParameterEntryInterface} from "@/types";
+
+
+const props = defineProps<{
+  improvement: ImprovementValueInterface,
+}>()
 
 const session = useSessionStore();
 
@@ -145,62 +150,71 @@ const reset = () => {
             <div class="py-3 grow font-bold capitalize whitespace-nowrap">{{ categoryName.replace(/([A-Z])/g, ' $1') }}</div>
           </div>
         </div>
-        <div class="grid grid-cols-2 px-5 py-2" v-if="activeCategory">
-          <div
-            v-for="parameter in session.parameters[activeCategory]"
-            v-bind:key="`parameter-${parameter.parameters.id_parameter}`"
-            class="block rounded-xl bg-white border border-sky-600 m-5 max-w-[450px] self-start">
-            <div class="bg-sky-600 rounded-t-xl text-sm text-white px-4 py-2 flex justify-between items-center">
-              <span>{{ parameter.parameters.label }}</span>
-              <span class="bg-white rounded-xl text-sky-600 px-2 py-1 ml-2">{{ parameter.parameters.unit }}</span>
+        <div>
+          <div>
+            <div class="bg-sky-600 text-sky-400 p-2 inline-block rounded-br-xl">
+              <span class="font-bold mr-2 text-sky-200">{{ improvement.program }}</span> &mdash;
+              <span class="font-bold mx-2 text-sky-100">{{ improvement.subsector }}</span> &mdash;
+              <span class="font-bold ml-2 mr-4 text-white">{{ improvement.name }}</span>
             </div>
-            <div class="p-4">
-              <div v-if="parameter.years.length === 0" class="grid gap-2 py-1 items-center grid-cols-3">
-                <div>
-                  <input
-                    :id="`parameter-${parameter.parameters.id_parameter}-constant-range`"
-                    type="range"
-                    class="w-full h-1 bg-sky-200 rounded-lg appearance-none cursor-pointer"
-                    min="0"
-                    :max="roundNumber(parameter.parameters.constants, `parameter-${parameter.parameters.id_parameter}-constant-range`)"
-                    :step="roundNumber(parameter.parameters.constants, `parameter-${parameter.parameters.id_parameter}-constant-range`) / 100"
-                    v-model.number="parameter.parameters.constants"
-                  />
-                </div>
-                <div>
-                  <input
-                    :id="`parameter-${parameter.parameters.id_parameter}-constant-input`"
-                    type="number"
-                    class="bg-sky-50 border border-sky-300 text-sky-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
-                    v-model.number="parameter.parameters.constants"
-                  >
-                </div>
+          </div>
+          <div class="grid grid-cols-2 px-5 py-2" v-if="activeCategory">
+            <div
+              v-for="parameter in session.parameters[activeCategory]"
+              v-bind:key="`parameter-${parameter.parameters.id_parameter}`"
+              class="block rounded-xl bg-white border border-sky-600 m-5 max-w-[450px] self-start">
+              <div class="bg-sky-600 rounded-t-xl text-sm text-white px-4 py-2 flex justify-between items-center">
+                <span>{{ parameter.parameters.label }}</span>
+                <span class="bg-white rounded-xl text-sky-600 px-2 py-1 ml-2">{{ parameter.parameters.unit }}</span>
               </div>
-              <div
-                v-else
-                v-for="year in parameter.years"
-                v-bind:key="`parameter-${parameter.parameters.id_parameter}-${year.key}`"
-                class="grid gap-2 py-1 items-center grid-cols-3"
-              >
-                <div class="text-sky-600 font-bold text-xs">{{ year.key }}</div>
-                <div>
-                  <input
-                    :id="`parameter-${parameter.parameters.id_parameter}-${year.key}-range`"
-                    type="range"
-                    class="w-full h-1 bg-sky-200 rounded-lg appearance-none cursor-pointer"
-                    min="0"
-                    :max="roundNumber(year.value, `parameter-${parameter.parameters.id_parameter}-${year.key}-range`)"
-                    :step="roundNumber(year.value, `parameter-${parameter.parameters.id_parameter}-${year.key}-range`) / 100"
-                    v-model.number="year.value"
-                  />
+              <div class="p-4">
+                <div v-if="parameter.years.length === 0" class="grid gap-2 py-1 items-center grid-cols-3">
+                  <div>
+                    <input
+                      :id="`parameter-${parameter.parameters.id_parameter}-constant-range`"
+                      type="range"
+                      class="w-full h-1 bg-sky-200 rounded-lg appearance-none cursor-pointer"
+                      min="0"
+                      :max="roundNumber(parameter.parameters.constants, `parameter-${parameter.parameters.id_parameter}-constant-range`)"
+                      :step="roundNumber(parameter.parameters.constants, `parameter-${parameter.parameters.id_parameter}-constant-range`) / 100"
+                      v-model.number="parameter.parameters.constants"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      :id="`parameter-${parameter.parameters.id_parameter}-constant-input`"
+                      type="number"
+                      class="bg-sky-50 border border-sky-300 text-sky-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
+                      v-model.number="parameter.parameters.constants"
+                    >
+                  </div>
                 </div>
-                <div>
-                  <input
-                    :id="`parameter-${parameter.parameters.id_parameter}-${year.key}-input`"
-                    type="number"
-                    class="bg-sky-50 border border-sky-300 text-sky-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
-                    v-model.number="year.value"
-                  >
+                <div
+                  v-else
+                  v-for="year in parameter.years"
+                  v-bind:key="`parameter-${parameter.parameters.id_parameter}-${year.key}`"
+                  class="grid gap-2 py-1 items-center grid-cols-3"
+                >
+                  <div class="text-sky-600 font-bold text-xs">{{ year.key }}</div>
+                  <div>
+                    <input
+                      :id="`parameter-${parameter.parameters.id_parameter}-${year.key}-range`"
+                      type="range"
+                      class="w-full h-1 bg-sky-200 rounded-lg appearance-none cursor-pointer"
+                      min="0"
+                      :max="roundNumber(year.value, `parameter-${parameter.parameters.id_parameter}-${year.key}-range`)"
+                      :step="roundNumber(year.value, `parameter-${parameter.parameters.id_parameter}-${year.key}-range`) / 100"
+                      v-model.number="year.value"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      :id="`parameter-${parameter.parameters.id_parameter}-${year.key}-input`"
+                      type="number"
+                      class="bg-sky-50 border border-sky-300 text-sky-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
+                      v-model.number="year.value"
+                    >
+                  </div>
                 </div>
               </div>
             </div>

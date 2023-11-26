@@ -13,9 +13,12 @@ export interface ModalInjectInterface {
     openModal(key: string): any;
     closeModal(): any;
 }
-export interface StageInjectInterface {
-    stage: number;
-    stages: { [key: string]: number }
+
+export interface SelectedImprovementInterface {
+    name?: string;
+    id?: number;
+    program?: string;
+    subsector?: string;
 }
 
 export interface ImprovementValueInterface {
