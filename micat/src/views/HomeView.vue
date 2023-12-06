@@ -22,6 +22,7 @@ import type {
   PayloadParameterInterface,
   PayloadParameterEntryInterface,
   SelectedImprovementInterface,
+  ImprovementInterface,
 } from "@/types";
 import { defaultImprovement, defaultModalInject, defaultProgram, stages, units } from "@/defaults";
 import { useSessionStore } from "@/stores/session";
@@ -46,7 +47,7 @@ const newYears = ref<Array<number>>([...Array(35).keys()].map(delta => session.f
 const newYearSelected = ref<number>(newYears.value[0]);
 const showGlobalParametersOverlay = ref<boolean>(false);
 const showParametersOverlay = ref<boolean>(false);
-const selectedImprovement = ref<SelectedImprovementInterface>({});
+const selectedImprovement = ref<SelectedImprovementInterface>({internalId: 0});
 const error = ref<string>("");
 
 // Watchers
@@ -139,6 +140,13 @@ onMounted(async () => {
       improvements: Object.values(improvements).filter(improvement => improvement.subsectors.indexOf(subsector[0]) > -1)
     });
   });
+
+  // Create internal IDs for improvements
+  programs.forEach(program => {
+    program.improvements.forEach(improvement => {
+      if (!improvement.internalId) improvement.internalId = getInternalId();
+    });
+  });
 })
 
 // Functions
@@ -174,11 +182,22 @@ const removeProgram = (i: number) => {
     session.updatePrograms(programs);
   }
 }
+const getInternalId = () => {
+  let ids: Array<number> = [];
+  programs.forEach(program => {
+    ids = ids.concat(program.improvements.filter(improvement => typeof improvement.internalId !== 'undefined').map(improvement => improvement.internalId));
+  });
+  return ids.length > 0 ? Math.max(...ids) + 1 : 1;
+};
 const copyImprovement = (program: ProgramInterface, i: number) => {
-  program.improvements.push(JSON.parse(JSON.stringify(program.improvements[i])));
+  const newImprovement = JSON.parse(JSON.stringify(program.improvements[i]));
+  newImprovement.internalId = getInternalId();
+  program.improvements.push(newImprovement);
 }
 const addImprovement = (program: ProgramInterface) => {
-  program.improvements.push(JSON.parse(JSON.stringify(defaultImprovement)));
+  const newImprovement = JSON.parse(JSON.stringify(defaultImprovement));
+  newImprovement.internalId = getInternalId();
+  program.improvements.push(newImprovement);
 }
 const removeImprovement = (program: ProgramInterface, i: number) => {
   if (program.improvements.length >= 2) {
@@ -239,13 +258,14 @@ const getGlobalParametersPayload = () => {
   delete results['MonetisationFactors'];
   return results;
 }
-const showParameters = (elementId: string, id: number, subsectorId: string, program: string) => {
+const showParameters = (elementId: string, data: ImprovementInterface, subsectorElementId: string, subsectorId: number, program: string) => {
   const element = document.getElementById(elementId) as HTMLElement;
   const name = element.options[element.options.selectedIndex].text;
-  const subsectorElement = document.getElementById(subsectorId) as HTMLElement;
+  const subsectorElement = document.getElementById(subsectorElementId) as HTMLElement;
   const subsector = subsectorElement.options[subsectorElement.options.selectedIndex].text;
+  const internalId = data && data.internalId ? data.internalId : 0;
   selectedImprovement.value = {
-    name, id, subsector, program
+    internalId, name, subsector, subsectorId, program, data
   };
   showParametersOverlay.value = true;
 };
@@ -1095,7 +1115,7 @@ const analyze = async () => {
               <div class="border-t border-gray-200 px-6 py-3 text-center bg-orange-200 dark:bg-sky-200">
                 <button
                   class="bg-orange-400 hover:bg-orange-500 dark:bg-sky-400 dark:hover:bg-sky-500 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
-                  @click="showParameters(`improvement-${i}-${improvement.id}`, improvement.id, `subsector-${i}`, program.name)"
+                  @click="showParameters(`improvement-${i}-${improvement.id}`, improvement, `subsector-${i}`, program.subsector, program.name)"
                 >
                   <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
                   Advanced
@@ -1135,23 +1155,25 @@ const analyze = async () => {
           </button>
         </div>
         <div
-          class="text-center sticky bottom-3"
+          class="text-center sticky"
         >
-          <button
-            class="bg-amber-300 hover:bg-amber-400 font-bold py-2 px-8 rounded-full uppercase text-xl"
-            @click="analyze()"
-            ref="analyzeButton"
-            :disabled="loading"
-          >
-            <div role="status" v-if="loading">
-                <svg aria-hidden="true" class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-orange-400" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-                </svg>
-                <span class="sr-only">Loading...</span>
-            </div>
-            <span v-else>Analyze</span>
-          </button>
+          <div class="mx-2 p-4" style="backdrop-filter: blur(2px);">
+            <button
+              class="bg-amber-300 hover:bg-amber-400 font-bold py-2 px-8 rounded-full uppercase text-xl"
+              @click="analyze()"
+              ref="analyzeButton"
+              :disabled="loading"
+            >
+              <div role="status" v-if="loading">
+                  <svg aria-hidden="true" class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-orange-400" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                      <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                  </svg>
+                  <span class="sr-only">Loading...</span>
+              </div>
+              <span v-else>Analyze</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

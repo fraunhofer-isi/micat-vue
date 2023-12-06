@@ -1,12 +1,19 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import { XCircleIcon } from '@heroicons/vue/24/outline';
 import {useSessionStore} from "@/stores/session";
-import type {ImprovementValueInterface, ParameterEntry, Parameters, PayloadParameterEntryInterface} from "@/types";
+import type {
+  ParameterCategory,
+  ParameterEntry,
+  Parameters,
+  PayloadParameterEntryInterface,
+  SelectedImprovementInterface
+} from "@/types";
+import {units} from "@/defaults";
 
 
 const props = defineProps<{
-  improvement: ImprovementValueInterface,
+  improvement: SelectedImprovementInterface,
 }>()
 
 const session = useSessionStore();
@@ -14,22 +21,51 @@ const session = useSessionStore();
 // Refs
 const activeCategory = ref<string>("");
 const loading = ref<boolean>(true);
+const parameters = reactive<Parameters>(session.parameters);
+
+// Watchers
+watch(parameters, (parameters) => {
+  session.updateParameters(parameters);
+  console.log('foo')
+});
 
 // Variables
 const rangeIndex: {[key: string]: number} = {};
 
 // Lifecycle
 onMounted(async () => {
-  if (Object.keys(session.parameters).length == 0) {
+  if (typeof parameters[props.improvement.internalId] === 'undefined') parameters[props.improvement.internalId] = {};
+  if (Object.keys(parameters[props.improvement.internalId]).length == 0) {
     await getParameters();
   }
-  activeCategory.value = Object.keys(session.parameters)[0];
+  activeCategory.value = Object.keys(parameters[props.improvement.internalId])[0];
   loading.value = false;
 });
 
 // Functions
 const getParameters = async () => {
   loading.value = true;
+  const body = {
+    "id": props.improvement.internalId,
+    // "row_number": 1,
+    "active": true,
+    "subsector": {
+      "id": props.improvement.subsectorId,
+      // "label": "Average agriculture",
+      // "_description": "Agriculture, forestry & fishing"
+    },
+    "action_type": {
+     "id": props.improvement.data ? props.improvement.data.id : 0,
+     // "label": "Cross-cutting technologies",
+     // "_description": "Energy-efficient electric cross-cutting technologies"
+    },
+    "details": {},
+    "unit": {
+      // "name": "kilotonne of oil equivalent",
+      "symbol": units[session.unit].symbol,
+      "factor": units[session.unit].factor
+    }
+  };
   const responseParameters: Response = await fetch(
     `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 4 : 2}&id_region=${session.region}`,
     {
@@ -37,37 +73,11 @@ const getParameters = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        "2000": 0,
-        "2010": 0,
-        "2015": 0,
-        "2020": 10,
-        "2025": 20,
-        "2030": 30,
-        "id": 1,
-        "row_number": 1,
-        "active": true,
-        "subsector": {
-          "id": 1,
-          "label": "Average agriculture",
-          "_description": "Agriculture, forestry & fishing"
-        },
-        "action_type": {
-         "id": 8,
-         "label": "Cross-cutting technologies",
-         "_description": "Energy-efficient electric cross-cutting technologies"
-        },
-        "details": {},
-        "unit": {
-          "name": "kilotonne of oil equivalent",
-          "symbol": "ktoe",
-          "factor": 1
-        }
-      })
+      body: JSON.stringify({...props.improvement.data?.values, ...body})
     },
   );
   const results = await responseParameters.json();
-  const restructuredResults: Parameters = {};
+  const restructuredResults: ParameterCategory = {};
   const yearRegex = /^[0-9]+$/;
   for (const [category, dataSet] of Object.entries(results)) {
     if (category === 'context') continue;
@@ -86,7 +96,7 @@ const getParameters = async () => {
       restructuredResults[category].push(entry);
     }
   }
-  session.parameters = restructuredResults;
+  parameters[props.improvement.internalId] = restructuredResults;
 }
 const selectCategory = (category: string) => {
   activeCategory.value = category;
@@ -100,7 +110,7 @@ const roundNumber = (value: number, id: string) => {
 };
 const reset = () => {
   getParameters();
-  activeCategory.value = Object.keys(session.parameters)[0];
+  activeCategory.value = Object.keys(parameters[props.improvement.internalId])[0];
   loading.value = false;
 }
 </script>
@@ -142,9 +152,9 @@ const reset = () => {
               'hover:text-orange-700': activeCategory === categoryName,
               'hover:bg-orange-900': activeCategory !== categoryName,
               'rounded-tl-3xl': i === 0,
-              'rounded-bl-3xl': activeCategory === categoryName && i === Object.keys(session.parameters).length - 1,
+              'rounded-bl-3xl': activeCategory === categoryName && i === Object.keys(parameters[props.improvement.internalId]).length - 1,
             }"
-            v-for="(categoryName, i) in Object.keys(session.parameters)"
+            v-for="(categoryName, i) in Object.keys(parameters[props.improvement.internalId])"
             v-bind:key="`parameter-${i}`"
           >
             <div class="py-3 grow font-bold capitalize whitespace-nowrap">{{ categoryName.replace(/([A-Z])/g, ' $1') }}</div>
@@ -152,15 +162,15 @@ const reset = () => {
         </div>
         <div>
           <div>
-            <div class="bg-sky-600 text-sky-400 p-2 inline-block rounded-br-xl">
-              <span class="font-bold mr-2 text-sky-200">{{ improvement.program }}</span> &mdash;
-              <span class="font-bold mx-2 text-sky-100">{{ improvement.subsector }}</span> &mdash;
+            <div class="bg-sky-600 text-sky-500 p-2 inline-block rounded-br-xl">
+              <span class="font-bold mr-2 text-sky-400">{{ improvement.program }}</span> &mdash;
+              <span class="font-bold mx-2 text-sky-200">{{ improvement.subsector }}</span> &mdash;
               <span class="font-bold ml-2 mr-4 text-white">{{ improvement.name }}</span>
             </div>
           </div>
           <div class="grid grid-cols-2 px-5 py-2" v-if="activeCategory">
             <div
-              v-for="parameter in session.parameters[activeCategory]"
+              v-for="parameter in parameters[props.improvement.internalId][activeCategory]"
               v-bind:key="`parameter-${parameter.parameters.id_parameter}`"
               class="block rounded-xl bg-white border border-sky-600 m-5 max-w-[450px] self-start">
               <div class="bg-sky-600 rounded-t-xl text-sm text-white px-4 py-2 flex justify-between items-center">

@@ -12,6 +12,7 @@ export const defaultModalInject: ModalInjectInterface = {
 }
 export const defaultImprovement: ImprovementInterface = {
     id: 0,
+    internalId: 0,
     values: {},
 }
 export const defaultProgram: ProgramInterface = {
@@ -31,19 +32,23 @@ export const chartColours: Array<string> = [
 export const units: UnitInterface = {
   1: {
     name: "ktoe (tonne of oil equivalent)",
+    symbol: "ktoe",
     factor: 1
   },
   2: {
     name: "MJ (Megajoule)",
+    symbol: "MJ",
     factor: 41868000
 
   },
   3: {
     name: "GJ (Gigajoule)",
+    symbol: "GJ",
     factor: 41868
   },
   4: {
     name: "MWh (Energy quantity per hour)",
+    symbol: "MWh",
     factor: 11630
   },
 }

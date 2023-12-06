@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import {
   XCircleIcon,
   CheckIcon, ExclamationCircleIcon,
@@ -13,17 +13,23 @@ const session = useSessionStore();
 const activeCategory = ref<string>("");
 const activeSubsector = ref<number>(0);
 const loading = ref<boolean>(true);
+let globalParameters = reactive<GlobalParameters>(session.globalParameters);
+
+// Watchers
+watch(globalParameters, (globalParameters: GlobalParameters) => {
+  session.updateGlobalParameters(globalParameters);
+});
 
 // Variables
 const rangeIndex: {[key: string]: number} = {};
 
 // Lifecycle
 onMounted(async () => {
-  if (Object.keys(session.globalParameters).length == 0) {
+  if (Object.keys(globalParameters).length == 0) {
     await getAndStructureGlobalParameters();
   }
-  activeCategory.value = Object.keys(session.globalParameters)[0];
-  activeSubsector.value = Number(Object.keys(session.globalParameters[activeCategory.value])[0]);
+  activeCategory.value = Object.keys(globalParameters)[0];
+  activeSubsector.value = Number(Object.keys(globalParameters[activeCategory.value])[0]);
   loading.value = false;
 });
 
@@ -33,25 +39,24 @@ const getAndStructureGlobalParameters = async () => {
   const responseGlobalParameters: Response = await fetch(`${import.meta.env.VITE_API_URL}json_parameters?id_mode=${session.future ? 4 : 2}&id_region=${session.region}&orient=records`);
   const results = await responseGlobalParameters.json();
   // Re-structure parameters
-  const restructuredResults: GlobalParameters = {};
   const yearRegex = /^[0-9]+$/;
   for (const [category, dataSet] of Object.entries(results)) {
     if (category === 'Options') continue;
     // Add category key, if it doesn't exist yet
-    if (!restructuredResults[category]) restructuredResults[category] = {};
+    if (!globalParameters[category]) globalParameters[category] = {};
     for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
       // Add subsector key, if it doesn't exist yet
       let subsectorId = data['id_subsector'] ? data['id_subsector'] : 0;
       session.subsectorMapping[subsectorId] = data['Subsector'] ? data['Subsector'] : 'General';
-      if (!restructuredResults[category][subsectorId]) restructuredResults[category][subsectorId] = {};
+      if (!globalParameters[category][subsectorId]) globalParameters[category][subsectorId] = {};
 
       if (category === 'MonetisationFactors') {
         if (!data['Monetisation factor'] || typeof data['Value'] === 'undefined' || !data['index']) continue;
         session.monetisationFactorMapping[data['index']] = data['Monetisation factor'];
-        restructuredResults[category][subsectorId][data['index']] = [];
+        globalParameters[category][subsectorId][data['index']] = [];
         if (data['Value'] !== null) {
           // monetisation factors might have one value only
-          restructuredResults[category][subsectorId][data['index']].push({
+          globalParameters[category][subsectorId][data['index']].push({
             key: 0,
             value: data['Value'],
           });
@@ -64,14 +69,14 @@ const getAndStructureGlobalParameters = async () => {
           if (category === 'MonetisationFactors') {
             // monetisation factors are handled differently
             if (value === null || !data['index']) continue;
-            restructuredResults[category][subsectorId][data['index']].push({key: parseInt((key as string)), value: (value as number)});
+            globalParameters[category][subsectorId][data['index']].push({key: parseInt((key as string)), value: (value as number)});
           } else if (data['id_final_energy_carrier'] || data['id_primary_energy_carrier']) {
             // Add year key, if it doesn't exist yet
-            if (!restructuredResults[category][subsectorId][key]) restructuredResults[category][subsectorId][key] = [];
+            if (!globalParameters[category][subsectorId][key]) globalParameters[category][subsectorId][key] = [];
             // Map carrier data
             if (data['id_final_energy_carrier'] && data['Final energy carrier']) session.carrierMapping[data['id_final_energy_carrier']] = data['Final energy carrier'];
             if (data['id_primary_energy_carrier'] && data['Primary energy carrier']) session.carrierMapping[data['id_primary_energy_carrier']] = data['Primary energy carrier'];
-            restructuredResults[category][subsectorId][key].push({
+            globalParameters[category][subsectorId][key].push({
               key: data['id_final_energy_carrier'] ? data['id_final_energy_carrier'] : data['id_primary_energy_carrier'] ? data['id_primary_energy_carrier'] : 0,
               value: (value as number),
             });
@@ -80,11 +85,10 @@ const getAndStructureGlobalParameters = async () => {
       }
     }
   }
-  session.globalParameters = restructuredResults;
 }
 const selectCategory = (category: string) => {
   activeCategory.value = category;
-  activeSubsector.value = Number(Object.keys(session.globalParameters[activeCategory.value])[0]);
+  activeSubsector.value = Number(Object.keys(globalParameters[activeCategory.value])[0]);
 };
 const roundNumber = (value: number, id: string) => {
   // round to next one, hundred, thousand, million, billion, etc.
@@ -95,8 +99,8 @@ const roundNumber = (value: number, id: string) => {
 };
 const reset = () => {
   getAndStructureGlobalParameters();
-  activeCategory.value = Object.keys(session.globalParameters)[0];
-  activeSubsector.value = Number(Object.keys(session.globalParameters[activeCategory.value])[0]);
+  activeCategory.value = Object.keys(globalParameters)[0];
+  activeSubsector.value = Number(Object.keys(globalParameters[activeCategory.value])[0]);
   loading.value = false;
 }
 const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
@@ -142,16 +146,16 @@ const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
               'hover:text-orange-700': activeCategory === categoryName,
               'hover:bg-orange-900': activeCategory !== categoryName,
               'rounded-tl-3xl': i === 0,
-              'rounded-bl-3xl': activeCategory === categoryName && i === Object.keys(session.globalParameters).length - 1,
+              'rounded-bl-3xl': activeCategory === categoryName && i === Object.keys(globalParameters).length - 1,
             }"
-            v-for="(categoryName, i) in Object.keys(session.globalParameters)"
+            v-for="(categoryName, i) in Object.keys(globalParameters)"
             v-bind:key="`global-parameter-${i}`"
           >
             <div class="py-3 grow font-bold">{{ categoryName.replace(/([A-Z])/g, ' $1') }}</div>
           </div>
         </div>
         <div class="flex" v-if="activeCategory">
-          <div class="bg-orange-500 self-start" v-if="Object.keys(session.globalParameters[activeCategory]).length > 1">
+          <div class="bg-orange-500 self-start" v-if="Object.keys(globalParameters[activeCategory]).length > 1">
             <div
               class="flex items-center px-3 py-3 cursor-pointer text-sm"
               @click="activeSubsector = Number(subsector)"
@@ -162,7 +166,7 @@ const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
                 'hover:text-orange-600': activeSubsector === Number(subsector),
                 'hover:bg-orange-600': activeSubsector !== Number(subsector),
               }"
-              v-for="(subsector, i) in Object.keys(session.globalParameters[activeCategory])"
+              v-for="(subsector, i) in Object.keys(globalParameters[activeCategory])"
               v-bind:key="`global-parameters-subcategory-${i}`"
             >
               <span class="font-bold mr-8 grow whitespace-nowrap">{{ session.subsectorMapping[Number(subsector)] }}</span>
@@ -171,7 +175,7 @@ const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
           </div>
           <div class="px-5 py-3">
             <div
-              v-for="[yearOrFactor, entries] in Object.entries(session.globalParameters[activeCategory][activeSubsector])"
+              v-for="[yearOrFactor, entries] in Object.entries(globalParameters[activeCategory][activeSubsector])"
               v-bind:key="`global-parameters-years-${yearOrFactor}`"
               class="block rounded-xl bg-white border border-orange-600 m-5 max-w-[450px]">
               <div

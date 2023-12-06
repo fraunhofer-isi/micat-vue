@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import {defaultProgram, stages} from '@/defaults';
-import type {ProgramInterface, ISessionState, PayloadInterface} from "@/types";
+import type {ProgramInterface, ISessionState, PayloadInterface, Parameters, GlobalParameters} from "@/types";
 
 const currentYear = new Date().getFullYear();
 const nextValidYearPast = Math.floor( currentYear / 5) * 5;
@@ -30,11 +30,11 @@ export const useSessionStore = defineStore({
       payload: {"measures": [], "parameters": {}},
       resetted: false,
       results: {},
-      globalParameters: {},
+      globalParameters: JSON.parse(localStorage.getItem("globalParameters") || JSON.stringify({})),
       subsectorMapping: {},
       carrierMapping: {},
       monetisationFactorMapping: {},
-      parameters: {},
+      parameters: JSON.parse(localStorage.getItem("parameters") || JSON.stringify({})),
     }
   },
   actions: {
@@ -79,6 +79,14 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       this.payload = payload;
     },
+    updateParameters(parameters: Parameters, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("parameters", JSON.stringify(parameters));
+    },
+    updateGlobalParameters(globalParameters: GlobalParameters, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("globalParameters", JSON.stringify(globalParameters));
+    },
     reset() {
       this.resetted = true;
       this.updateStage(stages.home, false);
@@ -90,6 +98,8 @@ export const useSessionStore = defineStore({
       this.updateYears(getYears(false), false);
       this.updatePrograms([structuredClone(defaultProgram)], false);
       this.updatePayload({"measures": [], "parameters": {}}, false);
+      this.updateParameters({}, false);
+      this.updateGlobalParameters({}, false);
     },
   },
 });

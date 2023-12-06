@@ -15,10 +15,12 @@ export interface ModalInjectInterface {
 }
 
 export interface SelectedImprovementInterface {
+    internalId: number;
     name?: string;
-    id?: number;
     program?: string;
     subsector?: string;
+    subsectorId?: number;
+    data?: ImprovementInterface;
 }
 
 export interface ImprovementValueInterface {
@@ -26,6 +28,7 @@ export interface ImprovementValueInterface {
 }
 export interface ImprovementInterface {
     id: number;
+    internalId?: number;
     name?: string;
     label?: string;
     values: ImprovementValueInterface;
@@ -34,6 +37,7 @@ export interface ImprovementInterface {
 export interface UnitInterface {
     [key: number]: {
         name: string;
+        symbol: string;
         factor: number;
     }
 }
@@ -243,7 +247,9 @@ export interface ParameterEntry {
         [key: string]: string | number;
     };
 }
-export interface Parameters {
-    // Categories
+export interface ParameterCategory {
     [key: string]: Array<ParameterEntry>
+}
+export interface Parameters {
+    [key: number]: ParameterCategory
 }
