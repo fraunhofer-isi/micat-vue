@@ -31,6 +31,24 @@ import ParametersOverlay from "@/components/ParametersOverlay.vue";
 
 const session = useSessionStore();
 
+// Variables
+const improvementParameterMapping: { [key: number]: string } = {
+  14: "finalParameters",
+  15: "finalParameters",
+  16: "finalParameters",
+  17: "finalParameters",
+  18: "finalParameters",
+  29: "parameters",
+  31: "parameters",
+  32: "parameters",
+  34: "parameters",
+  35: "parameters",
+  36: "constants",
+  40: "parameters",
+  42: "parameters",
+  45: "parameters",
+};
+
 // Injections
 const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
 
@@ -185,7 +203,7 @@ const removeProgram = (i: number) => {
 const getInternalId = () => {
   let ids: Array<number> = [];
   programs.forEach(program => {
-    ids = ids.concat(program.improvements.filter(improvement => typeof improvement.internalId !== 'undefined').map(improvement => improvement.internalId));
+    ids = ids.concat(program.improvements.filter(improvement => typeof improvement.internalId !== 'undefined').map(improvement => improvement.internalId as number));
   });
   return ids.length > 0 ? Math.max(...ids) + 1 : 1;
 };
@@ -259,9 +277,9 @@ const getGlobalParametersPayload = () => {
   return results;
 }
 const showParameters = (elementId: string, data: ImprovementInterface, subsectorElementId: string, subsectorId: number, program: string) => {
-  const element = document.getElementById(elementId) as HTMLElement;
+  const element = document.getElementById(elementId) as HTMLSelectElement;
   const name = element.options[element.options.selectedIndex].text;
-  const subsectorElement = document.getElementById(subsectorElementId) as HTMLElement;
+  const subsectorElement = document.getElementById(subsectorElementId) as HTMLSelectElement;
   const subsector = subsectorElement.options[subsectorElement.options.selectedIndex].text;
   const internalId = data && data.internalId ? data.internalId : 0;
   selectedImprovement.value = {
@@ -286,448 +304,44 @@ const analyze = async () => {
     }
     program.improvements.forEach(improvement => {
       if (!improvement.id) errors += `<em>${program.name}</em> has invalid improvements.<br />`;
+      const parameters: Array<{ [key: string]: number }> = [];
+      const finalParameters: Array<{ [key: string]: number }> = [];
+      const constants: Array<{ [key: string]: number }> = [];
+      if (improvement.internalId) {
+        const improvementParameters = session.parameters[improvement.internalId];
+        if (improvementParameters) {
+          // parameters are only present if they have been edited
+          const keys: Array<string> = ["main", "fuelSwitch", "residential"];
+          keys.forEach(key => {
+            improvementParameters[key].forEach(parameter => {
+              const result: { [key: string]: number } = {"id_parameter": parameter.parameters.id_parameter as number};
+              if (!result["id_parameter"]) return;
+              parameter.years.forEach(yearData => result[yearData.key] = yearData.value);
+              if (improvementParameterMapping[result["id_parameter"]] === 'parameters') {
+                parameters.push(result);
+              } else if (improvementParameterMapping[result["id_parameter"]] === 'finalParameters') {
+                result["id_final_energy_carrier"] = parameter.parameters.id_final_energy_carrier as number;
+                finalParameters.push(result);
+              } else if (improvementParameterMapping[result["id_parameter"]] === 'constants') {
+                result["value"] = parameter.parameters.constants as number;
+                constants.push(result);
+              }
+            });
+          });
+        }
+      }
       const improvementData: PayloadMeasureInterface = {
         "id": i,
         "savings": {
           "details": {
-            "parameters": [
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 535622569.0456187,
-            //     "2025": 692018823.0563549,
-            //     "2030": 922691764.0751399,
-            //     "id_parameter": 40
-            //   },
-            //   {
-            //     "2000": 31,
-            //     "2010": 31,
-            //     "2015": 31,
-            //     "2020": 31,
-            //     "2025": 31,
-            //     "2030": 31,
-            //     "id_parameter": 35
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 0,
-            //     "2030": 0,
-            //     "id_parameter": 45
-            //   },
-            //   {
-            //     "2000": 20,
-            //     "2010": 20,
-            //     "2015": 20,
-            //     "2020": 20,
-            //     "2025": 20,
-            //     "2030": 20,
-            //     "id_parameter": 42
-            //   },
-            //   {
-            //     "2000": 23754205.51982583,
-            //     "2010": 23924812.46237311,
-            //     "2015": 23968007.16277976,
-            //     "2020": 24011201.8631864,
-            //     "2025": 24062569.76836053,
-            //     "2030": 24113937.67353465,
-            //     "id_parameter": 32
-            //   },
-            //   {
-            //     "2000": 2.79101928590836,
-            //     "2010": 2.795743031883219,
-            //     "2015": 2.7937031776348,
-            //     "2020": 2.79166332338638,
-            //     "2025": 2.790559240638709,
-            //     "2030": 2.789455157891037,
-            //     "id_parameter": 31
-            //   },
-            //   {
-            //     "2000": 3786.298909558472,
-            //     "2010": 3835.057541165328,
-            //     "2015": 3857.204751368041,
-            //     "2020": 3879.351961570755,
-            //     "2025": 3899.888507180995,
-            //     "2030": 3920.425052791236,
-            //     "id_parameter": 29
-            //   },
-            //   {
-            //     "2000": 8,
-            //     "2010": 8,
-            //     "2015": 8,
-            //     "2020": 8,
-            //     "2025": 8,
-            //     "2030": 8,
-            //     "id_parameter": 34
-            //   }
-            // ],
-            // "finalParameters": [
-            //   {
-            //     "2000": 1,
-            //     "2010": 1,
-            //     "2015": 1,
-            //     "2020": 1,
-            //     "2025": 1,
-            //     "2030": 1,
-            //     "id_parameter": 16,
-            //     "id_final_energy_carrier": 1
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 0,
-            //     "2030": 0,
-            //     "id_parameter": 16,
-            //     "id_final_energy_carrier": 2
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 0,
-            //     "2030": 0,
-            //     "id_parameter": 16,
-            //     "id_final_energy_carrier": 3
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 0,
-            //     "2030": 0,
-            //     "id_parameter": 16,
-            //     "id_final_energy_carrier": 4
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 0,
-            //     "2030": 0,
-            //     "id_parameter": 16,
-            //     "id_final_energy_carrier": 5
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 0,
-            //     "2030": 0,
-            //     "id_parameter": 16,
-            //     "id_final_energy_carrier": 6
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 0,
-            //     "2030": 0,
-            //     "id_parameter": 16,
-            //     "id_final_energy_carrier": 7
-            //   },
-            //   {
-            //     "2000": 10001,
-            //     "2010": 10000,
-            //     "2015": 10000,
-            //     "2020": 10000,
-            //     "2025": 10000,
-            //     "2030": 10000,
-            //     "id_parameter": 17,
-            //     "id_final_energy_carrier": 1
-            //   },
-            //   {
-            //     "2000": 30000,
-            //     "2010": 30000,
-            //     "2015": 30000,
-            //     "2020": 30000,
-            //     "2025": 30000,
-            //     "2030": 30000,
-            //     "id_parameter": 17,
-            //     "id_final_energy_carrier": 2
-            //   },
-            //   {
-            //     "2000": 7000,
-            //     "2010": 7000,
-            //     "2015": 7000,
-            //     "2020": 7000,
-            //     "2025": 7000,
-            //     "2030": 7000,
-            //     "id_parameter": 17,
-            //     "id_final_energy_carrier": 3
-            //   },
-            //   {
-            //     "2000": 50000,
-            //     "2010": 50000,
-            //     "2015": 50000,
-            //     "2020": 50000,
-            //     "2025": 50000,
-            //     "2030": 50000,
-            //     "id_parameter": 17,
-            //     "id_final_energy_carrier": 4
-            //   },
-            //   {
-            //     "2000": 30000,
-            //     "2010": 30000,
-            //     "2015": 30000,
-            //     "2020": 30000,
-            //     "2025": 30000,
-            //     "2030": 30000,
-            //     "id_parameter": 17,
-            //     "id_final_energy_carrier": 5
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 0,
-            //     "2030": 0,
-            //     "id_parameter": 17,
-            //     "id_final_energy_carrier": 6
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 0,
-            //     "2030": 0,
-            //     "id_parameter": 17,
-            //     "id_final_energy_carrier": 7
-            //   },
-            //   {
-            //     "2000": 60,
-            //     "2010": 60,
-            //     "2015": 60,
-            //     "2020": 60,
-            //     "2025": 60,
-            //     "2030": 60,
-            //     "id_parameter": 18,
-            //     "id_final_energy_carrier": 1
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 0,
-            //     "2030": 0,
-            //     "id_parameter": 18,
-            //     "id_final_energy_carrier": 2
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 0,
-            //     "2030": 0,
-            //     "id_parameter": 18,
-            //     "id_final_energy_carrier": 3
-            //   },
-            //   {
-            //     "2000": 10,
-            //     "2010": 10,
-            //     "2015": 10,
-            //     "2020": 10,
-            //     "2025": 5,
-            //     "2030": 5,
-            //     "id_parameter": 18,
-            //     "id_final_energy_carrier": 4
-            //   },
-            //   {
-            //     "2000": 10,
-            //     "2010": 10,
-            //     "2015": 10,
-            //     "2020": 10,
-            //     "2025": 10,
-            //     "2030": 5,
-            //     "id_parameter": 18,
-            //     "id_final_energy_carrier": 5
-            //   },
-            //   {
-            //     "2000": 20,
-            //     "2010": 20,
-            //     "2015": 20,
-            //     "2020": 20,
-            //     "2025": 20,
-            //     "2030": 25,
-            //     "id_parameter": 18,
-            //     "id_final_energy_carrier": 6
-            //   },
-            //   {
-            //     "2000": 0,
-            //     "2010": 0,
-            //     "2015": 0,
-            //     "2020": 0,
-            //     "2025": 5,
-            //     "2030": 5,
-            //     "id_parameter": 18,
-            //     "id_final_energy_carrier": 7
-            //   },
-            //   {
-            //     "2000": 1,
-            //     "2010": 1,
-            //     "2015": 1,
-            //     "2020": 1,
-            //     "2025": 1,
-            //     "2030": 1,
-            //     "id_parameter": 14,
-            //     "id_final_energy_carrier": 1
-            //   },
-            //   {
-            //     "2000": 0.7360000000000001,
-            //     "2010": 0.7360000000000001,
-            //     "2015": 0.7360000000000001,
-            //     "2020": 0.7360000000000001,
-            //     "2025": 0.7360000000000001,
-            //     "2030": 0.7440000000000001,
-            //     "id_parameter": 14,
-            //     "id_final_energy_carrier": 2
-            //   },
-            //   {
-            //     "2000": 0.4,
-            //     "2010": 0.4,
-            //     "2015": 0.4,
-            //     "2020": 0.4,
-            //     "2025": 0.48,
-            //     "2030": 0.544,
-            //     "id_parameter": 14,
-            //     "id_final_energy_carrier": 3
-            //   },
-            //   {
-            //     "2000": 0.792,
-            //     "2010": 0.792,
-            //     "2015": 0.792,
-            //     "2020": 0.792,
-            //     "2025": 0.792,
-            //     "2030": 0.8,
-            //     "id_parameter": 14,
-            //     "id_final_energy_carrier": 4
-            //   },
-            //   {
-            //     "2000": 0.668,
-            //     "2010": 0.668,
-            //     "2015": 0.668,
-            //     "2020": 0.668,
-            //     "2025": 0.684,
-            //     "2030": 0.7040000000000001,
-            //     "id_parameter": 14,
-            //     "id_final_energy_carrier": 5
-            //   },
-            //   {
-            //     "2000": 0.792,
-            //     "2010": 0.792,
-            //     "2015": 0.792,
-            //     "2020": 0.792,
-            //     "2025": 0.792,
-            //     "2030": 0.794,
-            //     "id_parameter": 14,
-            //     "id_final_energy_carrier": 6
-            //   },
-            //   {
-            //     "2000": 0.792,
-            //     "2010": 0.792,
-            //     "2015": 0.792,
-            //     "2020": 0.792,
-            //     "2025": 0.792,
-            //     "2030": 0.8,
-            //     "id_parameter": 14,
-            //     "id_final_energy_carrier": 7
-            //   },
-            //   {
-            //     "2000": 3.025,
-            //     "2010": 3.025,
-            //     "2015": 3.025,
-            //     "2020": 3.025,
-            //     "2025": 3.175,
-            //     "2030": 3.325,
-            //     "id_parameter": 15,
-            //     "id_final_energy_carrier": 1
-            //   },
-            //   {
-            //     "2000": 0.92,
-            //     "2010": 0.92,
-            //     "2015": 0.92,
-            //     "2020": 0.92,
-            //     "2025": 0.92,
-            //     "2030": 0.93,
-            //     "id_parameter": 15,
-            //     "id_final_energy_carrier": 2
-            //   },
-            //   {
-            //     "2000": 0.5,
-            //     "2010": 0.5,
-            //     "2015": 0.5,
-            //     "2020": 0.5,
-            //     "2025": 0.6,
-            //     "2030": 0.68,
-            //     "id_parameter": 15,
-            //     "id_final_energy_carrier": 3
-            //   },
-            //   {
-            //     "2000": 0.99,
-            //     "2010": 0.99,
-            //     "2015": 0.99,
-            //     "2020": 0.99,
-            //     "2025": 0.99,
-            //     "2030": 1,
-            //     "id_parameter": 15,
-            //     "id_final_energy_carrier": 4
-            //   },
-            //   {
-            //     "2000": 0.835,
-            //     "2010": 0.835,
-            //     "2015": 0.835,
-            //     "2020": 0.835,
-            //     "2025": 0.855,
-            //     "2030": 0.88,
-            //     "id_parameter": 15,
-            //     "id_final_energy_carrier": 5
-            //   },
-            //   {
-            //     "2000": 0.99,
-            //     "2010": 0.99,
-            //     "2015": 0.99,
-            //     "2020": 0.99,
-            //     "2025": 0.99,
-            //     "2030": 0.9924999999999999,
-            //     "id_parameter": 15,
-            //     "id_final_energy_carrier": 6
-            //   },
-            //   {
-            //     "2000": 0.99,
-            //     "2010": 0.99,
-            //     "2015": 0.99,
-            //     "2020": 0.99,
-            //     "2025": 0.99,
-            //     "2030": 1,
-            //     "id_parameter": 15,
-            //     "id_final_energy_carrier": 7
-            //   }
-            // ],
-            // "constants": [
-            //   {
-            //     "id_parameter": 36,
-            //     "value": 8
-            //   }
-            ]
+            "parameters": parameters,
+            "finalParameters": finalParameters,
+            "constants": constants,
           },
           "id_measure": i,
           "id_subsector": program.subsector,
           "id_action_type": improvement.id,
         },
-        "parameters": {}
       };
 
       session.years.forEach(year => {
@@ -1155,7 +769,7 @@ const analyze = async () => {
           </button>
         </div>
         <div
-          class="text-center sticky"
+          class="text-center sticky bottom-0"
         >
           <div class="mx-2 p-4" style="backdrop-filter: blur(2px);">
             <button

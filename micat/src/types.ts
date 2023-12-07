@@ -81,7 +81,6 @@ export interface PayloadSavingsInterface {
 export interface PayloadMeasureInterface {
     id: number;
     savings: PayloadSavingsInterface;
-    parameters: PayloadParameterInterface;
 }
 export interface PayloadInterface {
     measures: Array<PayloadMeasureInterface>;

@@ -26,7 +26,6 @@ const parameters = reactive<Parameters>(session.parameters);
 // Watchers
 watch(parameters, (parameters) => {
   session.updateParameters(parameters);
-  console.log('foo')
 });
 
 // Variables
@@ -185,8 +184,8 @@ const reset = () => {
                       type="range"
                       class="w-full h-1 bg-sky-200 rounded-lg appearance-none cursor-pointer"
                       min="0"
-                      :max="roundNumber(parameter.parameters.constants, `parameter-${parameter.parameters.id_parameter}-constant-range`)"
-                      :step="roundNumber(parameter.parameters.constants, `parameter-${parameter.parameters.id_parameter}-constant-range`) / 100"
+                      :max="roundNumber(parameter.parameters.constants as number, `parameter-${parameter.parameters.id_parameter}-constant-range`)"
+                      :step="roundNumber(parameter.parameters.constants as number, `parameter-${parameter.parameters.id_parameter}-constant-range`) / 100"
                       v-model.number="parameter.parameters.constants"
                     />
                   </div>
