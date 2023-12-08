@@ -31,9 +31,9 @@ export const useSessionStore = defineStore({
       resetted: false,
       results: {},
       globalParameters: JSON.parse(localStorage.getItem("globalParameters") || JSON.stringify({})),
-      subsectorMapping: {},
-      carrierMapping: {},
-      monetisationFactorMapping: {},
+      subsectorMapping: JSON.parse(localStorage.getItem("subsectorMapping") || JSON.stringify({})),
+      carrierMapping: JSON.parse(localStorage.getItem("carrierMapping") || JSON.stringify({})),
+      monetisationFactorMapping: JSON.parse(localStorage.getItem("monetisationFactorMapping") || JSON.stringify({})),
       parameters: JSON.parse(localStorage.getItem("parameters") || JSON.stringify({})),
     }
   },
@@ -87,6 +87,18 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       localStorage.setItem("globalParameters", JSON.stringify(globalParameters));
     },
+    updateSubsectorMapping(subsectorMapping: {[key: number]: string}, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("subsectorMapping", JSON.stringify(subsectorMapping));
+    },
+    updateCarrierMapping(carrierMapping: {[key: number]: string}, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("carrierMapping", JSON.stringify(carrierMapping));
+    },
+    updateMonetisationFactorMapping(monetisationFactorMapping: {[key: number]: string}, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("monetisationFactorMapping", JSON.stringify(monetisationFactorMapping));
+    },
     reset() {
       this.resetted = true;
       this.updateStage(stages.home, false);
@@ -100,6 +112,9 @@ export const useSessionStore = defineStore({
       this.updatePayload({"measures": [], "parameters": {}}, false);
       this.updateParameters({}, false);
       this.updateGlobalParameters({}, false);
+      this.updateSubsectorMapping({}, false);
+      this.updateCarrierMapping({}, false);
+      this.updateMonetisationFactorMapping({}, false);
     },
   },
 });

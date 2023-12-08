@@ -28,6 +28,7 @@ import { defaultImprovement, defaultModalInject, defaultProgram, stages, units }
 import { useSessionStore } from "@/stores/session";
 import GlobalParametersOverlay from "@/components/GlobalParametersOverlay.vue";
 import ParametersOverlay from "@/components/ParametersOverlay.vue";
+import {GlobalParameters} from "@/types";
 
 const session = useSessionStore();
 
@@ -115,9 +116,14 @@ watch(() => session.unit, (unit) => {
 watch(() => session.inhabitants, (inhabitants) => {
   session.updateInhabitants(inhabitants);
 });
+watch(stage, (stage: number) => {
+  session.updateStage(stage);
+});
 
 // Lifecycle
 onMounted(async () => {
+  // When travelling back from results, we need to re-assign the stage
+  stage.value = parseInt(localStorage.getItem("stage") || stages.home.toString());
   // id_region
   const responseRegion: Response = await fetch(`${import.meta.env.VITE_API_URL}id_region`);
   const dataRegion: { rows: Array<[id: number, name: string]> } = await responseRegion.json();
@@ -502,7 +508,7 @@ const analyze = async () => {
         </div>
         <button
           class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full uppercase"
-          @click="stage = stages.full; session.updateStage(stage); years = session.resetYears(session.future);"
+          @click="stage = stages.full; years = session.resetYears(session.future);"
           v-if="stage === stages.home"
         >
           Start

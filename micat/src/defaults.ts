@@ -31,23 +31,23 @@ export const chartColours: Array<string> = [
 ];
 export const units: UnitInterface = {
   1: {
-    name: "ktoe (tonne of oil equivalent)",
+    name: "ktoe (kilo tonne of oil equivalent)",
     symbol: "ktoe",
     factor: 1
   },
   2: {
-    name: "MJ (Megajoule)",
+    name: "MJ",
     symbol: "MJ",
     factor: 41868000
 
   },
   3: {
-    name: "GJ (Gigajoule)",
+    name: "GJ",
     symbol: "GJ",
     factor: 41868
   },
   4: {
-    name: "MWh (Energy quantity per hour)",
+    name: "MWh",
     symbol: "MWh",
     factor: 11630
   },

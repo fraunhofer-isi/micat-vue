@@ -14,10 +14,22 @@ const activeCategory = ref<string>("");
 const activeSubsector = ref<number>(0);
 const loading = ref<boolean>(true);
 let globalParameters = reactive<GlobalParameters>(session.globalParameters);
+let subsectorMapping = reactive<{[key: number]: string}>(session.subsectorMapping);
+let carrierMapping = reactive<{[key: number]: string}>(session.carrierMapping);
+let monetisationFactorMapping = reactive<{[key: number]: string}>(session.monetisationFactorMapping);
 
 // Watchers
 watch(globalParameters, (globalParameters: GlobalParameters) => {
   session.updateGlobalParameters(globalParameters);
+});
+watch(subsectorMapping, (subsectorMapping: {[key: number]: string}) => {
+  session.updateSubsectorMapping(subsectorMapping);
+});
+watch(carrierMapping, (carrierMapping: {[key: number]: string}) => {
+  session.updateCarrierMapping(carrierMapping);
+});
+watch(monetisationFactorMapping, (monetisationFactorMapping: {[key: number]: string}) => {
+  session.updateMonetisationFactorMapping(monetisationFactorMapping);
 });
 
 // Variables
@@ -47,12 +59,12 @@ const getAndStructureGlobalParameters = async () => {
     for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
       // Add subsector key, if it doesn't exist yet
       let subsectorId = data['id_subsector'] ? data['id_subsector'] : 0;
-      session.subsectorMapping[subsectorId] = data['Subsector'] ? data['Subsector'] : 'General';
+      subsectorMapping[subsectorId] = data['Subsector'] ? data['Subsector'] : 'General';
       if (!globalParameters[category][subsectorId]) globalParameters[category][subsectorId] = {};
 
       if (category === 'MonetisationFactors') {
         if (!data['Monetisation factor'] || typeof data['Value'] === 'undefined' || !data['index']) continue;
-        session.monetisationFactorMapping[data['index']] = data['Monetisation factor'];
+        monetisationFactorMapping[data['index']] = data['Monetisation factor'];
         globalParameters[category][subsectorId][data['index']] = [];
         if (data['Value'] !== null) {
           // monetisation factors might have one value only
@@ -74,8 +86,8 @@ const getAndStructureGlobalParameters = async () => {
             // Add year key, if it doesn't exist yet
             if (!globalParameters[category][subsectorId][key]) globalParameters[category][subsectorId][key] = [];
             // Map carrier data
-            if (data['id_final_energy_carrier'] && data['Final energy carrier']) session.carrierMapping[data['id_final_energy_carrier']] = data['Final energy carrier'];
-            if (data['id_primary_energy_carrier'] && data['Primary energy carrier']) session.carrierMapping[data['id_primary_energy_carrier']] = data['Primary energy carrier'];
+            if (data['id_final_energy_carrier'] && data['Final energy carrier']) carrierMapping[data['id_final_energy_carrier']] = data['Final energy carrier'];
+            if (data['id_primary_energy_carrier'] && data['Primary energy carrier']) carrierMapping[data['id_primary_energy_carrier']] = data['Primary energy carrier'];
             globalParameters[category][subsectorId][key].push({
               key: data['id_final_energy_carrier'] ? data['id_final_energy_carrier'] : data['id_primary_energy_carrier'] ? data['id_primary_energy_carrier'] : 0,
               value: (value as number),
@@ -169,7 +181,7 @@ const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
               v-for="(subsector, i) in Object.keys(globalParameters[activeCategory])"
               v-bind:key="`global-parameters-subcategory-${i}`"
             >
-              <span class="font-bold mr-8 grow whitespace-nowrap">{{ session.subsectorMapping[Number(subsector)] }}</span>
+              <span class="font-bold mr-8 grow whitespace-nowrap">{{ subsectorMapping[Number(subsector)] }}</span>
               <CheckIcon v-if="activeSubsector === Number(subsector)" class="h-5 w-5"></CheckIcon>
             </div>
           </div>
@@ -180,7 +192,7 @@ const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
               class="block rounded-xl bg-white border border-orange-600 m-5 max-w-[450px]">
               <div
                 class="bg-orange-600 rounded-t-xl text-white px-4 py-2">
-                {{ activeCategory === 'MonetisationFactors' ? session.monetisationFactorMapping[Number(yearOrFactor)] : yearOrFactor }}
+                {{ activeCategory === 'MonetisationFactors' ? monetisationFactorMapping[Number(yearOrFactor)] : yearOrFactor }}
               </div>
               <div class="p-4">
                 <div
@@ -192,7 +204,7 @@ const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
                     'grid-cols-2': entries.length == 1,
                   }"
                 >
-                  <div class="text-orange-600 font-bold text-xs" v-if="entries.length > 1">{{ activeCategory === 'MonetisationFactors' ? entry.key : session.carrierMapping[entry.key] }}</div>
+                  <div class="text-orange-600 font-bold text-xs" v-if="entries.length > 1">{{ activeCategory === 'MonetisationFactors' ? entry.key : carrierMapping[entry.key] }}</div>
                   <div>
                     <input
                       :id="`global-parameters-years-${yearOrFactor}-${i}-range`"
