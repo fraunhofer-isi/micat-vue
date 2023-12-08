@@ -28,7 +28,6 @@ import { defaultImprovement, defaultModalInject, defaultProgram, stages, units }
 import { useSessionStore } from "@/stores/session";
 import GlobalParametersOverlay from "@/components/GlobalParametersOverlay.vue";
 import ParametersOverlay from "@/components/ParametersOverlay.vue";
-import {GlobalParameters} from "@/types";
 
 const session = useSessionStore();
 

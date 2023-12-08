@@ -83,6 +83,7 @@ const getParameters = async () => {
     // Add category key, if it doesn't exist yet
     if (!restructuredResults[category]) restructuredResults[category] = [];
     for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
+      if (data.id_parameter === null) continue;
       const entry: ParameterEntry = {years: [], parameters: {}};
       for (const [key, v] of Object.entries((data as {[key: string]: number | string}))) {
         const value: number = (v as number);
