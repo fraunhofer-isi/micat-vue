@@ -109,8 +109,9 @@ watch(() => session.municipality, (municipality) => {
 watch(() => session.inhabitants, (inhabitants) => {
   session.updateInhabitants(inhabitants);
 });
-watch(() => session.unit, (unit) => {
+watch(() => session.unit, (unit, oldUnit) => {
  session.updateUnit(unit);
+ convertValues(unit, oldUnit);
 });
 watch(() => session.inhabitants, (inhabitants) => {
   session.updateInhabitants(inhabitants);
@@ -173,6 +174,25 @@ onMounted(async () => {
 })
 
 // Functions
+const convertValues = (unitId: number, oldUnitId: number) => {
+  // Functions to convert all given energy savings in case of unit changes
+  const unit = units[unitId];
+  const oldUnit = units[oldUnitId];
+  programs.forEach(program => {
+    program.improvements.forEach(improvement => {
+      Object.keys(improvement.values).forEach(key => {
+        if (oldUnit.symbol === 'ktoe') {
+          improvement.values[key] *= unit.factor;
+        } else {
+          // convert back to ktoe
+          improvement.values[key] /= oldUnit.factor;
+          if (unit.symbol !== 'ktoe') improvement.values[key] *= unit.factor;
+        }
+      });
+    });
+  });
+  session.updatePrograms(programs);
+};
 const addYear = () => {
   years.value.push(newYearSelected.value);
   years.value.sort();
@@ -233,7 +253,6 @@ const getSubsectorImprovements = (subsectorId: number) => {
 }
 const getGlobalParametersPayload = () => {
   const results: PayloadParameterInterface = {};
-  // const unitFactor = units[session.unit].factor;
   for (const [category, subsectors] of Object.entries(session.globalParameters)) {
     results[category] = [];
     for (const [subsector, factors] of Object.entries(subsectors)) {
@@ -351,8 +370,7 @@ const analyze = async () => {
 
       session.years.forEach(year => {
         const value = improvement.values[year.toString()];
-        const factor = units[session.unit].factor;
-        improvementData.savings[year.toString()] = value ? value * 1 / factor : 0;
+        improvementData.savings[year.toString()] = value ? value : 0;
       });
       payload.measures.push(improvementData);
       i++;

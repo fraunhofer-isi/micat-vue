@@ -1,4 +1,4 @@
-import type {ImprovementInterface, ModalInjectInterface, ProgramInterface, UnitInterface} from "@/types";
+import type {ImprovementInterface, ModalInjectInterface, ProgramInterface, UnitsInterface} from "@/types";
 
 
 export const stages = Object.freeze({ home: 1, full: 2 });
@@ -29,7 +29,7 @@ export const chartColours: Array<string> = [
   "rgb(31,149,178)",
   "rgb(255,242,92)",
 ];
-export const units: UnitInterface = {
+export const units: UnitsInterface = {
   1: {
     name: "ktoe (kilo tonne of oil equivalent)",
     symbol: "ktoe",

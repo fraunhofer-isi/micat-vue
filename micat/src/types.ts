@@ -35,11 +35,12 @@ export interface ImprovementInterface {
 }
 
 export interface UnitInterface {
-    [key: number]: {
-        name: string;
-        symbol: string;
-        factor: number;
-    }
+    name: string;
+    symbol: string;
+    factor: number;
+}
+export interface UnitsInterface {
+    [key: number]: UnitInterface
 }
 
 export interface ProgramInterface {
