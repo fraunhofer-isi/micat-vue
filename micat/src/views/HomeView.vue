@@ -46,6 +46,7 @@ const improvementParameterMapping: { [key: number]: string } = {
   36: "constants",
   40: "parameters",
   42: "parameters",
+  43: "parameters",
   45: "parameters",
 };
 
@@ -122,6 +123,7 @@ watch(stage, (stage: number) => {
 
 // Lifecycle
 onMounted(async () => {
+  console.log(session.useRenovationRate);
   // When travelling back from results, we need to re-assign the stage
   stage.value = parseInt(localStorage.getItem("stage") || stages.home.toString());
   // id_region
@@ -328,6 +330,8 @@ const analyze = async () => {
     }
     program.improvements.forEach(improvement => {
       if (!improvement.id) errors += `<em>${program.name}</em> has invalid improvements.<br />`;
+
+      // Prepare parameters
       const parameters: Array<{ [key: string]: number }> = [];
       const finalParameters: Array<{ [key: string]: number }> = [];
       const constants: Array<{ [key: string]: number }> = [];
@@ -339,7 +343,8 @@ const analyze = async () => {
           keys.forEach(key => {
             improvementParameters[key].forEach(parameter => {
               const result: { [key: string]: number } = {"id_parameter": parameter.parameters.id_parameter as number};
-              if (!result["id_parameter"]) return;
+              // Filter out residential parameters, depending on the usage of the annual renovation rate
+              if (parameter.parameters.id_parameter === 45 && session.useRenovationRate || [32, 43].indexOf(parameter.parameters.id_parameter as number) > -1 && !session.useRenovationRate) return;
               parameter.years.forEach(yearData => result[yearData.key] = yearData.value);
               if (improvementParameterMapping[result["id_parameter"]] === 'parameters') {
                 parameters.push(result);
@@ -367,6 +372,7 @@ const analyze = async () => {
           "id_action_type": improvement.id,
         },
       };
+      console.log(improvementData)
 
       session.years.forEach(year => {
         const value = improvement.values[year.toString()];

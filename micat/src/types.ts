@@ -140,6 +140,7 @@ export interface ISessionState {
   carrierMapping: {[key: number]: string};
   monetisationFactorMapping: {[key: number]: string};
   parameters: Parameters;
+  useRenovationRate: boolean;
 }
 export interface ISessionStateFunctions {
     updateStage: (stage: number) => void;

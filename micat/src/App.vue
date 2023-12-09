@@ -74,6 +74,11 @@ const helpTexts: HelpTextInterface = {
     'text': 'tba',
     'type': 'help'
   },
+  'renovation': {
+    'title': 'Annual renovation rate',
+    'text': 'tba',
+    'type': 'help'
+  },
 };
 
 const showModal = ref<Boolean>(false);

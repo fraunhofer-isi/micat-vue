@@ -35,6 +35,7 @@ export const useSessionStore = defineStore({
       carrierMapping: JSON.parse(localStorage.getItem("carrierMapping") || JSON.stringify({})),
       monetisationFactorMapping: JSON.parse(localStorage.getItem("monetisationFactorMapping") || JSON.stringify({})),
       parameters: JSON.parse(localStorage.getItem("parameters") || JSON.stringify({})),
+      useRenovationRate: String(localStorage.getItem("useRenovationRate") || "false").toLowerCase() === "true",
     }
   },
   actions: {
@@ -99,6 +100,10 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       localStorage.setItem("monetisationFactorMapping", JSON.stringify(monetisationFactorMapping));
     },
+    updateUseRenovationRate(useRenovationRate: boolean, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("useRenovationRate", useRenovationRate.toString());
+    },
     reset() {
       this.resetted = true;
       this.updateStage(stages.home, false);
@@ -115,6 +120,7 @@ export const useSessionStore = defineStore({
       this.updateSubsectorMapping({}, false);
       this.updateCarrierMapping({}, false);
       this.updateMonetisationFactorMapping({}, false);
+      this.updateUseRenovationRate(false, false);
     },
   },
 });

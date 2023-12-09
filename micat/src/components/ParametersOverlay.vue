@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import {onMounted, reactive, ref, watch} from "vue";
-import { XCircleIcon } from '@heroicons/vue/24/outline';
+import {onMounted, reactive, ref, watch, inject} from "vue";
+import {XCircleIcon, ArrowsRightLeftIcon, InformationCircleIcon} from '@heroicons/vue/24/outline';
 import {useSessionStore} from "@/stores/session";
 import type {
   ParameterCategory,
   ParameterEntry,
   Parameters,
   PayloadParameterEntryInterface,
-  SelectedImprovementInterface
+  SelectedImprovementInterface,
+  ModalInjectInterface,
 } from "@/types";
-import {units} from "@/defaults";
+import {units, defaultModalInject} from "@/defaults";
 
 
 const props = defineProps<{
@@ -18,14 +19,22 @@ const props = defineProps<{
 
 const session = useSessionStore();
 
+// Injections
+const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
+
 // Refs
 const activeCategory = ref<string>("");
 const loading = ref<boolean>(true);
+const useRenovationRate = ref<boolean>(session.useRenovationRate);
 const parameters = reactive<Parameters>(session.parameters);
 
 // Watchers
 watch(parameters, (parameters) => {
   session.updateParameters(parameters);
+});
+watch(useRenovationRate, (useRenovationRate) => {
+  session.useRenovationRate = useRenovationRate;
+  session.updateUseRenovationRate(useRenovationRate);
 });
 
 // Variables
@@ -88,7 +97,9 @@ const getParameters = async () => {
       for (const [key, v] of Object.entries((data as {[key: string]: number | string}))) {
         const value: number = (v as number);
         if (yearRegex.test(key)) {
-          if (value !== null) entry.years.push({key, value});
+          // If there's a value for a year, we always take it; alternative values might have null values, but they don't
+          // have constants defined, so we also set them
+          if (value !== null || typeof data.constants === 'undefined') entry.years.push({key, value});
         } else {
           entry.parameters[key] = value;
         }
@@ -171,8 +182,12 @@ const reset = () => {
           <div class="grid grid-cols-2 px-5 py-2" v-if="activeCategory">
             <div
               v-for="parameter in parameters[props.improvement.internalId][activeCategory]"
-              v-bind:key="`parameter-${parameter.parameters.id_parameter}`"
-              class="block rounded-xl bg-white border border-sky-600 m-5 max-w-[450px] self-start">
+              v-bind:key="`parameter-${parameter.parameters.id_parameter}-${parameter.parameters.id_final_energy_carrier ? parameter.parameters.id_final_energy_carrier : 'na'}`"
+              class="block rounded-xl bg-white border border-sky-600 m-5 max-w-[450px] self-start"
+              :class="{
+                'hidden': parameter.parameters.id_parameter === 45 && useRenovationRate || [32, 43].indexOf(parameter.parameters.id_parameter as number) > -1 && !useRenovationRate,
+              }"
+            >
               <div class="bg-sky-600 rounded-t-xl text-sm text-white px-4 py-2 flex justify-between items-center">
                 <span>{{ parameter.parameters.label }}</span>
                 <span class="bg-white rounded-xl text-sky-600 px-2 py-1 ml-2">{{ parameter.parameters.unit }}</span>
@@ -226,6 +241,21 @@ const reset = () => {
                     >
                   </div>
                 </div>
+              </div>
+              <div
+                v-if="[43, 45].indexOf(parameter.parameters.id_parameter as number) > -1"
+                class="bg-sky-100 rounded-b-xl text-center text-sm text-sky-500 p-2"
+              >
+                <button @click="useRenovationRate = !(useRenovationRate ?? false)">
+                  <ArrowsRightLeftIcon
+                    class="h-4 w-4 mt-[-3px] inline mr-1"
+                  ></ArrowsRightLeftIcon>
+                  Switch to <span class="font-bold italic">{{ useRenovationRate ? "affected dwellings" : "annual renovation rate" }}</span>
+                  <InformationCircleIcon
+                    @click="openModal('renovation')"
+                    class="h-5 w-5 ml-1 cursor-pointer inline mt-[-3px]"
+                  ></InformationCircleIcon>
+                </button>
               </div>
             </div>
           </div>
