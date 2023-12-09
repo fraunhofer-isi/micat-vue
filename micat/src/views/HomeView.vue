@@ -123,7 +123,6 @@ watch(stage, (stage: number) => {
 
 // Lifecycle
 onMounted(async () => {
-  console.log(session.useRenovationRate);
   // When travelling back from results, we need to re-assign the stage
   stage.value = parseInt(localStorage.getItem("stage") || stages.home.toString());
   // id_region
@@ -372,11 +371,11 @@ const analyze = async () => {
           "id_action_type": improvement.id,
         },
       };
-      console.log(improvementData)
 
       session.years.forEach(year => {
         const value = improvement.values[year.toString()];
-        improvementData.savings[year.toString()] = value ? value : 0;
+        const factor = units[session.unit].factor
+        improvementData.savings[year.toString()] = value ? value * 1 / factor : 0;
       });
       payload.measures.push(improvementData);
       i++;
