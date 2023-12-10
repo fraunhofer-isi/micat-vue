@@ -46,7 +46,7 @@ onMounted(async () => {
 });
 
 // Functions
-const getAndStructureGlobalParameters = async () => {
+const getAndStructureGlobalParameters = async (reset: boolean = false) => {
   loading.value = true;
   const responseGlobalParameters: Response = await fetch(`${import.meta.env.VITE_API_URL}json_parameters?id_mode=${session.future ? 4 : 2}&id_region=${session.region}&orient=records`);
   const results = await responseGlobalParameters.json();
@@ -55,7 +55,7 @@ const getAndStructureGlobalParameters = async () => {
   for (const [category, dataSet] of Object.entries(results)) {
     if (category === 'Options') continue;
     // Add category key, if it doesn't exist yet
-    if (!globalParameters[category]) globalParameters[category] = {};
+    if (!globalParameters[category] || reset) globalParameters[category] = {};
     for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
       // Add subsector key, if it doesn't exist yet
       let subsectorId = data['id_subsector'] ? data['id_subsector'] : 0;
@@ -109,8 +109,8 @@ const roundNumber = (value: number, id: string) => {
   }
   return rangeIndex[id];
 };
-const reset = () => {
-  getAndStructureGlobalParameters();
+const reset = async () => {
+  await getAndStructureGlobalParameters(true);
   activeCategory.value = Object.keys(globalParameters)[0];
   activeSubsector.value = Number(Object.keys(globalParameters[activeCategory.value])[0]);
   loading.value = false;
