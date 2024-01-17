@@ -21,16 +21,16 @@ For more **open source** software provided by [**Fraunhofer ISI**](https://www.i
 
 This project contains a front-end for MICAT, based on [vue.js](https://vuejs.org/).
 
-For the back-end see [micat](https://github.com/fraunhofer-isi/micat).
+The web page is published at: https://app.micatool.eu.
 
-Deployment page: https://app.micatool.eu
+For the back-end see [micat](https://github.com/fraunhofer-isi/micat).
 
 ## Licenses
 
 This project is free and open source software:
 
 * It is licensed under the GNU Affero General Public License v3 or later (AGPLv3+) - see [LICENSE.md](./LICENSE.md).
-* It uses third-party open source modules, see [package.jsonl](./micat/package.json) and [THIRDPARTY.md](./THIRDPARTY.md).
+* It uses third-party open source modules, see [package.json](./micat/package.json) and [THIRDPARTY.md](./THIRDPARTY.md).
 
 ## Badges
 
