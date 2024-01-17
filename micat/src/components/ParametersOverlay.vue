@@ -1,3 +1,9 @@
+<!--
+© 2024 Fraunhofer-Gesellschaft e.V., München
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 <script setup lang="ts">
 import {onMounted, reactive, ref, watch, inject} from "vue";
 import {XCircleIcon, ArrowsRightLeftIcon, InformationCircleIcon} from '@heroicons/vue/24/outline';

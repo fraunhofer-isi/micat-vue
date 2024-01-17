@@ -1,0 +1,38 @@
+# © 2024 Fraunhofer-Gesellschaft e.V., München
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+name: reuse_annotate
+
+on:
+  # This should run *after* creation of files has been done by
+  # other workflow actions.
+  # Otherwise, new files might miss the annotation.
+  workflow_run:
+    workflows: [ "third_party_license_file_generation" ]
+    types: [ completed ]
+
+jobs:
+  annotate:
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: create copyright and license annotations
+        uses: fsfe/reuse-action@v2
+        with:
+          # Also see https://reuse.readthedocs.io/en/v2.1.0/usage.html
+          # The copyright style follows the one used at https://www.fraunhofer.de/en/publishing-notes.html
+          # Currently only src and test folders and THIRDPARTY.md are considered for
+          # automated annotations. Otherwise unwanted license files for *.json files would be created.
+          # Also see https://stackoverflow.com/questions/77806897/how-to-skip-json-files-with-dep5-when-creating-reuse-annotations
+          # => You might need to manually trigger the creation of annotations for extra files.           
+          args: annotate --copyright="Fraunhofer-Gesellschaft e.V., München" --copyright-style=symbol --merge-copyrights --license=AGPL-3.0-or-later --skip-unrecognised --recursive micat/src micat/test THIRDPARTY.md
+      - name: push changes made by reuse annotate
+        # also see https://github.com/stefanzweifel/git-auto-commit-action
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: create copyright and license annotations with reuse tool

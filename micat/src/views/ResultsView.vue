@@ -1,3 +1,9 @@
+<!--
+© 2024 Fraunhofer-Gesellschaft e.V., München
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 <script setup async lang="ts">
 import {onBeforeMount} from 'vue';
 import ResultsOverlay from "@/components/ResultsOverlay.vue";

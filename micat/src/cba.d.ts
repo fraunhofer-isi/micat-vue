@@ -1,3 +1,7 @@
+// © 2024 Fraunhofer-Gesellschaft e.V., München
+//
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 export function convert(data: any): {
     costBenefitAnalysisData: {};
 };

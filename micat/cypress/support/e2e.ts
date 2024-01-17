@@ -1,3 +1,7 @@
+// © 2024 Fraunhofer-Gesellschaft e.V., München
+//
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 // ***********************************************************
 // This example support/index.js is processed and
 // loaded automatically before your test files.

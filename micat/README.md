@@ -1,3 +1,9 @@
+<!--
+© 2024 Fraunhofer-Gesellschaft e.V., München
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # MICAT
 
 This template should help get you started developing with Vue 3 in Vite.

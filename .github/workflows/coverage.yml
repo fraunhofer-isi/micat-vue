@@ -1,0 +1,45 @@
+# © 2024 Fraunhofer-Gesellschaft e.V., München
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+name: coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: set up node 
+      uses: actions/setup-node@v3
+      with:
+        node-version: 19
+    - name: install dependencies
+      run: |      
+        npx next telemetry disable
+        cd micat
+        npm install
+    - name: test
+      run: |      
+        cd micat
+        mkdir .coverage
+        npm run coverage | tee ./.coverage/coverage.log     
+        VITEST_COVERAGE=$(awk '$1 == "Statements" {print $3+0}' ./.coverage/coverage.log)
+        echo "VITEST_COVERAGE=$VITEST_COVERAGE" >> $GITHUB_ENV
+        echo "Vitest coverage is $VITEST_COVERAGE"
+    - name: badge
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: ${{ secrets.GIST_ID }}
+        filename: micat-vue_coverage.json
+        label: coverage
+        message: ${{ env.VITEST_COVERAGE }}
+        valColorRange: ${{ env.VITEST_COVERAGE }}
+        maxColorRange: 100
+        minColorRange: 0

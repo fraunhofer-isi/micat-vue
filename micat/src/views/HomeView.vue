@@ -1,3 +1,9 @@
+<!--
+© 2024 Fraunhofer-Gesellschaft e.V., München
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 <script setup async lang="ts">
 import {inject, onMounted, reactive, ref, watch} from 'vue';
 import type {Ref} from 'vue';

@@ -1,3 +1,7 @@
+// © 2024 Fraunhofer-Gesellschaft e.V., München
+//
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 /* eslint-disable */
 // TODO: This file has been taken from the old frontend and should be revised.
 class CostBenefitAnalysisTools {

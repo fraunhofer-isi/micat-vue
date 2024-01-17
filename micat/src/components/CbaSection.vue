@@ -1,3 +1,9 @@
+<!--
+© 2024 Fraunhofer-Gesellschaft e.V., München
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 <script setup lang="ts">
 import { Line } from "vue-chartjs";
 import { Chart as ChartJS } from 'chart.js'
