@@ -6,6 +6,7 @@
 require('@rushstack/eslint-patch/modern-module-resolution')
 
 module.exports = {
+  "ignorePatterns": ["check_licenses.js"],
   root: true,
   'extends': [
     'plugin:vue/vue3-essential',
