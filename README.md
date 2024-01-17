@@ -76,11 +76,13 @@ for example at: http://micatool-dev.eu/
 
 ### Start 
 
-* Run vue.js application in development mode from within `micat` folder:
+* Build and start vue.js application in development mode from within `micat` folder:
 
-`npm run dev`   
+`npm run build`   
 
-* Open Google Chrome and go to following url:
+`npm run preview`
+
+* Ctrl click on the link that is shown in the console or open Google Chrome and paste the url, for example:
 
 `http://localhost:3000/`
 
