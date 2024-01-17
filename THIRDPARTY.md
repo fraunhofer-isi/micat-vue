@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -512,7 +506,7 @@ THE SOFTWARE.
 The following npm packages may be included in this product:
 
  - pinia@2.1.6
- - vue-router@4.2.4
+ - vue-router@4.2.5
 
 These packages each contain the following license and notice below:
 
