@@ -42,7 +42,7 @@
     "@vue/test-utils": "^2.4.1",
     "@vue/tsconfig": "^0.4.0",
     "autoprefixer": "^10.4.15",
-    "cypress": "^12.17.4",
+    "cypress": "^13.0.0",
     "eslint": "^8.46.0",
     "eslint-plugin-cypress": "^2.14.0",
     "eslint-plugin-vue": "^9.16.1",
