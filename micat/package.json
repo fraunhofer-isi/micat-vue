@@ -1,11 +1,13 @@
 {
-  "name": "micat",
-  "version": "0.0.0",
+  "name": "micat-vue",
+  "version": "0.0.1",
+  "license": "AGPL-3.0-or-later",
   "private": true,
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
+    "license-check": "node check/check_licenses.js",
     "coverage": "vitest run --coverage",
     "test:unit": "vitest",
     "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",

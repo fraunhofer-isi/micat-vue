@@ -70,12 +70,13 @@ for example at: http://micatool-dev.eu/
 * Install dependencies with node package manager:
 
 `cd micat`
+
 `npm install`
 
 
 ### Start 
 
-* Run vue.js application in development mode from within micat folder:
+* Run vue.js application in development mode from within `micat` folder:
 
 `npm run dev`   
 
