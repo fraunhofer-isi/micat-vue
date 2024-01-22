@@ -59,6 +59,6 @@
     "license-checker": "25.0.1"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.9.5" 
+    "@rollup/rollup-linux-x64-gnu": "4.9.6" 
   }
 }
