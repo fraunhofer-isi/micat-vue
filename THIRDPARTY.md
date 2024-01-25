@@ -75,7 +75,7 @@ MIT License
 
 The following npm package may be included in this product:
 
- - typescript@5.1.6
+ - typescript@5.3.3
 
 This package contains the following license and notice below:
 
@@ -273,7 +273,6 @@ The following npm packages may be included in this product:
 
  - @headlessui/vue@1.7.17
  - @heroicons/vue@2.1.1
- - @rollup/rollup-linux-x64-gnu@4.9.5
  - @vue/devtools-api@6.5.1
 
 These packages each contain the following license and notice below:
