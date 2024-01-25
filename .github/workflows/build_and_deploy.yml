@@ -39,13 +39,14 @@ jobs:
       run: |
         cd micat
         npm run build --if-present
-    - name: deploy
-      uses: pressidium/lftp-mirror-action@v1
-      with:
-        host: ${{ secrets.SFTP_URL }}
-        port: ${{ secrets.SFTP_PORT }}
-        user: ${{ secrets.SFTP_USER }}
-        pass: ${{ secrets.SFTP_PASSWORD }}
-        localDir: './micat/dist'
-        remoteDir: '.'
-        reverse: true       
+        
+    #- name: deploy
+    #  uses: pressidium/lftp-mirror-action@v1
+    #  with:
+    #    host: ${{ secrets.SFTP_URL }}
+    #    port: ${{ secrets.SFTP_PORT }}
+    #    user: ${{ secrets.SFTP_USER }}
+    #    pass: ${{ secrets.SFTP_PASSWORD }}
+    #    localDir: './micat/dist'
+    #    remoteDir: '.'
+    #    reverse: true       
