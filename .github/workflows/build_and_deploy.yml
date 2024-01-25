@@ -30,7 +30,7 @@ jobs:
     - name: install node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 21
+        node-version: '19.x'
     - name: install node.js dependencies
       run: |
         cd micat
