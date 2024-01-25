@@ -45,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The following npm package may be included in this product:
 
- - @types/web-bluetooth@0.0.17
+ - @types/web-bluetooth@0.0.20
 
 This package contains the following license and notice below:
 
@@ -75,7 +75,7 @@ MIT License
 
 The following npm package may be included in this product:
 
- - typescript@5.1.6
+ - typescript@5.3.3
 
 This package contains the following license and notice below:
 
@@ -183,7 +183,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm package may be included in this product:
 
- - csstype@3.1.2
+ - csstype@3.1.3
 
 This package contains the following license and notice below:
 
@@ -206,6 +206,26 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+-----------
+
+The following npm package may be included in this product:
+
+ - entities@4.5.0
+
+This package contains the following license and notice below:
+
+Copyright (c) Felix Böhm
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+THIS IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -----------
 
@@ -252,8 +272,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 The following npm packages may be included in this product:
 
  - @headlessui/vue@1.7.17
- - @heroicons/vue@2.0.18
- - @vue/devtools-api@6.5.0
+ - @heroicons/vue@2.1.1
+ - @rollup/rollup-linux-x64-gnu@4.9.6
+ - @vue/devtools-api@6.5.1
 
 These packages each contain the following license and notice below:
 
@@ -263,7 +284,7 @@ MIT
 
 The following npm package may be included in this product:
 
- - vue-chartjs@5.2.0
+ - vue-chartjs@5.3.0
 
 This package contains the following license and notice below:
 
@@ -293,9 +314,9 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @vueuse/core@10.4.1
- - @vueuse/metadata@10.4.1
- - @vueuse/shared@10.4.1
+ - @vueuse/core@10.7.2
+ - @vueuse/metadata@10.7.2
+ - @vueuse/shared@10.7.2
 
 These packages each contain the following license and notice below:
 
@@ -323,12 +344,11 @@ SOFTWARE.
 
 -----------
 
-The following npm packages may be included in this product:
+The following npm package may be included in this product:
 
- - vue-demi@0.14.5
  - vue-demi@0.14.6
 
-These packages each contain the following license and notice below:
+This package contains the following license and notice below:
 
 MIT License
 
@@ -471,17 +491,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.3.4
- - @vue/compiler-dom@3.3.4
- - @vue/compiler-sfc@3.3.4
- - @vue/compiler-ssr@3.3.4
- - @vue/reactivity-transform@3.3.4
- - @vue/reactivity@3.3.4
- - @vue/runtime-core@3.3.4
- - @vue/runtime-dom@3.3.4
- - @vue/server-renderer@3.3.4
- - @vue/shared@3.3.4
- - vue@3.3.4
+ - @vue/compiler-core@3.4.15
+ - @vue/compiler-dom@3.4.15
+ - @vue/compiler-sfc@3.4.15
+ - @vue/compiler-ssr@3.4.15
+ - @vue/reactivity@3.4.15
+ - @vue/runtime-core@3.4.15
+ - @vue/runtime-dom@3.4.15
+ - @vue/server-renderer@3.4.15
+ - @vue/shared@3.4.15
+ - vue@3.4.15
 
 These packages each contain the following license and notice below:
 
@@ -511,7 +530,7 @@ THE SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - pinia@2.1.6
+ - pinia@2.1.7
  - vue-router@4.2.5
 
 These packages each contain the following license and notice below:
