@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -75,7 +69,7 @@ MIT License
 
 The following npm package may be included in this product:
 
- - typescript@5.1.6
+ - typescript@5.3.3
 
 This package contains the following license and notice below:
 
@@ -139,7 +133,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.23.6
+ - @babel/parser@7.23.9
 
 This package contains the following license and notice below:
 
