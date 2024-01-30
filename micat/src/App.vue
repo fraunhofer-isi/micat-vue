@@ -155,5 +155,13 @@ provide('modal', {
 
     <NotificationBox></NotificationBox>
   </div>
-  <div class="text-center bg-blue-900 text-xs text-blue-500 p-2">© 2023 Fraunhofer-Gesellschaft e.V., München &middot; SPDX-License-Identifier: AGPL-3.0-or-later</div>
+  <div class="bg-blue-800 p-2 text-xs text-blue-400">
+    <div class="max-w-screen-xl flex items-center justify-between mx-auto">
+      <div>© 2023 Fraunhofer-Gesellschaft e.V., München &middot; SPDX-License-Identifier: AGPL-3.0-or-later</div>
+      <div class="flex max-w-[450px] items-center">
+        <img src="@/assets/Flag_of_Europe.svg" class="h-8 mr-3" alt="Flag of Europe" />
+        This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No. 101000132.
+      </div>
+    </div>
+  </div>
 </template>
