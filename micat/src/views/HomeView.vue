@@ -16,7 +16,7 @@ import {
   ExclamationCircleIcon,
   XCircleIcon,
   PresentationChartBarIcon,
-  AdjustmentsVerticalIcon
+  AdjustmentsVerticalIcon, ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline';
 import type {
   ModalInjectInterface,
@@ -63,6 +63,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
 const stage = ref<number>(session.stage);
 const years = ref<Array<number>>(session.years);
 const programs = reactive<Array<ProgramInterface>>(session.programs);
+const seedInfo = ref<boolean>(session.seedInfo);
 
 // Refs
 const loading = ref<boolean>(false);
@@ -112,9 +113,6 @@ watch(() => session.region, (region) => {
 });
 watch(() => session.municipality, (municipality) => {
   session.updateMunicipality(municipality);
-});
-watch(() => session.inhabitants, (inhabitants) => {
-  session.updateInhabitants(inhabitants);
 });
 watch(() => session.unit, (unit, oldUnit) => {
  session.updateUnit(unit);
@@ -258,6 +256,10 @@ const getSubsectorImprovements = (subsectorId: number) => {
   if (!subsectorId || subsectors.value.length === 0) return [];
   return subsectors.value.filter(subsector => subsector.id === subsectorId)[0].improvements;
 }
+const setSeedInfo = (value: boolean) => {
+  seedInfo.value = value;
+  session.updateSeedInfo(value);
+};
 const getGlobalParametersPayload = () => {
   const results: PayloadParameterInterface = {};
   for (const [category, subsectors] of Object.entries(session.globalParameters)) {
@@ -436,12 +438,38 @@ const analyze = async () => {
           efficiency, optionally add your own values and receive a comprehensive analysis for your region.</p>
       </div>
       <div
-        class="col"
+        class="col relative"
         :class="{
             'col-span-4': stage === stages.full,
             'col-span-5': stage === stages.home,
           }"
       >
+        <div v-if="seedInfo" class="absolute inset-[-1rem] z-10 bg-white/80 dark:bg-blue-950/80 transition-opacity min-h-full">
+          <div class="absolute top-1/2 transform -translate-y-1/2 w-full">
+            <div class="flex min-h-full justify-center p-2 text-center items-center sm:p-0">
+              <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                  <div class="sm:flex sm:items-start">
+                    <div
+                      class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-sky-100"
+                    >
+                      <ExclamationTriangleIcon class="h-6 w-6 text-sky-600" aria-hidden="true" />
+                    </div>
+                    <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                      <h3 class="text-base font-semibold leading-6 text-gray-900">Important information</h3>
+                      <div class="mt-2">
+                        <p class="text-sm text-gray-500">Due to structural changes with the MICATool, linked to the move from the MICAT to the SEED MICAT project, unexpected bugs and results might occur. We are genuinely sorry for the inconvenience and are working hard on fixing these issues. In case you have any questions or remarks, please contact us at <a class="font-bold" href="mailto:frederic.berger@isi.fraunhofer.de">frederic.berger@isi.fraunhofer.de</a>.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                  <button type="button" class="inline-flex w-full justify-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 sm:ml-3 sm:w-auto border-0 focus:border-0 focus:outline-none" @click="setSeedInfo(false)">Sure</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5">
           <div class="absolute top-[-14px] left-0 w-full text-center">
             <span class="inline-block font-bold italic bg-white dark:bg-blue-950 dark:text-white px-4">
@@ -619,9 +647,10 @@ const analyze = async () => {
         </div>
       </div>
       <div
-        class="col col-span-6"
+        class="col col-span-6 relative"
         v-if="stage === stages.full"
       >
+        <div v-if="seedInfo" class="absolute inset-[-1rem] z-10 bg-white/80 dark:bg-blue-950/80 transition-opacity min-h-full"></div>
         <div
           v-if="error"
           class="flex p-4 mb-7 text-red-800 border-t-4 border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800 rounded-2xl"

@@ -145,6 +145,7 @@ export interface ISessionState {
   monetisationFactorMapping: {[key: number]: string};
   parameters: Parameters;
   useRenovationRate: boolean;
+  seedInfo: boolean;
 }
 export interface ISessionStateFunctions {
     updateStage: (stage: number) => void;
