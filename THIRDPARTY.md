@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -345,7 +339,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - vue-demi@0.14.6
+ - vue-demi@0.14.7
 
 This package contains the following license and notice below:
 
