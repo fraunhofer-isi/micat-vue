@@ -159,9 +159,10 @@ const _convertCostBenefitAnalysisData = (data) => {
   const resultDataset = {};
   for (const indicatorName of Object.keys(data)) {
     const indicatorData = data[indicatorName];
+    const yearColumnNames = indicatorName === 'lifetime' ? ['value'] : indicatorData.yearColumnNames;
     const header = [
       ...indicatorData.idColumnNames,
-      ...indicatorData.yearColumnNames
+      ...yearColumnNames
     ];
     const table = _arrayOfArraysToJson(indicatorData.rows, header);
     resultDataset[indicatorName] = table;
