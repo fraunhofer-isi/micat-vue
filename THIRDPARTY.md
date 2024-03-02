@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -139,7 +133,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.23.9
+ - @babel/parser@7.24.0
 
 This package contains the following license and notice below:
 
@@ -231,7 +225,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The following npm package may be included in this product:
 
- - magic-string@0.30.6
+ - magic-string@0.30.7
 
 This package contains the following license and notice below:
 
@@ -271,9 +265,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @headlessui/vue@1.7.17
+ - @headlessui/vue@1.7.19
  - @heroicons/vue@2.1.1
- - @vue/devtools-api@6.5.1
+ - @vue/devtools-api@6.6.1
 
 These packages each contain the following license and notice below:
 
@@ -313,9 +307,9 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @vueuse/core@10.7.2
- - @vueuse/metadata@10.7.2
- - @vueuse/shared@10.7.2
+ - @vueuse/core@10.9.0
+ - @vueuse/metadata@10.9.0
+ - @vueuse/shared@10.9.0
 
 These packages each contain the following license and notice below:
 
@@ -375,8 +369,8 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @tanstack/virtual-core@3.0.0
- - @tanstack/vue-virtual@3.0.2
+ - @tanstack/virtual-core@3.1.3
+ - @tanstack/vue-virtual@3.1.3
 
 These packages each contain the following license and notice below:
 
@@ -436,7 +430,7 @@ THE SOFTWARE.
 
 The following npm package may be included in this product:
 
- - chart.js@4.4.1
+ - chart.js@4.4.2
 
 This package contains the following license and notice below:
 
@@ -490,16 +484,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.4.15
- - @vue/compiler-dom@3.4.15
- - @vue/compiler-sfc@3.4.15
- - @vue/compiler-ssr@3.4.15
- - @vue/reactivity@3.4.15
- - @vue/runtime-core@3.4.15
- - @vue/runtime-dom@3.4.15
- - @vue/server-renderer@3.4.15
- - @vue/shared@3.4.15
- - vue@3.4.15
+ - @vue/compiler-core@3.4.21
+ - @vue/compiler-dom@3.4.21
+ - @vue/compiler-sfc@3.4.21
+ - @vue/compiler-ssr@3.4.21
+ - @vue/reactivity@3.4.21
+ - @vue/runtime-core@3.4.21
+ - @vue/runtime-dom@3.4.21
+ - @vue/server-renderer@3.4.21
+ - @vue/shared@3.4.21
+ - vue@3.4.21
 
 These packages each contain the following license and notice below:
 
@@ -530,7 +524,7 @@ THE SOFTWARE.
 The following npm packages may be included in this product:
 
  - pinia@2.1.7
- - vue-router@4.2.5
+ - vue-router@4.3.0
 
 These packages each contain the following license and notice below:
 
@@ -560,7 +554,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - postcss@8.4.33
+ - postcss@8.4.35
 
 This package contains the following license and notice below:
 
