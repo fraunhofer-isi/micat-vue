@@ -54,7 +54,8 @@ onMounted(async () => {
 // Functions
 const getAndStructureGlobalParameters = async (reset: boolean = false) => {
   loading.value = true;
-  const responseGlobalParameters: Response = await fetch(`${import.meta.env.VITE_API_URL}json_parameters?id_mode=${session.future ? 4 : 2}&id_region=${session.region}&orient=records`);
+  const years = session.years.map(y => `&years=${y}`).join('');
+  const responseGlobalParameters: Response = await fetch(`${import.meta.env.VITE_API_URL}json_parameters?id_mode=${session.future ? 4 : 2}&id_region=${session.region}&orient=records${years}`);
   const results = await responseGlobalParameters.json();
   // Re-structure parameters
   const yearRegex = /^[0-9]+$/;
