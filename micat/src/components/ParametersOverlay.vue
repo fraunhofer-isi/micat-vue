@@ -21,6 +21,7 @@ import {units, defaultModalInject} from "@/defaults";
 
 const props = defineProps<{
   improvement: SelectedImprovementInterface,
+  years: Array<number>,
 }>()
 
 const session = useSessionStore();
@@ -49,9 +50,7 @@ const rangeIndex: {[key: string]: number} = {};
 // Lifecycle
 onMounted(async () => {
   if (typeof parameters[props.improvement.internalId] === 'undefined') parameters[props.improvement.internalId] = {};
-  if (Object.keys(parameters[props.improvement.internalId]).length == 0) {
-    await getParameters();
-  }
+  await getParameters();
   activeCategory.value = Object.keys(parameters[props.improvement.internalId])[0];
   loading.value = false;
 });
@@ -80,6 +79,13 @@ const getParameters = async () => {
       "factor": units[session.unit].factor
     }
   };
+  // Since we also cache old values, we need to filter out the ones that are not in the current years selection
+  const values = Object.fromEntries(
+    Object.entries(props.improvement.data?.values).filter(
+      ([key, val])=>props.years.includes(parseInt(key))
+    )
+  );
+  
   const responseParameters: Response = await fetch(
     `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 4 : 2}&id_region=${session.region}`,
     {
@@ -87,12 +93,14 @@ const getParameters = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({...props.improvement.data?.values, ...body})
+      body: JSON.stringify({...values, ...body})
     },
   );
   const results = await responseParameters.json();
+  
   const restructuredResults: ParameterCategory = {};
   const yearRegex = /^[0-9]+$/;
+  
   for (const [category, dataSet] of Object.entries(results)) {
     if (category === 'context') continue;
     // Add category key, if it doesn't exist yet

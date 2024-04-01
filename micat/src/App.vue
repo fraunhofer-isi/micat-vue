@@ -85,6 +85,32 @@ const helpTexts: HelpTextInterface = {
     'text': 'tba',
     'type': 'help'
   },
+  // Global parameters
+  'FuelSplitCoefficient': {
+    'title': 'Fuel Split Coefficient',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'EnergyPrice': {
+    'title': 'Energy Price',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'ElectricityGeneration': {
+    'title': 'Electricity Generation',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'HeatGeneration': {
+    'title': 'Heat Generation',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'MonetisationFactors': {
+    'title': 'Monetisation Factors',
+    'text': 'tba',
+    'type': 'help'
+  },
 };
 
 const showModal = ref<Boolean>(false);

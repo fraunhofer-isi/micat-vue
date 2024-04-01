@@ -105,6 +105,8 @@ watch(() => session.future, (future) => {
     newYears.value = [...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1);
   }
   newYearSelected.value = newYears.value[0];
+  console.log('foo');
+  
   session.updateFuture(future);
   session.updateYears(years.value);
 });
@@ -429,7 +431,7 @@ const analyze = async () => {
 <template>
   <main>
     <GlobalParametersOverlay v-if="showGlobalParametersOverlay" @close="showGlobalParametersOverlay = false;"></GlobalParametersOverlay>
-    <ParametersOverlay v-else-if="showParametersOverlay" :improvement="selectedImprovement" @close="showParametersOverlay = false;"></ParametersOverlay>
+    <ParametersOverlay v-else-if="showParametersOverlay" :improvement="selectedImprovement" :years="years" @close="showParametersOverlay = false;"></ParametersOverlay>
     <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
         <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency
@@ -487,18 +489,34 @@ const analyze = async () => {
               ></InformationCircleIcon>
             </div>
             <div class="col-span-3">
-              <label
-                for="timeframe"
+              <div
                 class="inline-flex items-center rounded-full cursor-pointer dark:text-gray-800 border border-sky-600 dark:border-0"
               >
-                <input id="timeframe" type="checkbox" class="hidden peer" v-model="session.future">
+                <span 
+                  class="leading-3 pl-8 pr-7 pt-4 pb-3 rounded-l-full text-center"
+                  :class="{
+                    'bg-sky-600 text-white': !session.future,
+                    'bg-white text-gray-400': session.future,
+                  }"
+                  @click="session.future = false"
+                >
+                  <span class="uppercase font-bold">past</span>
+                  <br>
+                  <span class="text-sm">(ex-post)</span>
+                </span>
                 <span
-                  class="leading-3 pl-8 pr-7 pt-4 pb-3 rounded-l-full bg-sky-600 text-white peer-checked:text-gray-400 peer-checked:bg-white text-center"><span
-                  class="uppercase font-bold">past</span><br><span class="text-sm">(ex-post)</span></span>
-                <span
-                  class="leading-3 pl-7 pr-8 pt-4 pb-3 rounded-r-full dark:bg-white text-gray-400 peer-checked:bg-sky-600 peer-checked:text-white text-center"><span
-                  class="uppercase font-bold">future</span><br><span class="text-sm">(ex-ante)</span></span>
-              </label>
+                  class="leading-3 pl-7 pr-8 pt-4 pb-3 rounded-r-full text-center"
+                  :class="{
+                    'dark:bg-white text-gray-400': !session.future,
+                    'bg-sky-600 text-white': session.future,
+                  }"
+                  @click="session.future = true"
+                >
+                  <span class="uppercase font-bold">future</span>
+                  <br>
+                  <span class="text-sm">(ex-ante)</span>
+                </span>
+              </div>
             </div>
             <!-- end time frame -->
             <!-- region -->
@@ -791,8 +809,13 @@ const analyze = async () => {
               </div>
               <div class="border-t border-gray-200 px-6 py-3 text-center bg-orange-200 dark:bg-sky-200">
                 <button
-                  class="bg-orange-400 hover:bg-orange-500 dark:bg-sky-400 dark:hover:bg-sky-500 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
+                  class="text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
+                  :class="{
+                    'cursor-not-allowed bg-gray-400 hover:bg-gray-400 dark:bg-gray-400 dark:hover:bg-gray-400': improvement.id === 0 || Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) === 0,
+                    'bg-orange-400 hover:bg-orange-500 dark:bg-sky-400 dark:hover:bg-sky-500': improvement.id !== 0 && Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) > 0,
+                  }"
                   @click="showParameters(`improvement-${i}-${improvement.id}`, improvement, `subsector-${i}`, program.subsector, program.name)"
+                  :disabled="improvement.id === 0 || Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) === 0"
                 >
                   <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
                   Advanced

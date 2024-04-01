@@ -5,13 +5,16 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 <script setup lang="ts">
-import {onMounted, reactive, ref, watch} from "vue";
+import {onMounted, reactive, ref, watch, inject} from "vue";
 import {
   XCircleIcon,
-  CheckIcon, ExclamationCircleIcon,
+  CheckIcon, 
+  ExclamationCircleIcon,
+  InformationCircleIcon,
 } from '@heroicons/vue/24/outline';
 import {useSessionStore} from "@/stores/session";
-import type {GlobalParameters, GlobalParameterValue, PayloadParameterEntryInterface} from "@/types";
+import { defaultModalInject } from "@/defaults";
+import type {GlobalParameters, GlobalParameterValue, PayloadParameterEntryInterface, ModalInjectInterface} from "@/types";
 
 const session = useSessionStore();
 
@@ -126,6 +129,9 @@ const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
   // Check if all entries sum up to (almost) 1
   return Math.abs(entries.map((entry) => entry.value).reduce((a, b) => a + b) - 1) < 0.1;
 };
+
+// Injections
+const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
 </script>
 
 <template>
@@ -170,7 +176,13 @@ const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
             v-for="(categoryName, i) in Object.keys(globalParameters)"
             v-bind:key="`global-parameter-${i}`"
           >
-            <div class="py-3 grow font-bold">{{ categoryName.replace(/([A-Z])/g, ' $1') }}</div>
+            <div class="py-3 grow">
+              <span class="font-bold">{{ categoryName.replace(/([A-Z])/g, ' $1') }}</span>
+              <InformationCircleIcon
+                @click="openModal(categoryName)"
+                class="h-6 w-6 ml-2 cursor-pointer inline"
+              ></InformationCircleIcon>
+            </div>
           </div>
         </div>
         <div class="flex" v-if="activeCategory">
