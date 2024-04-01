@@ -81,7 +81,7 @@ const getParameters = async () => {
   };
   // Since we also cache old values, we need to filter out the ones that are not in the current years selection
   const values = Object.fromEntries(
-    Object.entries(props.improvement.data?.values).filter(
+    Object.entries(props.improvement.data ? props.improvement.data.values : {}).filter(
       ([key, val])=>props.years.includes(parseInt(key))
     )
   );
