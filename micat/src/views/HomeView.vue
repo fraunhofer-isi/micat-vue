@@ -85,27 +85,27 @@ watch(() => session.future, (future) => {
   let currentYear = new Date().getFullYear();
   if (future) {
     // We allow to let users test with already running actions
-    currentYear -= 8;
-    // Filter out years from the past
-    years.value = years.value.filter(year => year >= currentYear);
+    // Filter out years before 2000
+    years.value = years.value.filter(year => year >= 2000);
     if (years.value.length == 0) {
       // Round up to nearest 5
       const nextValidYear = Math.ceil(currentYear / 5) * 5;
       years.value = [nextValidYear, nextValidYear + 5, nextValidYear + 10];
     }
-    newYears.value = [...Array(30).keys()].map(delta => currentYear + delta).filter(newYear => years.value.indexOf(newYear) == -1);
+    newYears.value = [...Array(51).keys()].map(delta => 2000 + delta).filter(newYear => years.value.indexOf(newYear) == -1);
   } else {
-    // Filter out years from the future
-    years.value = years.value.filter(year => year <= currentYear);
+    // We allow to let users test with already running actions
+    // Filter out years before 2000
+    years.value = years.value.filter(year => year <= 2000);
     if (years.value.length == 0) {
       // Round down to nearest 5
       const nextValidYear = Math.floor(currentYear / 5) * 5;
       years.value = [nextValidYear - 10, nextValidYear - 5, nextValidYear];
     }
-    newYears.value = [...Array(30).keys()].map(delta => currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1);
+    const range = currentYear - 2000 - 2;
+    newYears.value = [...Array(range).keys()].map(delta => currentYear - 3 - delta).filter(newYear => years.value.indexOf(newYear) == -1);
   }
   newYearSelected.value = newYears.value[0];
-  console.log('foo');
   
   session.updateFuture(future);
   session.updateYears(years.value);
