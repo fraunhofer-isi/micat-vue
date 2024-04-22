@@ -127,9 +127,12 @@ const getParameters = async () => {
       restructuredResults[category].push(entry);
     }
   }
-  restructuredResults['fuelSwitch'].sort((a, b) => {
-    return a['parameters']['id_final_energy_carrier'] < b['parameters']['id_final_energy_carrier'] ? -1 : 1;
-  });
+  if (restructuredResults['fuelSwitch']) {
+    // Re-order fuel switch parameters by final energy carrier
+    restructuredResults['fuelSwitch'].sort((a, b) => {
+      return a['parameters']['id_final_energy_carrier'] < b['parameters']['id_final_energy_carrier'] ? -1 : 1;
+    });
+  }
   parameters[props.improvement.internalId] = restructuredResults;
 }
 const selectCategory = (category: string) => {
