@@ -28,7 +28,7 @@ module.exports = {
        "major",
        "lockFileMaintenance"
      ],
-     "automerge": true,
+     "automerge": false,
      "automergeType": "branch",
      "ignoreTests": true, // set to false if you want updates only to be installed if tests pass
      "dependencyDashboardApproval": false,
