@@ -16,7 +16,7 @@ import {
   CheckIcon,
   InformationCircleIcon,
 } from '@heroicons/vue/24/outline';
-import { Bar, Line } from 'vue-chartjs'
+import { Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
 import type {
   CategoriesInterface,
@@ -28,6 +28,7 @@ import type {
   CbaData,
 } from "@/types";
 import { defaultModalInject, chartColours } from "@/defaults";
+import AggregationChart from "@/components/AggregationChart.vue";
 import CbaSection from "@/components/CbaSection.vue";
 import { formatter, labelFormatter, scientificFormatter } from "@/helpers";
 import {
@@ -49,15 +50,6 @@ import router from "@/router";
 const session = useSessionStore();
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement);
 
-const chartColoursAggregation: Array<string> = [
-  "rgb(68,178,47)",
-  "rgb(162,243,149)",
-  "rgb(16,94,0)",
-  "rgb(150,178,47)",
-  "rgb(200,217,136)",
-  "rgb(110,138,8)",
-  "rgb(72,89,9)",
-];
 const icons: any = {
   UserGroupIcon,
   CurrencyEuroIcon,
@@ -328,94 +320,7 @@ const discountRate = ref<number>(3);
 const cbaYear = ref<string>(session.years[0].toString());
 const activeCbaResult = ref<string>(cbaResults[0].slug);
 
-// Variables
-const aggregationChartOptions: any = {
-  plugins: {
-    title: {
-      display: false,
-      text: 'MICAT - Aggregation'
-    },
-    tooltip: {
-      callbacks: {
-        label: function(context: any) {
-          let label = context.dataset.label || '';
-
-          if (label) {
-              label += ': ';
-          }
-          if (context.parsed.y !== null) {
-            label += context.parsed.y < 1 && context.parsed.y >= 0 ? scientificFormatter.format(context.parsed.y) : labelFormatter.format(context.parsed.y);
-          }
-          return label;
-        },
-      },
-    },
-  },
-  responsive: true,
-  interaction: {
-    intersect: false,
-  },
-  scales: {
-    x: {
-      stacked: true,
-    },
-    y: {
-      stacked: true,
-      ticks: {
-        callback: (label: number | string) => typeof label === "number" ? label < 1 && label >= 0 ? formatter.format(label) : formatter.format(label) : label,
-      },
-    }
-  }
-};
-
 // Computed
-const aggregationChartData: any = computed(() => {
-  const datasets: Array<DatasetInterface> = [];
-  let measurements = categories.monetization.measurements
-  measurements = measurements.concat(categories.quantification.measurements.filter(measurement => measurement.identifier === "impactOnGrossDomesticProduct"));
-  measurements.forEach((measurement, i) => {
-    const aggregationData: ResultInterface = JSON.parse(JSON.stringify(session.results[measurement.identifier]));
-    if (measurement.identifier === 'reductionOfEnergyCost') {
-      aggregationData.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
-        const values = new Array(session.years.length).fill(0);
-        aggregationData.rows.filter(row => row[1] === label).forEach(row => {
-          row.splice(0, 2);
-          row.forEach((measure, iM) => {
-            // Sum up measurements
-            values[iM] += measure;
-          });
-        });
-        datasets.push({
-          label: label,
-          data: values,
-          borderColor: chartColoursAggregation[iL],
-          backgroundColor: chartColoursAggregation[iL],
-          stack: `stack-reductionOfEnergyCost`,
-        });
-      });
-    } else {
-      const values = new Array(session.years.length).fill(0);
-      aggregationData.rows.forEach(row => {
-        row.splice(0, 1);
-        row.forEach((measure, iM) => {
-          // Sum up measurements
-          values[iM] += measure;
-        });
-      });
-      datasets.push({
-        label: measurement.title,
-        data: values,
-        borderColor: chartColours[i],
-        backgroundColor: chartColours[i],
-        stack: `stack-${i}`,
-      });
-    }
-  });
-  return {
-    labels: session.years,
-    datasets,
-  }
-});
 const data = computed<ResultInterface>(() => {
   return activeMeasurement.value ? JSON.parse(JSON.stringify(session.results[activeMeasurement.value.identifier])) : {};
 });
@@ -707,11 +612,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
           </div>
         </div>
         <div v-else-if="activeCategory === 'aggregation'" class="w-full max-w-full p-7">
-          <Bar
-            id="chart-aggregation"
-            :options="aggregationChartOptions"
-            :data="aggregationChartData"
-          />
+          <AggregationChart :categories="categories"></AggregationChart>
         </div>
         <div v-if="activeCategory === 'cba'" class="w-full">
           <div class="flex w-full">

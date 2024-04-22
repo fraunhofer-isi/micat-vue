@@ -338,7 +338,10 @@ const analyze = async () => {
       return;
     }
     program.improvements.forEach(improvement => {
-      if (!improvement.id) errors += `<em>${program.name}</em> has invalid improvements.<br />`;
+      if (!improvement.id) {
+        errors += `<em>${program.name}</em> has invalid improvements.<br />`;
+        return;
+      }
 
       // Prepare parameters
       const parameters: Array<{ [key: string]: number }> = [];
@@ -350,6 +353,7 @@ const analyze = async () => {
           // parameters are only present if they have been edited
           const keys: Array<string> = ["main", "fuelSwitch", "residential"];
           keys.forEach(key => {
+            if (!improvementParameters[key]) return;
             improvementParameters[key].forEach(parameter => {
               const result: { [key: string]: number } = {"id_parameter": parameter.parameters.id_parameter as number};
               // Filter out residential parameters, depending on the usage of the annual renovation rate
@@ -394,7 +398,7 @@ const analyze = async () => {
 
   if (errors.length > 0) {
     session.results = {};
-    error.value = `<h2 class="font-bold mt-1">We are sorry. Your inputs are invalid.</h2><p class="text-sm">${errors}</p>`;
+    error.value = `<h2 class="mt-1 font-bold">We are sorry. Your inputs are invalid.</h2><p class="text-sm">${errors}</p>`;
     loading.value = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
     return;
@@ -416,7 +420,7 @@ const analyze = async () => {
   const data = await response.json();
   if (Object.prototype.hasOwnProperty.call(data, 'error')) {
     session.results = {};
-    error.value = `<h2 class="font-bold mt-1">We are sorry. Your request could not be processed.</h2><p class="text-sm"><em>Details:</em> ${data.error.arg0}<br />Please get in touch.</p>`;
+    error.value = `<h2 class="mt-1 font-bold">We are sorry. Your request could not be processed.</h2><p class="text-sm"><em>Details:</em> ${data.error.arg0}<br />Please get in touch.</p>`;
     loading.value = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
@@ -426,6 +430,13 @@ const analyze = async () => {
     router.push({ name: 'results' });
   }
 }
+const programChanged = (program: ProgramInterface, i: number) => {
+  program.improvements.forEach(improvement => {
+    improvement.id = 0;
+  });
+  programs[i] = program;
+  session.updatePrograms(programs);
+}
 </script>
 
 <template>
@@ -434,28 +445,28 @@ const analyze = async () => {
     <ParametersOverlay v-else-if="showParametersOverlay" :improvement="selectedImprovement" :years="years" @close="showParametersOverlay = false;"></ParametersOverlay>
     <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
-        <h1 class="text-4xl dark:text-white font-bold leading-normal">Assess the impacts of energy efficiency
+        <h1 class="text-4xl font-bold leading-normal dark:text-white">Assess the impacts of energy efficiency
           projects</h1>
         <p class="mt-6 text-lg font-light dark:text-white">Select a suitable scenario from the world of energy
           efficiency, optionally add your own values and receive a comprehensive analysis for your region.</p>
       </div>
       <div
-        class="col relative"
+        class="relative col"
         :class="{
             'col-span-4': stage === stages.full,
             'col-span-5': stage === stages.home,
           }"
       >
         <div v-if="seedInfo" class="absolute inset-[-1rem] z-10 bg-white/80 dark:bg-blue-950/80 transition-opacity min-h-full">
-          <div class="absolute top-1/2 transform -translate-y-1/2 w-full">
-            <div class="flex min-h-full justify-center p-2 text-center items-center sm:p-0">
-              <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+          <div class="absolute w-full transform -translate-y-1/2 top-1/2">
+            <div class="flex items-center justify-center min-h-full p-2 text-center sm:p-0">
+              <div class="relative overflow-hidden text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg">
+                <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div
-                      class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-sky-100"
+                      class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-sky-100"
                     >
-                      <ExclamationTriangleIcon class="h-6 w-6 text-sky-600" aria-hidden="true" />
+                      <ExclamationTriangleIcon class="w-6 h-6 text-sky-600" aria-hidden="true" />
                     </div>
                     <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                       <h3 class="text-base font-semibold leading-6 text-gray-900">Important information</h3>
@@ -465,54 +476,54 @@ const analyze = async () => {
                     </div>
                   </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button type="button" class="inline-flex w-full justify-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 sm:ml-3 sm:w-auto border-0 focus:border-0 focus:outline-none" @click="setSeedInfo(false)">Sure</button>
+                <div class="px-4 py-3 bg-gray-50 sm:flex sm:flex-row-reverse sm:px-6">
+                  <button type="button" class="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white bg-gray-600 border-0 rounded-md shadow-sm hover:bg-gray-500 sm:ml-3 sm:w-auto focus:border-0 focus:outline-none" @click="setSeedInfo(false)">Sure</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-5">
+        <div class="relative px-8 py-8 mb-5 border border-gray-300 rounded-3xl dark:border-gray-400">
           <div class="absolute top-[-14px] left-0 w-full text-center">
-            <span class="inline-block font-bold italic bg-white dark:bg-blue-950 dark:text-white px-4">
+            <span class="inline-block px-4 italic font-bold bg-white dark:bg-blue-950 dark:text-white">
               <span v-if="stage === stages.home">Select your use case</span>
               <span v-else>Options</span>
             </span>
           </div>
-          <div class="grid grid-cols-5 items-center">
+          <div class="grid items-center grid-cols-5">
             <!-- time frame -->
             <div class="col-span-2">
-              <label for="timeframe" class="dark:text-white text-sm">Time frame</label>
+              <label for="timeframe" class="text-sm dark:text-white">Time frame</label>
               <InformationCircleIcon
                 @click="openModal('timeframe')"
-                class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
               ></InformationCircleIcon>
             </div>
             <div class="col-span-3">
               <div
-                class="inline-flex items-center rounded-full cursor-pointer dark:text-gray-800 border border-sky-600 dark:border-0"
+                class="inline-flex items-center border rounded-full cursor-pointer dark:text-gray-800 border-sky-600 dark:border-0"
               >
                 <span 
-                  class="leading-3 pl-8 pr-7 pt-4 pb-3 rounded-l-full text-center"
+                  class="pt-4 pb-3 pl-8 leading-3 text-center rounded-l-full pr-7"
                   :class="{
                     'bg-sky-600 text-white': !session.future,
                     'bg-white text-gray-400': session.future,
                   }"
                   @click="session.future = false"
                 >
-                  <span class="uppercase font-bold">past</span>
+                  <span class="font-bold uppercase">past</span>
                   <br>
                   <span class="text-sm">(ex-post)</span>
                 </span>
                 <span
-                  class="leading-3 pl-7 pr-8 pt-4 pb-3 rounded-r-full text-center"
+                  class="pt-4 pb-3 pr-8 leading-3 text-center rounded-r-full pl-7"
                   :class="{
                     'dark:bg-white text-gray-400': !session.future,
                     'bg-sky-600 text-white': session.future,
                   }"
                   @click="session.future = true"
                 >
-                  <span class="uppercase font-bold">future</span>
+                  <span class="font-bold uppercase">future</span>
                   <br>
                   <span class="text-sm">(ex-ante)</span>
                 </span>
@@ -520,14 +531,14 @@ const analyze = async () => {
             </div>
             <!-- end time frame -->
             <!-- region -->
-            <div class="mt-8 col-span-2">
-              <label for="region" class="dark:text-white text-sm">Region</label>
+            <div class="col-span-2 mt-8">
+              <label for="region" class="text-sm dark:text-white">Region</label>
               <InformationCircleIcon
                 @click="openModal('region')"
-                class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
               ></InformationCircleIcon>
             </div>
-            <div class="mt-8 col-span-3">
+            <div class="col-span-3 mt-8">
               <select
                 id="region"
                 class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
@@ -539,15 +550,15 @@ const analyze = async () => {
                 </option>
               </select>
               <div v-if="session.region !== 0">
-                <div class="flex items-center mb-2 mt-3">
+                <div class="flex items-center mt-3 mb-2">
                   <input v-model="session.municipality" id="municipality-1" type="radio" :value="false" name="municipality"
-                         class="w-4 h-4 text-sky-600 bg-gray-100 border-gray-300 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                         class="w-4 h-4 bg-gray-100 border-gray-300 text-sky-600 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                   <label for="municipality-1" class="ml-2 text-xs font-medium text-gray-500 dark:text-gray-300">Whole
                     country</label>
                 </div>
                 <div class="flex items-center">
                   <input v-model="session.municipality" id="municipality-2" type="radio" :value="true" name="municipality"
-                         class="w-4 h-4 text-sky-600 bg-gray-100 border-gray-300 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                         class="w-4 h-4 bg-gray-100 border-gray-300 text-sky-600 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                   <label for="municipality-2" class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300">Municipality
                     with <input type="number" id="inhabitants"
                                 class="bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[80px]"
@@ -558,14 +569,14 @@ const analyze = async () => {
             </div>
             <!-- end region -->
             <!-- unit -->
-            <div class="mt-8 col-span-2">
-              <label for="unit" class="dark:text-white text-sm">Unit</label>
+            <div class="col-span-2 mt-8">
+              <label for="unit" class="text-sm dark:text-white">Unit</label>
               <InformationCircleIcon
                 @click="openModal('unit')"
-                class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
               ></InformationCircleIcon>
             </div>
-            <div class="mt-8 col-span-3">
+            <div class="col-span-3 mt-8">
               <select
                 id="unit"
                 class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
@@ -581,14 +592,14 @@ const analyze = async () => {
           </div>
         </div>
         <button
-          class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full uppercase"
+          class="px-8 py-2 font-bold text-white uppercase bg-orange-500 rounded-full hover:bg-orange-600"
           @click="stage = stages.full; years = session.resetYears(session.future);"
           v-if="stage === stages.home"
         >
           Start
         </button>
         <a
-          class="border border-sky-500 text-sky-500 hover:border-sky-600 hover:text-sky-600  hover:dark:border-sky-400 hover:dark:text-sky-400 font-bold py-2 px-8 rounded-full uppercase ml-3"
+          class="px-8 py-2 ml-3 font-bold uppercase border rounded-full border-sky-500 text-sky-500 hover:border-sky-600 hover:text-sky-600 hover:dark:border-sky-400 hover:dark:text-sky-400"
           href="https://doc.micatool.eu"
           target="_blank"
           v-if="stage === stages.home"
@@ -598,20 +609,20 @@ const analyze = async () => {
         <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mt-[3rem]"
              v-if="stage === stages.full">
           <div class="absolute top-[-14px] left-0 w-full text-center">
-            <span class="inline-block font-bold italic bg-white dark:bg-blue-950 dark:text-white px-4">
+            <span class="inline-block px-4 italic font-bold bg-white dark:bg-blue-950 dark:text-white">
               Time frame
               <InformationCircleIcon
                 @click="openModal('years')"
-                class="h-6 w-6 ml-1 cursor-pointer inline dark:text-white"
+                class="inline w-6 h-6 ml-1 cursor-pointer dark:text-white"
               ></InformationCircleIcon>
             </span>
           </div>
           <div class="flex flex-wrap">
-            <div v-for="year in years" v-bind:key="year.toString()" class="whitespace-nowrap rounded-full mr-4 mb-7">
-              <span class="px-2 py-2 rounded-l-full bg-sky-600 text-white text-center border-sky-600 border">
+            <div v-for="year in years" v-bind:key="year.toString()" class="mr-4 rounded-full whitespace-nowrap mb-7">
+              <span class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600">
                 {{ year }}
               </span>
-              <span class="px-2 py-2 rounded-r-full dark:bg-white text-sky-900 text-center border-sky-600 border">
+              <span class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600">
                 <TrashIcon
                   @click="removeYear(year)"
                   class="mt-[-3px] h-5 w-5 inline"
@@ -639,20 +650,20 @@ const analyze = async () => {
             </select>
             <PlusCircleIcon
               @click="addYear()"
-              class="h-7 w-7 ml-5 cursor-pointer inline text-sky-700 dark:text-white"
+              class="inline ml-5 cursor-pointer h-7 w-7 text-sky-700 dark:text-white"
             ></PlusCircleIcon>
           </div>
         </div>
         <div class="mt-5" v-if="!session.resetted && stage !== stages.home">
           <button
-            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs mr-3"
+            class="py-2 pl-3 pr-4 mr-3 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
             @click="reset()"
           >
             <XCircleIcon class="h-5 w-5 mt-[-3px] inline text-white"></XCircleIcon>
             Reset
           </button>
           <button
-            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
+            class="py-2 pl-3 pr-4 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
             @click="showGlobalParametersOverlay = true;"
           >
             <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
@@ -660,21 +671,21 @@ const analyze = async () => {
           </button>
            <InformationCircleIcon
               @click="openModal('global-parameters')"
-              class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+              class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
             ></InformationCircleIcon>
         </div>
       </div>
       <div
-        class="col col-span-6 relative"
+        class="relative col-span-6 col"
         v-if="stage === stages.full"
       >
         <div v-if="seedInfo" class="absolute inset-[-1rem] z-10 bg-white/80 dark:bg-blue-950/80 transition-opacity min-h-full"></div>
         <div
           v-if="error"
-          class="flex p-4 mb-7 text-red-800 border-t-4 border-red-300 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800 rounded-2xl"
+          class="flex p-4 text-red-800 border-t-4 border-red-300 mb-7 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800 rounded-2xl"
           role="alert"
         >
-          <ExclamationCircleIcon class="h-8 w-8"></ExclamationCircleIcon>
+          <ExclamationCircleIcon class="w-8 h-8"></ExclamationCircleIcon>
           <div class="ml-3 font-medium">
             <div v-html="error"></div>
           </div>
@@ -692,23 +703,23 @@ const analyze = async () => {
         </div>
         <div
           v-if="Object.keys(session.results).length > 0"
-          class="flex p-4 mb-7 text-green-800 border-t-4 border-green-300 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800 rounded-2xl cursor-pointer"
+          class="flex p-4 text-green-800 border-t-4 border-green-300 cursor-pointer mb-7 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800 rounded-2xl"
           role="alert"
           @click="router.push({ name: 'results' });"
         >
-          <PresentationChartBarIcon class="h-8 w-8"></PresentationChartBarIcon>
+          <PresentationChartBarIcon class="w-8 h-8"></PresentationChartBarIcon>
           <div class="ml-3 font-medium">
-            <h2 class="font-bold mt-1">Results are ready.</h2>
+            <h2 class="mt-1 font-bold">Results are ready.</h2>
             <p class="text-sm">Click here to open the results again.</p>
           </div>
         </div>
         <div
-          class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mb-8"
+          class="relative px-8 py-8 mb-8 border border-gray-300 rounded-3xl dark:border-gray-400"
           v-for="(program, i) in programs"
           v-bind:key="`program-${i}`"
         >
           <div class="absolute top-[-14px] left-0 w-full text-center">
-            <span class="inline-block bg-white dark:bg-blue-950 dark:text-white pl-4 pr-3">
+            <span class="inline-block pl-4 pr-3 bg-white dark:bg-blue-950 dark:text-white">
               <div class="flex items-center">
                 <input
                   type="text"
@@ -720,17 +731,17 @@ const analyze = async () => {
                 <TrashIcon
                   v-if="programs.length >= 2"
                   @click="removeProgram(i)"
-                  class="ml-3 h-5 w-5 inline cursor-pointer text-red-700"
+                  class="inline w-5 h-5 ml-3 text-red-700 cursor-pointer"
                 ></TrashIcon>
               </div>
             </span>
           </div>
           <div class="flex items-center gap-8">
             <div>
-              <label :for="`subsector-${i}`" class="dark:text-white text-sm">Subsector</label>
+              <label :for="`subsector-${i}`" class="text-sm dark:text-white">Subsector</label>
               <InformationCircleIcon
                 @click="openModal('subsector')"
-                class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
               ></InformationCircleIcon>
             </div>
             <div>
@@ -738,6 +749,7 @@ const analyze = async () => {
                 :id="`subsector-${i}`"
                 class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                 v-model="program.subsector"
+                @change="programChanged(program, i)"
               >
                 <option value="0" selected disabled>Select subsector</option>
                 <option
@@ -749,9 +761,9 @@ const analyze = async () => {
               </select>
             </div>
           </div>
-          <div class="grid grid-cols-2 mt-8 gap-5 items-center" v-if="program.subsector">
+          <div class="grid items-center grid-cols-2 gap-5 mt-8" v-if="program.subsector">
             <div
-              class="rounded-3xl border relative mb-2"
+              class="relative mb-2 border rounded-3xl"
               :class="{
                 'border-gray-300': improvement.id,
                 'dark:border-gray-400': improvement.id,
@@ -788,14 +800,14 @@ const analyze = async () => {
                   </select>
                   <InformationCircleIcon
                     @click="openModal('improvement')"
-                    class="h-6 w-6 ml-2 cursor-pointer inline dark:text-white"
+                    class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
                   ></InformationCircleIcon>
                 </div>
-                <div v-for="year in years" v-bind:key="year.toString()" class="whitespace-nowrap rounded-full mt-7">
-                  <span class="px-2 py-2 rounded-l-full bg-sky-600 text-white text-center border-sky-600 border">{{
+                <div v-for="year in years" v-bind:key="year.toString()" class="rounded-full whitespace-nowrap mt-7">
+                  <span class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600">{{
                       year
                     }}</span>
-                  <span class="px-2 py-2 rounded-r-full dark:bg-white text-sky-900 text-center border-sky-600 border">
+                  <span class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600">
                     <input
                       v-model="improvement.values[year]"
                       :id="`improvement-value-${improvement.id}-${year}`"
@@ -807,9 +819,9 @@ const analyze = async () => {
                   </span>
                 </div>
               </div>
-              <div class="border-t border-gray-200 px-6 py-3 text-center bg-orange-200 dark:bg-sky-200">
+              <div class="px-6 py-3 text-center bg-orange-200 border-t border-gray-200 dark:bg-sky-200">
                 <button
-                  class="text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
+                  class="py-2 pl-3 pr-4 text-xs font-bold text-white uppercase rounded-full"
                   :class="{
                     'cursor-not-allowed bg-gray-400 hover:bg-gray-400 dark:bg-gray-400 dark:hover:bg-gray-400': improvement.id === 0 || Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) === 0,
                     'bg-orange-400 hover:bg-orange-500 dark:bg-sky-400 dark:hover:bg-sky-500': improvement.id !== 0 && Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) > 0,
@@ -822,11 +834,11 @@ const analyze = async () => {
                 </button>
                  <InformationCircleIcon
                     @click="openModal('parameters')"
-                    class="h-6 w-6 ml-2 cursor-pointer inline dark:text-sky-400 text-orange-400"
+                    class="inline w-6 h-6 ml-2 text-orange-400 cursor-pointer dark:text-sky-400"
                  ></InformationCircleIcon>
               </div>
               <div
-                class="border-t border-gray-200 px-6 py-3 text-center bg-blue-50 dark:bg-blue-900 rounded-b-3xl"
+                class="px-6 py-3 text-center border-t border-gray-200 bg-blue-50 dark:bg-blue-900 rounded-b-3xl"
               >
                 <DocumentDuplicateIcon
                   @click="copyImprovement(program, improvementIndex)"
@@ -841,13 +853,13 @@ const analyze = async () => {
             </div>
             <PlusCircleIcon
               @click="addImprovement(program)"
-              class="h-7 w-7 cursor-pointer inline text-gray-300 dark:text-white"
+              class="inline text-gray-300 cursor-pointer h-7 w-7 dark:text-white"
             ></PlusCircleIcon>
           </div>
         </div>
-        <div class="text-center mb-5">
+        <div class="mb-5 text-center">
           <button
-            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs"
+            class="py-2 pl-3 pr-4 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
             @click="addProgram()"
           >
             <PlusCircleIcon class="h-5 w-5 mt-[-2px] inline text-white"></PlusCircleIcon>
@@ -855,11 +867,11 @@ const analyze = async () => {
           </button>
         </div>
         <div
-          class="text-center sticky bottom-0"
+          class="sticky bottom-0 text-center"
         >
-          <div class="mx-2 p-4" style="backdrop-filter: blur(2px);">
+          <div class="p-4 mx-2" style="backdrop-filter: blur(2px);">
             <button
-              class="bg-amber-300 hover:bg-amber-400 font-bold py-2 px-8 rounded-full uppercase text-xl"
+              class="px-8 py-2 text-xl font-bold uppercase rounded-full bg-amber-300 hover:bg-amber-400"
               @click="analyze()"
               ref="analyzeButton"
               :disabled="loading"

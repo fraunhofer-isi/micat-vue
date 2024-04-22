@@ -102,7 +102,13 @@ const getParameters = async () => {
   const yearRegex = /^[0-9]+$/;
   
   for (const [category, dataSet] of Object.entries(results)) {
-    if (category === 'context') continue;
+    // Use residential parameters for residential subsectors only (which is "average residential" (ID: 17) only)
+    // Use fuel switch parameters for fuel switch improvements only
+    if (
+      category === 'context' || 
+      category === 'residential' && [17].indexOf(props.improvement.subsectorId) == -1 ||
+      category === 'fuelSwitch' && ['fuel switch', 'heating fuel switch'].indexOf(props.improvement.name?.toLowerCase()) == -1
+    ) { continue; }
     // Add category key, if it doesn't exist yet
     if (!restructuredResults[category]) restructuredResults[category] = [];
     for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
@@ -121,17 +127,21 @@ const getParameters = async () => {
       restructuredResults[category].push(entry);
     }
   }
+  restructuredResults['fuelSwitch'].sort((a, b) => {
+    return a['parameters']['id_final_energy_carrier'] < b['parameters']['id_final_energy_carrier'] ? -1 : 1;
+  });
   parameters[props.improvement.internalId] = restructuredResults;
 }
 const selectCategory = (category: string) => {
   activeCategory.value = category;
 };
-const roundNumber = (value: number, id: string) => {
+const roundNumber = (value: number, id: string, unit: string | number | undefined | null = null) => {
   // round to next one, hundred, thousand, million, billion, etc.
   if (!rangeIndex[id]) {
     rangeIndex[id] = Math.max(100, 10 ** (Math.ceil(Math.log10(value))) * 2);
   }
-  return rangeIndex[id];
+  // If the unit is a percentage, we need to make sure the range is capped at 100
+  return unit && unit === '%' ? Math.min(rangeIndex[id], 100) : rangeIndex[id];
 };
 const reset = () => {
   getParameters();
@@ -141,18 +151,18 @@ const reset = () => {
 </script>
 
 <template>
-  <div role="status" v-if="loading" class="text-center p-5">
+  <div role="status" v-if="loading" class="p-5 text-center">
       <svg aria-hidden="true" class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-orange-400" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
           <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
       </svg>
       <span class="sr-only">Loading...</span>
   </div>
-  <div v-else class="max-w-screen-xl mx-auto pt-5 pb-10">
-    <div class="flex items-center gap-2 justify-between pb-2">
+  <div v-else class="max-w-screen-xl pt-5 pb-10 mx-auto">
+    <div class="flex items-center justify-between gap-2 pb-2">
       <a href="#" @click="$emit('close')" class="text-sm text-orange-700 dark:text-orange-300">back to the entries</a>
       <button
-        class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 pl-3 pr-4 rounded-full uppercase text-xs mr-3"
+        class="py-2 pl-3 pr-4 mr-3 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
         @click="reset()"
         :disabled="loading"
       >
@@ -160,13 +170,13 @@ const reset = () => {
         Reset to defaults
       </button>
     </div>
-    <div class="rounded-3xl border border-gray-300 my-3 relative bg-white">
+    <div class="relative my-3 bg-white border border-gray-300 rounded-3xl">
       <div @click="$emit('close')"
            class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-10px] cursor-pointer">
         <XCircleIcon class="text-orange-700 dark:text-orange-300 h-9 w-9"></XCircleIcon>
       </div>
       <div class="flex">
-        <div class="bg-orange-600 rounded-l-3xl self-stretch">
+        <div class="self-stretch bg-orange-600 rounded-l-3xl">
           <div
             class="flex items-center px-5 cursor-pointer"
             @click="selectCategory(categoryName)"
@@ -182,15 +192,15 @@ const reset = () => {
             v-for="(categoryName, i) in Object.keys(parameters[props.improvement.internalId])"
             v-bind:key="`parameter-${i}`"
           >
-            <div class="py-3 grow font-bold capitalize whitespace-nowrap">{{ categoryName.replace(/([A-Z])/g, ' $1') }}</div>
+            <div class="py-3 font-bold capitalize grow whitespace-nowrap">{{ categoryName.replace(/([A-Z])/g, ' $1') }}</div>
           </div>
         </div>
         <div>
           <div>
-            <div class="bg-sky-600 text-sky-500 p-2 inline-block rounded-br-xl">
-              <span class="font-bold mr-2 text-sky-400">{{ improvement.program }}</span> &mdash;
-              <span class="font-bold mx-2 text-sky-200">{{ improvement.subsector }}</span> &mdash;
-              <span class="font-bold ml-2 mr-4 text-white">{{ improvement.name }}</span>
+            <div class="inline-block p-2 bg-sky-600 text-sky-500 rounded-br-xl">
+              <span class="mr-2 font-bold text-sky-400">{{ improvement.program }}</span> &mdash;
+              <span class="mx-2 font-bold text-sky-200">{{ improvement.subsector }}</span> &mdash;
+              <span class="ml-2 mr-4 font-bold text-white">{{ improvement.name }}</span>
             </div>
           </div>
           <div class="grid grid-cols-2 px-5 py-2" v-if="activeCategory">
@@ -202,19 +212,23 @@ const reset = () => {
                 'hidden': parameter.parameters.id_parameter === 45 && useRenovationRate || [32, 43].indexOf(parameter.parameters.id_parameter as number) > -1 && !useRenovationRate,
               }"
             >
-              <div class="bg-sky-600 rounded-t-xl text-sm text-white px-4 py-2 flex justify-between items-center">
-                <span>{{ parameter.parameters.label }}</span>
-                <span class="bg-white rounded-xl text-sky-600 px-2 py-1 ml-2">{{ parameter.parameters.unit }}</span>
+              <div class="flex items-center px-4 py-2 text-sm text-white justify-items-start bg-sky-600 rounded-t-xl">
+                <span class="grow">{{ parameter.parameters.label }}</span>
+                <InformationCircleIcon
+                  @click="openModal(`advanced-parameters-${parameter.parameters.id_parameter}${parameter.parameters.id_final_energy_carrier ? `-${parameter.parameters.id_final_energy_carrier}` : ''}`)"
+                  class="inline w-6 h-6 ml-2 cursor-pointer"
+                ></InformationCircleIcon>
+                <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">{{ parameter.parameters.unit }}</span>
               </div>
               <div class="p-4">
-                <div v-if="parameter.years.length === 0" class="grid gap-2 py-1 items-center grid-cols-3">
+                <div v-if="parameter.years.length === 0" class="grid items-center grid-cols-3 gap-2 py-1">
                   <div>
                     <input
                       :id="`parameter-${parameter.parameters.id_parameter}-constant-range`"
                       type="range"
-                      class="w-full h-1 bg-sky-200 rounded-lg appearance-none cursor-pointer"
+                      class="w-full h-1 rounded-lg appearance-none cursor-pointer bg-sky-200"
                       min="0"
-                      :max="roundNumber(parameter.parameters.constants as number, `parameter-${parameter.parameters.id_parameter}-constant-range`)"
+                      :max="roundNumber(parameter.parameters.constants as number, `parameter-${parameter.parameters.id_parameter}-constant-range`, parameter.parameters.unit)"
                       :step="roundNumber(parameter.parameters.constants as number, `parameter-${parameter.parameters.id_parameter}-constant-range`) / 100"
                       v-model.number="parameter.parameters.constants"
                     />
@@ -232,16 +246,16 @@ const reset = () => {
                   v-else
                   v-for="year in parameter.years"
                   v-bind:key="`parameter-${parameter.parameters.id_parameter}-${year.key}`"
-                  class="grid gap-2 py-1 items-center grid-cols-3"
+                  class="grid items-center grid-cols-3 gap-2 py-1"
                 >
-                  <div class="text-sky-600 font-bold text-xs">{{ year.key }}</div>
+                  <div class="text-xs font-bold text-sky-600">{{ year.key }}</div>
                   <div>
                     <input
                       :id="`parameter-${parameter.parameters.id_parameter}-${year.key}-range`"
                       type="range"
-                      class="w-full h-1 bg-sky-200 rounded-lg appearance-none cursor-pointer"
+                      class="w-full h-1 rounded-lg appearance-none cursor-pointer bg-sky-200"
                       min="0"
-                      :max="roundNumber(year.value, `parameter-${parameter.parameters.id_parameter}-${year.key}-range`)"
+                      :max="roundNumber(year.value, `parameter-${parameter.parameters.id_parameter}-${year.key}-range`, parameter.parameters.unit)"
                       :step="roundNumber(year.value, `parameter-${parameter.parameters.id_parameter}-${year.key}-range`) / 100"
                       v-model.number="year.value"
                     />
@@ -258,13 +272,13 @@ const reset = () => {
               </div>
               <div
                 v-if="[43, 45].indexOf(parameter.parameters.id_parameter as number) > -1"
-                class="bg-sky-100 rounded-b-xl text-center text-sm text-sky-500 p-2"
+                class="p-2 text-sm text-center bg-sky-100 rounded-b-xl text-sky-500"
               >
                 <button @click="useRenovationRate = !(useRenovationRate ?? false)">
                   <ArrowsRightLeftIcon
                     class="h-4 w-4 mt-[-3px] inline mr-1"
                   ></ArrowsRightLeftIcon>
-                  Switch to <span class="font-bold italic">{{ useRenovationRate ? "affected dwellings" : "annual renovation rate" }}</span>
+                  Switch to <span class="italic font-bold">{{ useRenovationRate ? "affected dwellings" : "annual renovation rate" }}</span>
                   <InformationCircleIcon
                     @click="openModal('renovation')"
                     class="h-5 w-5 ml-1 cursor-pointer inline mt-[-3px]"

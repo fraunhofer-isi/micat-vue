@@ -31,7 +31,7 @@ export interface ImprovementValueInterface {
     [key: string]: number;
 }
 export interface ImprovementInterface {
-    id: number;
+    id?: number;
     internalId?: number;
     name?: string;
     label?: string;

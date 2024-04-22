@@ -129,6 +129,29 @@ const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
   // Check if all entries sum up to (almost) 1
   return Math.abs(entries.map((entry) => entry.value).reduce((a, b) => a + b) - 1) < 0.1;
 };
+const getCategoryTitle = (categoryName: string) => {
+  switch (categoryName) {
+    case 'FuelSplitCoefficient':
+      return 'Energy mix coefficient';
+    case 'EnergyPrice':
+      return 'Energy prices';
+    default:
+      let name = categoryName.replace(/([A-Z])/g, ' $1').toLowerCase().trim();
+      return name[0].toUpperCase() + name.slice(1);
+  }
+};
+const getFactorTitle = (factor: string) => {
+  const cleaned_factor = getCleanedMonetisationFactorName(factor);
+  switch (cleaned_factor) {
+    case 'CostpertonofemittedCO2':
+      return 'Cost of CO2-emissions [€/tCO2]';
+    default:
+      return factor;
+  }
+};
+const getCleanedMonetisationFactorName = (factor: string) => {
+  return factor.replace(/ \[[\s\S]*?\]|\s/g, '');
+};
 
 // Injections
 const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
@@ -177,7 +200,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
             v-bind:key="`global-parameter-${i}`"
           >
             <div class="py-3 grow">
-              <span class="font-bold">{{ categoryName.replace(/([A-Z])/g, ' $1') }}</span>
+              <span class="font-bold">{{ getCategoryTitle(categoryName) }}</span>
               <InformationCircleIcon
                 @click="openModal(categoryName)"
                 class="h-6 w-6 ml-2 cursor-pointer inline"
@@ -211,7 +234,12 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               class="block rounded-xl bg-white border border-orange-600 m-5 max-w-[450px]">
               <div
                 class="bg-orange-600 rounded-t-xl text-white px-4 py-2">
-                {{ activeCategory === 'MonetisationFactors' ? monetisationFactorMapping[Number(yearOrFactor)] : yearOrFactor }}
+                {{ activeCategory === 'MonetisationFactors' ? getFactorTitle(monetisationFactorMapping[Number(yearOrFactor)]) : yearOrFactor }}
+                <InformationCircleIcon
+                  v-if="activeCategory === 'MonetisationFactors'"
+                  @click="openModal(getCleanedMonetisationFactorName(monetisationFactorMapping[Number(yearOrFactor)]))"
+                  class="h-6 w-6 ml-2 cursor-pointer inline"
+                ></InformationCircleIcon>
               </div>
               <div class="p-4">
                 <div
