@@ -106,8 +106,8 @@ const getParameters = async () => {
     // Use fuel switch parameters for fuel switch improvements only
     if (
       category === 'context' || 
-      category === 'residential' && [17].indexOf(props.improvement.subsectorId) == -1 ||
-      category === 'fuelSwitch' && ['fuel switch', 'heating fuel switch'].indexOf(props.improvement.name?.toLowerCase()) == -1
+      category === 'residential' && [17].indexOf(props.improvement.subsectorId!) == -1 ||
+      category === 'fuelSwitch' && ['fuel switch', 'heating fuel switch'].indexOf(props.improvement.name!.toLowerCase()) == -1
     ) { continue; }
     // Add category key, if it doesn't exist yet
     if (!restructuredResults[category]) restructuredResults[category] = [];

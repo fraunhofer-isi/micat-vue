@@ -22,16 +22,19 @@ const props = defineProps<{
 }>()
 
 // Legend
-const getOrCreateLegendList = (chart, id) => {
+const getOrCreateLegendList = (chart: any, id: any) => {
   const legendContainer = document.getElementById(id);
+  if (!legendContainer) {
+    return;
+  }
   let listContainer = legendContainer.querySelector('ul');
 
   if (!listContainer) {
     listContainer = document.createElement('ul');
     listContainer.style.display = 'flex';
     listContainer.style.flexDirection = 'row';
-    listContainer.style.margin = 0;
-    listContainer.style.padding = 0;
+    listContainer.style.margin = "0";
+    listContainer.style.padding = "0";
 
     legendContainer.appendChild(listContainer);
   }
@@ -40,8 +43,11 @@ const getOrCreateLegendList = (chart, id) => {
 };
 const htmlLegendPlugin = {
   id: 'htmlLegend',
-  afterUpdate(chart, args, options) {
+  afterUpdate(chart: any, args: any, options: any) {
     const ul = getOrCreateLegendList(chart, options.containerID);
+    if (!ul) {
+      return;
+    }
 
     // Remove old legend items
     while (ul.firstChild) {
@@ -49,7 +55,7 @@ const htmlLegendPlugin = {
     }
 
     // Reuse the built-in legendItems generator
-    const items = chart.options.plugins.legend.labels.generateLabels(chart);
+    const items: Array<any> = chart.options.plugins.legend.labels.generateLabels(chart);
 
     items.forEach(item => {
       const li = document.createElement('li');
@@ -76,7 +82,7 @@ const htmlLegendPlugin = {
       boxSpan.style.borderColor = item.strokeStyle;
       boxSpan.style.borderWidth = item.lineWidth + 'px';
       boxSpan.style.display = 'inline-block';
-      boxSpan.style.flexShrink = 0;
+      boxSpan.style.flexShrink = '0';
       boxSpan.style.height = '10px';
       boxSpan.style.marginRight = '5px';
       boxSpan.style.width = '10px';
@@ -84,8 +90,8 @@ const htmlLegendPlugin = {
       // Text
       const textContainer = document.createElement('p');
       textContainer.style.color = item.fontColor;
-      textContainer.style.margin = 0;
-      textContainer.style.padding = 0;
+      textContainer.style.margin = "0px";
+      textContainer.style.padding = "0px";
       textContainer.style.textDecoration = item.hidden ? 'line-through' : '';
 
       const text = document.createTextNode(item.text);
@@ -204,8 +210,8 @@ const aggregationChartData: any = computed(() => {
 </script>
 
 <template>
-  <div class="bg-sky-600 text-white mx-7 my-5 p-4 rounded-lg">
-    <h3 class="font-bold text-md mb-2">Aggregation</h3>
+  <div class="p-4 my-5 text-white rounded-lg bg-sky-600 mx-7">
+    <h3 class="mb-2 font-bold text-md">Aggregation</h3>
     <div class="text-sm text-sky-200">More information will follow shortly.</div>
   </div>
   <div id="aggregation-legend"></div>
