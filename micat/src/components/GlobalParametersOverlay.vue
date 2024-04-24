@@ -149,10 +149,22 @@ const getFactorTitle = (factor: string) => {
     case 'CostpertonofemittedCO2':
       return 'Cost of CO2-emissions [€/tCO2]';
     default:
-      return factor;
+      // Remove units
+      return factor.replace(/ \[[\s\S]*?\]|/g, '');
+  }
+};  
+const getFactorUnit = (factor: string) => {
+  const cleaned_factor = getCleanedMonetisationFactorName(factor);
+  const regExp = /\[([^)]+)\]/;
+
+  switch (cleaned_factor) {
+    case 'CostpertonofemittedCO2':
+      return '€/tCO2';
+    default:
+      return regExp.exec(factor)![1];
   }
 };
-const getCleanedMonetisationFactorName = (factor: string) => {
+const getCleanedMonetisationFactorName = (factor: string) => { 
   return factor.replace(/ \[[\s\S]*?\]|\s/g, '');
 };
 
@@ -236,13 +248,14 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               v-bind:key="`global-parameters-years-${yearOrFactor}`"
               class="block rounded-xl bg-white border border-orange-600 m-5 max-w-[450px]">
               <div
-                class="px-4 py-2 text-white bg-orange-600 rounded-t-xl">
-                {{ activeCategory === 'MonetisationFactors' ? getFactorTitle(monetisationFactorMapping[Number(yearOrFactor)]) : yearOrFactor }}
+                class="flex items-center px-4 py-2 text-white bg-orange-600 rounded-t-xl justify-items-start">
+                <span class="grow">{{ activeCategory === 'MonetisationFactors' ? getFactorTitle(monetisationFactorMapping[Number(yearOrFactor)]) : yearOrFactor }}</span>
                 <InformationCircleIcon
                   v-if="activeCategory === 'MonetisationFactors'"
                   @click="openModal(getCleanedMonetisationFactorName(monetisationFactorMapping[Number(yearOrFactor)]))"
                   class="inline w-6 h-6 ml-2 cursor-pointer"
                 ></InformationCircleIcon>
+                <span v-if="activeCategory === 'MonetisationFactors'" class="px-2 ml-2 bg-white rounded-xl text-sky-600">{{ getFactorUnit(monetisationFactorMapping[Number(yearOrFactor)]) }}</span>
               </div>
               <div class="p-4">
                 <div
