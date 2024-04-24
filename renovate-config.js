@@ -9,6 +9,7 @@
 // https://docs.renovatebot.com/self-hosted-configuration/
 
 module.exports = {
+  "enabled": false,
   "username": "renovate-release",
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
   "onboarding": false,
