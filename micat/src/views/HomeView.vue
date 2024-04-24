@@ -541,7 +541,7 @@ const programChanged = (program: ProgramInterface, i: number) => {
             <div class="col-span-3 mt-8">
               <select
                 id="region"
-                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                 v-model="session.region"
               >
                 <option v-for="(region, i) in regions" v-bind:key="`region-${i}`" :value="region[0]">{{
@@ -579,7 +579,7 @@ const programChanged = (program: ProgramInterface, i: number) => {
             <div class="col-span-3 mt-8">
               <select
                 id="unit"
-                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                 v-model="session.unit"
               >
                 <option v-for="[key, value] in Object.entries(units)" v-bind:key="`unit-${key}`" :value="key">{{
@@ -638,7 +638,7 @@ const programChanged = (program: ProgramInterface, i: number) => {
           <div class="mt-2">
             <select
               id="new-year"
-              class="py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
+              class="py-2.5 px-0 w-full text-sm text-gray-500 bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
               v-model="newYearSelected"
             >
               <option
@@ -747,7 +747,7 @@ const programChanged = (program: ProgramInterface, i: number) => {
             <div>
               <select
                 :id="`subsector-${i}`"
-                class="block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                 v-model="program.subsector"
                 @change="programChanged(program, i)"
               >
@@ -777,7 +777,7 @@ const programChanged = (program: ProgramInterface, i: number) => {
                 <div class="flex items-center">
                   <select
                     :id="`improvement-${i}-${improvement.id}`"
-                    class="block py-2.5 pl-0 pr-8 w-full text-sm bg-transparent border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                    class="block py-2.5 pl-0 pr-8 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                     :class="{
                       'border-gray-200': improvement.id,
                       'dark:text-gray-200': improvement.id,
