@@ -21,32 +21,30 @@ on:
 
 jobs:
   build_and_deploy:
-
     runs-on: ubuntu-latest
 
     steps:
-    - name: checkout
-      uses: actions/checkout@v3
-    - name: install node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '19.x'
-    - name: install node.js dependencies
-      run: |
-        cd micat
-        npm install
-    - name: build
-      run: |
-        cd micat
-        npm run build --if-present
-        
-#    - name: deploy
-#      uses: pressidium/lftp-mirror-action@v1
-#      with:
-#        host: ${{ secrets.SFTP_URL }}
-#        port: ${{ secrets.SFTP_PORT }}
-#        user: ${{ secrets.SFTP_USER }}
-#        pass: ${{ secrets.SFTP_PASSWORD }}
-#        localDir: './micat/dist'
-#        remoteDir: '.'
-#        reverse: true
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: install node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "19.x"
+      - name: install node.js dependencies
+        run: |
+          cd micat
+          npm install
+      - name: build
+        run: |
+          cd micat
+          npm run build --if-present
+      - name: deploy
+        uses: pressidium/lftp-mirror-action@v1
+        with:
+          host: ${{ secrets.SFTP_URL }}
+          port: ${{ secrets.SFTP_PORT }}
+          user: ${{ secrets.SFTP_USER }}
+          pass: ${{ secrets.SFTP_PASSWORD }}
+          localDir: "./micat/dist"
+          remoteDir: "."
+          reverse: true
