@@ -15,6 +15,7 @@ import {
   CursorArrowRaysIcon,
   CheckIcon,
   InformationCircleIcon,
+  ArrowDownTrayIcon,
 } from '@heroicons/vue/24/outline';
 import { Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
@@ -515,22 +516,55 @@ const toggleIndicator = (identifier: string) => {
 const selectCbaResult = (slug: string) => {
   activeCbaResult.value = slug;
 }
+const exportResults = () => {
+  const response = fetch(`${import.meta.env.VITE_API_URL}export-results`, {
+    method: "POST",
+    body: JSON.stringify({
+      results: session.results,
+      categories,
+      cbaData: cbaData.value,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then(res => res.blob()).then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'MICAT_results.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+    // window.location.assign(url);
+  });
+};
 
 // Injections
 const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
 </script>
 
 <template>
-  <div class="max-w-screen-xl mx-auto pt-5 pb-10">
-    <a href="#" @click="router.push({ name: 'home' });" class="text-sm text-sky-700 dark:text-sky-300">back to the entries</a>
-    <div class="rounded-3xl border border-gray-300 my-3 relative bg-white">
+  <div class="max-w-screen-xl pt-5 pb-10 mx-auto">
+    <div class="flex justify-between">
+      <a href="#" @click="router.push({ name: 'home' });" class="text-sm text-sky-700 dark:text-sky-300">back to the entries</a>
+      <button
+        class="py-2 pl-3 pr-4 mr-8 text-xs font-bold text-white uppercase bg-orange-400 rounded-full hover:bg-orange-500 dark:bg-sky-600 dark:hover:bg-sky-700"
+        @click="exportResults()"
+      >
+        <ArrowDownTrayIcon class="h-5 w-5 mt-[-3px] inline text-white"></ArrowDownTrayIcon>
+        Export
+      </button>
+    </div>
+    <div class="relative my-3 bg-white border border-gray-300 rounded-3xl">
       <div @click="router.push({ name: 'home' });" class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-10px] cursor-pointer">
         <XCircleIcon class="text-sky-700 dark:text-sky-300 h-9 w-9"></XCircleIcon>
       </div>
       <div class="flex">
         <div class="bg-sky-800 rounded-l-3xl min-w-[325px] self-stretch">
           <div
-            class="flex items-center pl-7 cursor-pointer"
+            class="flex items-center cursor-pointer pl-7"
             @click="selectCategory(key)"
             :class="{
               'text-white': activeCategory !== key,
@@ -546,7 +580,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
             v-bind:key="`category-${key}`"
           >
             <div>
-              <component :is="icons[category.icon]" class="h-5 w-5 mr-5"></component>
+              <component :is="icons[category.icon]" class="w-5 h-5 mr-5"></component>
             </div>
             <div class="py-5 grow">
               <span class="font-bold">{{ category.title }}</span><br />
@@ -556,7 +590,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               <div
                 v-for="(subcategory, i) in category.subcategories"
                 v-bind:key="`subcategory-${key}-${i}`"
-                class="py-2 px-4 text-sm font-bold"
+                class="px-4 py-2 text-sm font-bold"
                 :class="{
                   'text-white': activeSubcategory !== subcategory,
                   'text-sky-700': activeSubcategory === subcategory,
@@ -574,9 +608,9 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
         </div>
         <div v-if="['quantification', 'monetization'].indexOf(activeCategory) > -1">
           <div class="flex">
-            <div class="bg-orange-600 rounded-br-3xl pl-1 border-l border-white self-start">
+            <div class="self-start pl-1 bg-orange-600 border-l border-white rounded-br-3xl">
               <div
-                class="flex items-center pl-5 pr-3 py-4 cursor-pointer text-sm rounded-bl-3xl"
+                class="flex items-center py-4 pl-5 pr-3 text-sm cursor-pointer rounded-bl-3xl"
                 @click="activeMeasurement = measurement"
                 :class="{
                   'text-white': activeMeasurement.identifier !== measurement.identifier,
@@ -589,14 +623,14 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                 v-for="measurement in categories[activeCategory].measurements.filter(measurement => !measurement.subcategory || measurement.subcategory === activeSubcategory)"
                 v-bind:key="`measurement-${measurement.identifier}`"
               >
-                <span class="font-bold mr-8 grow whitespace-nowrap">{{ measurement.title }}</span>
-                <CheckIcon v-if="activeMeasurement.identifier === measurement.identifier" class="h-5 w-5"></CheckIcon>
-                <CursorArrowRaysIcon v-else class="h-5 w-5"></CursorArrowRaysIcon>
+                <span class="mr-8 font-bold grow whitespace-nowrap">{{ measurement.title }}</span>
+                <CheckIcon v-if="activeMeasurement.identifier === measurement.identifier" class="w-5 h-5"></CheckIcon>
+                <CursorArrowRaysIcon v-else class="w-5 h-5"></CursorArrowRaysIcon>
               </div>
             </div>
             <div>
-              <div class="bg-sky-600 text-white mx-7 my-7 p-4 rounded-lg">
-                <h3 class="font-bold text-md mb-2">{{ activeMeasurement.title }}</h3>
+              <div class="p-4 text-white rounded-lg bg-sky-600 mx-7 my-7">
+                <h3 class="mb-2 font-bold text-md">{{ activeMeasurement.title }}</h3>
                 <div class="text-sm text-sky-200" v-html="activeMeasurement.description"></div>
               </div>
             </div>
@@ -616,10 +650,10 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
         </div>
         <div v-if="activeCategory === 'cba'" class="w-full">
           <div class="flex w-full">
-            <div class="bg-sky-600 rounded-br-3xl pl-2 border-l border-white self-start">
-              <h3 class="bg-white font-bold p-2 text-sky-600">Indicators</h3>
+            <div class="self-start pl-2 border-l border-white bg-sky-600 rounded-br-3xl">
+              <h3 class="p-2 font-bold bg-white text-sky-600">Indicators</h3>
               <div
-                class="flex items-center pl-5 pr-3 py-4 cursor-pointer text-sm"
+                class="flex items-center py-4 pl-5 pr-3 text-sm cursor-pointer"
                 @click="toggleIndicator(measurement.identifier)"
                 @mouseover="indicatorInfo = measurement.description;"
                 @mouseleave="indicatorInfo = '';"
@@ -634,20 +668,20 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                 v-for="(measurement, i) in categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === 'reductionOfAirPollution'))"
                 v-bind:key="`measurement-cba-${measurement.identifier}`"
               >
-                <span class="font-bold mr-8 grow whitespace-nowrap">{{ measurement.title }}</span>
-                <CheckIcon v-if="activeIndicators.indexOf(measurement.identifier) > -1" class="h-5 w-5"></CheckIcon>
-                <CursorArrowRaysIcon v-else class="h-5 w-5"></CursorArrowRaysIcon>
+                <span class="mr-8 font-bold grow whitespace-nowrap">{{ measurement.title }}</span>
+                <CheckIcon v-if="activeIndicators.indexOf(measurement.identifier) > -1" class="w-5 h-5"></CheckIcon>
+                <CursorArrowRaysIcon v-else class="w-5 h-5"></CursorArrowRaysIcon>
               </div>
             </div>
             <div class="grow">
-              <div class="bg-orange-600 text-white mx-7 my-7 p-4 text-sm rounded-lg">
-                <h3 class="font-bold mb-2">Parameters</h3>
-                <div class="flex mt-2 gap-5">
+              <div class="p-4 text-sm text-white bg-orange-600 rounded-lg mx-7 my-7">
+                <h3 class="mb-2 font-bold">Parameters</h3>
+                <div class="flex gap-5 mt-2">
                   <div>
-                    <label for="energy-price-sensitivity" class="dark:text-white text-sm">Energy price sensitivity</label>
+                    <label for="energy-price-sensitivity" class="text-sm dark:text-white">Energy price sensitivity</label>
                     <InformationCircleIcon
                       @click="openModal('energy-price-sensitivity')"
-                      class="h-6 w-6 ml-2 cursor-pointer inline"
+                      class="inline w-6 h-6 ml-2 cursor-pointer"
                     ></InformationCircleIcon>
                   </div>
                   <div class="grow">
@@ -665,12 +699,12 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     <div class="text-sm text-orange-300">{{ energyPriceSensitivity }} %</div>
                   </div>
                 </div>
-                <div class="flex mt-2 gap-5">
+                <div class="flex gap-5 mt-2">
                   <div>
-                    <label for="investments-sensitivity" class="dark:text-white text-sm">Investments sensitivity</label>
+                    <label for="investments-sensitivity" class="text-sm dark:text-white">Investments sensitivity</label>
                     <InformationCircleIcon
                       @click="openModal('investments-sensitivity')"
-                      class="h-6 w-6 ml-2 cursor-pointer inline"
+                      class="inline w-6 h-6 ml-2 cursor-pointer"
                     ></InformationCircleIcon>
                   </div>
                   <div class="grow">
@@ -688,12 +722,12 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     <div class="text-sm text-orange-300">{{ investmentsSensitivity }} %</div>
                   </div>
                 </div>
-                <div class="flex mt-2 gap-5">
+                <div class="flex gap-5 mt-2">
                   <div>
-                    <label for="discount-rate" class="dark:text-white text-sm">Discount rate</label>
+                    <label for="discount-rate" class="text-sm dark:text-white">Discount rate</label>
                     <InformationCircleIcon
                       @click="openModal('discount-rate')"
-                      class="h-6 w-6 ml-2 cursor-pointer inline"
+                      class="inline w-6 h-6 ml-2 cursor-pointer"
                     ></InformationCircleIcon>
                   </div>
                   <div class="grow">
@@ -714,7 +748,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               </div>
               <div
                 v-html="indicatorInfo"
-                class="bg-sky-600 text-white mx-7 my-7 p-4 text-sm rounded-lg"
+                class="p-4 text-sm text-white rounded-lg bg-sky-600 mx-7 my-7"
                 :class="{
                   'hidden': !indicatorInfo,
                 }"
@@ -722,13 +756,13 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
             </div>
           </div>
           <div class="px-10 py-5">
-            <div class="rounded-3xl border border-gray-300 my-3 relative bg-white">
+            <div class="relative my-3 bg-white border border-gray-300 rounded-3xl">
               <div class="flex">
                 <div
                   class="bg-orange-700 rounded-l-3xl self-stretch text-white min-w-[235px]"
                 >
                   <div
-                    class="py-2 px-4 text-sm font-bold cursor-pointer"
+                    class="px-4 py-2 text-sm font-bold cursor-pointer"
                     :class="{
                       'rounded-tl-3xl': iC === 0,
                       'bg-opacity-5': iC === 0 && activeCbaResult !== result.slug,
@@ -750,13 +784,13 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     {{ result.title }}
                   </div>
                 </div>
-                <div class="grow p-5">
-                  <div class="flex gap-5 items-center mb-6" v-if="activeCbaResult === 'marginalCostCurves'">
+                <div class="p-5 grow">
+                  <div class="flex items-center gap-5 mb-6" v-if="activeCbaResult === 'marginalCostCurves'">
                     <div>
-                      <label for="cba-year" class="dark:text-white text-sm">Year</label>
+                      <label for="cba-year" class="text-sm dark:text-white">Year</label>
                       <InformationCircleIcon
                         @click="openModal('cba-year')"
-                        class="h-6 w-6 ml-2 cursor-pointer inline"
+                        class="inline w-6 h-6 ml-2 cursor-pointer"
                       ></InformationCircleIcon>
                     </div>
                     <div class="grow">
