@@ -139,7 +139,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.24.4
+ - @babel/parser@7.24.5
 
 This package contains the following license and notice below:
 
@@ -271,7 +271,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @headlessui/vue@1.7.20
+ - @headlessui/vue@1.7.21
  - @vue/devtools-api@6.6.1
 
 These packages each contain the following license and notice below:
@@ -374,8 +374,8 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @tanstack/virtual-core@3.4.0
- - @tanstack/vue-virtual@3.4.0
+ - @tanstack/virtual-core@3.5.0
+ - @tanstack/vue-virtual@3.5.0
 
 These packages each contain the following license and notice below:
 
@@ -519,16 +519,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.4.25
- - @vue/compiler-dom@3.4.25
- - @vue/compiler-sfc@3.4.25
- - @vue/compiler-ssr@3.4.25
- - @vue/reactivity@3.4.25
- - @vue/runtime-core@3.4.25
- - @vue/runtime-dom@3.4.25
- - @vue/server-renderer@3.4.25
- - @vue/shared@3.4.25
- - vue@3.4.25
+ - @vue/compiler-core@3.4.26
+ - @vue/compiler-dom@3.4.26
+ - @vue/compiler-sfc@3.4.26
+ - @vue/compiler-ssr@3.4.26
+ - @vue/reactivity@3.4.26
+ - @vue/runtime-core@3.4.26
+ - @vue/runtime-dom@3.4.26
+ - @vue/server-renderer@3.4.26
+ - @vue/shared@3.4.26
+ - vue@3.4.26
 
 These packages each contain the following license and notice below:
 

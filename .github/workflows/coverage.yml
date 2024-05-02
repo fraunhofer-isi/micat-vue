@@ -14,9 +14,9 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: set up node 
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: 21
     - name: install dependencies
@@ -33,7 +33,7 @@ jobs:
         echo "VITEST_COVERAGE=$VITEST_COVERAGE" >> $GITHUB_ENV
         echo "Vitest coverage is $VITEST_COVERAGE"
     - name: badge
-      uses: schneegans/dynamic-badges-action@v1.6.0
+      uses: schneegans/dynamic-badges-action@v1.7.0
       with:
         auth: ${{ secrets.GIST_SECRET }}
         gistID: ${{ secrets.GIST_ID }}
