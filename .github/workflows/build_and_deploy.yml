@@ -27,7 +27,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
       - name: install node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "19.x"
       - name: install node.js dependencies
