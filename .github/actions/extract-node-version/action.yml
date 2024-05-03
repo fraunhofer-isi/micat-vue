@@ -11,5 +11,5 @@ runs:
     - name: extract node.js version from package.json
       id: node_version
       run: |
-        run: echo "NODE_VERSION=$(node -p "require('./micat/package.json').engines.node")" >> $GITHUB_ENV
+        echo "NODE_VERSION=$(node -p "require('./micat/package.json').engines.node")" >> $GITHUB_ENV
       shell: bash
