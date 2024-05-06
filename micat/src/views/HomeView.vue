@@ -16,7 +16,9 @@ import {
   ExclamationCircleIcon,
   XCircleIcon,
   PresentationChartBarIcon,
-  AdjustmentsVerticalIcon, ExclamationTriangleIcon
+  AdjustmentsVerticalIcon, 
+  ExclamationTriangleIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/vue/24/outline';
 import type {
   ModalInjectInterface,
@@ -437,6 +439,33 @@ const programChanged = (program: ProgramInterface, i: number) => {
   programs[i] = program;
   session.updatePrograms(programs);
 }
+
+const exportInput = () => {
+  const response = fetch(`${import.meta.env.VITE_API_URL}export-input`, {
+    method: "POST",
+    body: JSON.stringify({
+      future: session.future,
+      region: session.region,
+      municipality: session.municipality,
+      inhabitants: session.inhabitants,
+      unit: session.unit,
+      years: session.years,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then(res => res.blob()).then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'MICAT_inputs.csv';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  });
+};
 </script>
 
 <template>
@@ -661,6 +690,13 @@ const programChanged = (program: ProgramInterface, i: number) => {
           >
             <XCircleIcon class="h-5 w-5 mt-[-3px] inline text-white"></XCircleIcon>
             Reset
+          </button>
+          <button
+            class="py-2 pl-3 pr-4 mr-3 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
+            @click="exportInput()"
+          >
+            <ArrowDownTrayIcon class="h-5 w-5 mt-[-3px] inline text-white"></ArrowDownTrayIcon>
+            Export input
           </button>
           <button
             class="py-2 pl-3 pr-4 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
