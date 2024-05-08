@@ -441,30 +441,28 @@ const programChanged = (program: ProgramInterface, i: number) => {
 }
 
 const exportInput = () => {
-  const response = fetch(`${import.meta.env.VITE_API_URL}export-input`, {
-    method: "POST",
-    body: JSON.stringify({
+  const blob = new Blob([JSON.stringify({
       future: session.future,
       region: session.region,
       municipality: session.municipality,
       inhabitants: session.inhabitants,
       unit: session.unit,
       years: session.years,
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then(res => res.blob()).then(blob => {
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = 'MICAT_inputs.csv';
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
-  });
+      programs: session.programs,
+      globalParameters: session.globalParameters,
+      parameters: session.parameters,
+      useRenovationRate: session.useRenovationRate,
+  })], { type: "text/json" });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = url;
+  const date = new Date();
+  a.download = `MICAT_inputs_${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  a.remove();
 };
 </script>
 
@@ -696,7 +694,7 @@ const exportInput = () => {
             @click="exportInput()"
           >
             <ArrowDownTrayIcon class="h-5 w-5 mt-[-3px] inline text-white"></ArrowDownTrayIcon>
-            Export input
+            Save
           </button>
           <button
             class="py-2 pl-3 pr-4 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
