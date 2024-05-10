@@ -49,8 +49,12 @@ const rangeIndex: {[key: string]: number} = {};
 
 // Lifecycle
 onMounted(async () => {
-  if (typeof parameters[props.improvement.internalId] === 'undefined') parameters[props.improvement.internalId] = {};
-  await getParameters();
+  if (typeof session.parameters[props.improvement.internalId] !== 'undefined') {
+    parameters[props.improvement.internalId] = session.parameters[props.improvement.internalId];
+  } else {
+    if (typeof parameters[props.improvement.internalId] === 'undefined') parameters[props.improvement.internalId] = {};
+    await getParameters();
+  }
   activeCategory.value = Object.keys(parameters[props.improvement.internalId])[0];
   loading.value = false;
 });

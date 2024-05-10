@@ -7,6 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <script setup async lang="ts">
 import {inject, onMounted, reactive, ref, watch} from 'vue';
 import type {Ref} from 'vue';
+import { watchPausable } from '@vueuse/core';
 import router from "@/router";
 import {
   InformationCircleIcon,
@@ -18,7 +19,8 @@ import {
   PresentationChartBarIcon,
   AdjustmentsVerticalIcon, 
   ExclamationTriangleIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
+  ArrowUpTrayIcon,
 } from '@heroicons/vue/24/outline';
 import type {
   ModalInjectInterface,
@@ -77,6 +79,7 @@ const showGlobalParametersOverlay = ref<boolean>(false);
 const showParametersOverlay = ref<boolean>(false);
 const selectedImprovement = ref<SelectedImprovementInterface>({internalId: 0});
 const error = ref<string>("");
+const fileUpload = ref<HTMLInputElement | null>(null);
 
 // Watchers
 watch(programs, (programs) => {
@@ -118,7 +121,7 @@ watch(() => session.region, (region) => {
 watch(() => session.municipality, (municipality) => {
   session.updateMunicipality(municipality);
 });
-watch(() => session.unit, (unit, oldUnit) => {
+const unitWatcher = watchPausable(() => session.unit, (unit, oldUnit) => {
  session.updateUnit(unit);
  convertValues(unit, oldUnit);
 });
@@ -447,11 +450,16 @@ const exportInput = () => {
       municipality: session.municipality,
       inhabitants: session.inhabitants,
       unit: session.unit,
-      years: session.years,
-      programs: session.programs,
+      years: years.value,
+      programs: programs,
       globalParameters: session.globalParameters,
       parameters: session.parameters,
       useRenovationRate: session.useRenovationRate,
+      subsectorMapping: session.subsectorMapping,
+      carrierMapping: session.carrierMapping,
+      monetisationFactorMapping: session.monetisationFactorMapping,
+      seedInfo: seedInfo.value,
+
   })], { type: "text/json" });
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -463,6 +471,37 @@ const exportInput = () => {
   a.click();
   window.URL.revokeObjectURL(url);
   a.remove();
+};
+const importInput = async (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  if (target.files === null) return;
+  const file = target.files[0];
+  target.value = '';
+  
+  const data = JSON.parse(await file.text());
+  session.future = data.future;
+  session.region = data.region;
+  session.municipality = data.municipality;
+  session.inhabitants = data.inhabitants;
+  years.value = data.years;
+  session.updateYears(data.years);
+  Object.assign(programs, data.programs);
+  session.updatePrograms(data.programs);
+  session.updateGlobalParameters(data.globalParameters);
+  session.updateParameters(data.parameters);
+  session.updateSubsectorMapping(data.subsectorMapping);
+  session.updateCarrierMapping(data.carrierMapping);
+  session.updateMonetisationFactorMapping(data.monetisationFactorMapping);
+  session.updateUseRenovationRate(data.useRenovationRate);
+  setSeedInfo(data.seedInfo);
+
+  // Pause watcher to avoid unit conversion
+  // Unfortunatly, the resume function is taking effect immediately, so we need to postpone it.
+  unitWatcher.pause();
+  session.unit = data.unit;
+  setTimeout(() => {
+    unitWatcher.resume();
+  }, 500);
 };
 </script>
 
@@ -683,25 +722,33 @@ const exportInput = () => {
         </div>
         <div class="mt-5" v-if="!session.resetted && stage !== stages.home">
           <button
-            class="py-2 pl-3 pr-4 mr-3 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
+            class="py-2 pl-2 pr-3 mr-2 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
             @click="reset()"
           >
             <XCircleIcon class="h-5 w-5 mt-[-3px] inline text-white"></XCircleIcon>
             Reset
           </button>
           <button
-            class="py-2 pl-3 pr-4 mr-3 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
+            class="py-2 pl-2 pr-3 mr-2 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
             @click="exportInput()"
           >
             <ArrowDownTrayIcon class="h-5 w-5 mt-[-3px] inline text-white"></ArrowDownTrayIcon>
             Save
           </button>
           <button
-            class="py-2 pl-3 pr-4 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
+            class="py-2 pl-2 pr-3 mr-2 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
+            @click="fileUpload!.click();"
+          >
+            <ArrowUpTrayIcon class="h-5 w-5 mt-[-3px] inline text-white"></ArrowUpTrayIcon>
+            <input ref="fileUpload" type="file" accept="application/json" class="hidden" @change="importInput" />
+            Import
+          </button>
+          <button
+            class="py-2 pl-2 pr-3 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
             @click="showGlobalParametersOverlay = true;"
           >
             <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
-            Global parameters
+            Parameters
           </button>
            <InformationCircleIcon
               @click="openModal('global-parameters')"
