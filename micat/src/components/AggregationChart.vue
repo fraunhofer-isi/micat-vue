@@ -92,6 +92,7 @@ const htmlLegendPlugin = {
       textContainer.style.color = item.fontColor;
       textContainer.style.margin = "0px";
       textContainer.style.padding = "0px";
+      textContainer.style.fontSize = "10px";
       textContainer.style.textDecoration = item.hidden ? 'line-through' : '';
 
       const text = document.createTextNode(item.text);
@@ -220,5 +221,5 @@ const aggregationChartData: any = computed(() => {
     :options="aggregationChartOptions"
     :data="aggregationChartData"
     :plugins="[htmlLegendPlugin]"
-  />
+  /> 
 </template>
