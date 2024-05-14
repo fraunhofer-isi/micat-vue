@@ -17,8 +17,9 @@ import {
   InformationCircleIcon,
   ArrowDownTrayIcon,
 } from '@heroicons/vue/24/outline';
-import { Line } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
+import { Line } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale } from 'chart.js';
+import 'chartjs-adapter-date-fns';
 import type {
   CategoriesInterface,
   MeasurementInterface,
@@ -49,7 +50,7 @@ import { useSessionStore } from "@/stores/session";
 import router from "@/router";
 
 const session = useSessionStore();
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement);
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale);
 
 const icons: any = {
   UserGroupIcon,
@@ -372,6 +373,10 @@ const chartOptions = computed(() => {
         title: {
           display: false,
           text: 'Years'
+        },
+        type: 'time',
+        time: {
+            unit: 'year'
         }
       },
       y: {

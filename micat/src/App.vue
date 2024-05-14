@@ -386,8 +386,6 @@ const modalType = ref<String>('help');
 
 // Functions
 const openModal = (key: string) => {  
-  console.log(key);
-  
   modalTitle.value = helpTexts[key].title;
   modalText.value = helpTexts[key].text;
   modalType.value = helpTexts[key].type;

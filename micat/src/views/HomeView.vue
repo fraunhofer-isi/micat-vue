@@ -114,6 +114,7 @@ watch(() => session.future, (future) => {
   
   session.updateFuture(future);
   session.updateYears(years.value);
+  session.years = years.value;
 });
 watch(() => session.region, (region) => {
   session.updateRegion(region);
@@ -134,8 +135,9 @@ watch(stage, (stage: number) => {
 
 // Lifecycle
 onMounted(async () => {
-  // When travelling back from results, we need to re-assign the stage
+  // When travelling back from results, we need to re-assign the stage and years
   stage.value = parseInt(localStorage.getItem("stage") || stages.home.toString());
+  years.value = JSON.parse(localStorage.getItem("years")!) || [];
   // id_region
   const responseRegion: Response = await fetch(`${import.meta.env.VITE_API_URL}id_region`);
   const dataRegion: { rows: Array<[id: number, name: string]> } = await responseRegion.json();
@@ -209,6 +211,7 @@ const addYear = () => {
   years.value.push(newYearSelected.value);
   years.value.sort();
   session.updateYears(years.value);
+  session.years = years.value;
   newYears.value = newYears.value.filter(newYear => newYear !== newYearSelected.value);
   newYearSelected.value = newYears.value[0];
 };
@@ -217,6 +220,7 @@ const removeYear = (year: number) => {
     // Keep at least two years
     years.value = years.value.filter(x => x !== year);
     session.updateYears(years.value);
+    session.years = years.value;
     newYears.value.push(year);
     newYears.value.sort();
   }
@@ -390,8 +394,7 @@ const analyze = async () => {
           "id_action_type": improvement.id,
         },
       };
-
-      session.years.forEach(year => {
+      years.value.forEach(year => {
         const value = improvement.values[year.toString()];
         const factor = units[session.unit].factor
         improvementData.savings[year.toString()] = value ? value * 1 / factor : 0;
@@ -485,6 +488,7 @@ const importInput = async (e: Event) => {
   session.inhabitants = data.inhabitants;
   years.value = data.years;
   session.updateYears(data.years);
+  session.years = years.value;
   Object.assign(programs, data.programs);
   session.updatePrograms(data.programs);
   session.updateGlobalParameters(data.globalParameters);
