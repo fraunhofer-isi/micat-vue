@@ -73,7 +73,18 @@ const seedInfo = ref<boolean>(session.seedInfo);
 const loading = ref<boolean>(false);
 let regions: Ref<Array<Array<number | string>>> = ref([]);
 let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
-const newYears = ref<Array<number>>([...Array(35).keys()].map(delta => session.future ? session.currentYear + delta : session.currentYear - delta).filter(newYear => years.value.indexOf(newYear) == -1));
+const getNewYears = () => {
+  let newYears = [];
+  if (session.future) {
+    newYears = [...Array(51).keys()].map(delta => 2000 + delta);
+  } else {
+    const currentYear = new Date().getFullYear();
+    const range = currentYear - 2000 - 2;
+    newYears = [...Array(range).keys()].map(delta => currentYear - 3 - delta);
+  }
+  return newYears.filter(newYear => years.value.indexOf(newYear) == -1);
+};
+const newYears = ref<Array<number>>(getNewYears());
 const newYearSelected = ref<number>(newYears.value[0]);
 const showGlobalParametersOverlay = ref<boolean>(false);
 const showParametersOverlay = ref<boolean>(false);
@@ -97,7 +108,6 @@ watch(() => session.future, (future) => {
       const nextValidYear = Math.ceil(currentYear / 5) * 5;
       years.value = [nextValidYear, nextValidYear + 5, nextValidYear + 10];
     }
-    newYears.value = [...Array(51).keys()].map(delta => 2000 + delta).filter(newYear => years.value.indexOf(newYear) == -1);
   } else {
     // We allow to let users test with already running actions
     // Filter out years before 2000
@@ -108,8 +118,8 @@ watch(() => session.future, (future) => {
       years.value = [nextValidYear - 10, nextValidYear - 5, nextValidYear];
     }
     const range = currentYear - 2000 - 2;
-    newYears.value = [...Array(range).keys()].map(delta => currentYear - 3 - delta).filter(newYear => years.value.indexOf(newYear) == -1);
   }
+  newYears.value = getNewYears();
   newYearSelected.value = newYears.value[0];
   
   session.updateFuture(future);
