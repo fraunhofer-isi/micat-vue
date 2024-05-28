@@ -46,8 +46,8 @@ const rangeIndex: {[key: string]: number} = {};
 
 // Lifecycle
 onMounted(async () => {
-  if (Object.keys(globalParameters).length == 0) {
-    await getAndStructureGlobalParameters();
+  if (Object.keys(JSON.parse(localStorage.getItem("globalParameters") || JSON.stringify({}))).length == 0) {
+    await getAndStructureGlobalParameters(true);
   }
   activeCategory.value = Object.keys(globalParameters)[0];
   activeSubsector.value = Number(Object.keys(globalParameters[activeCategory.value])[0]);
@@ -56,6 +56,7 @@ onMounted(async () => {
 
 // Functions
 const getAndStructureGlobalParameters = async (reset: boolean = false) => {
+  session.updateGlobalParameters({});
   loading.value = true;
   const years = session.years.map(y => `&years=${y}`).join('');
   const responseGlobalParameters: Response = await fetch(`${import.meta.env.VITE_API_URL}json_parameters?id_mode=${session.future ? 4 : 2}&id_region=${session.region}&orient=records${years}`);

@@ -72,7 +72,7 @@ const helpTexts: HelpTextInterface = {
   },
   'global-parameters': {
     'title': 'Global parameters',
-    'text': 'These parameters define the context in which the assessed measures take place. Inter alia, this concerns energy prices, the energy mix used in electricity and heat generation, the employed monetisation factors or the energy mix in certain sectors and subsectors. Thus, these settings apply to all measures, unless specified otherwise in measures\' advanced parameters.<br /><br />The region and years for which these values can be input reflects the selection of <strong>Region</strong> and years in the prompt <strong>Time frame</strong>, respectively.',
+    'text': 'These parameters define the context in which the assessed measures take place. Inter alia, this concerns energy prices, the energy mix used in electricity and heat generation, the employed monetisation factors or the energy mix in certain sectors and subsectors. Thus, these settings apply to all measures, unless specified otherwise in measures\' advanced parameters.<br /><br />The region and years for which these values can be input reflects the selection of <strong>Region</strong> and years in the prompt <strong>Time frame</strong>, respectively.<br /><br /><strong>Important:</strong> Please note, that any changes are lost if you change the given region or time frame.',
     'type': 'help'
   },
   'parameters': {

@@ -128,6 +128,8 @@ watch(() => session.future, (future) => {
 });
 watch(() => session.region, (region) => {
   session.updateRegion(region);
+  // If the region is changed, we need to reset the global parameters
+  session.updateGlobalParameters({});
 });
 watch(() => session.municipality, (municipality) => {
   session.updateMunicipality(municipality);
