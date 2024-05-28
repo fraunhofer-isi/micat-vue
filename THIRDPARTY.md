@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -139,7 +133,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.24.5
+ - @babel/parser@7.24.6
 
 This package contains the following license and notice below:
 
@@ -312,9 +306,9 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @vueuse/core@10.9.0
- - @vueuse/metadata@10.9.0
- - @vueuse/shared@10.9.0
+ - @vueuse/core@10.10.0
+ - @vueuse/metadata@10.10.0
+ - @vueuse/shared@10.10.0
 
 These packages each contain the following license and notice below:
 
