@@ -130,6 +130,10 @@ const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
   // Check if all entries sum up to (almost) 1
   return Math.abs(entries.map((entry) => entry.value).reduce((a, b) => a + b) - 1) < 0.1;
 };
+const entriesAreNull = (entries: Array<GlobalParameterValue>) => {
+  // Check if all entries are null
+  return entries.map((entry) => entry.value).every(x => x === null);
+};
 const reformatCategoryTitle = (categoryName: string) => {
   let name = categoryName.replace(/([A-Z])/g, ' $1').toLowerCase().trim();
   return name[0].toUpperCase() + name.slice(1);
@@ -289,8 +293,18 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     >
                   </div>
                 </div>
+                
                 <div
-                  v-if="activeCategory !== 'MonetisationFactors' && !entriesAreValid(entries)"
+                  v-if="activeCategory !== 'MonetisationFactors' && entriesAreNull(entries)"
+                  class="flex p-4 mt-5 text-sm text-yellow-800 border-t-4 border-yellow-300 bg-yellow-50 rounded-2xl"
+                  role="alert"
+                >
+                  <div class="ml-3 font-medium">
+                    The default values for these fields are confidential. Thus, they cannot be displayed. However, in case you know the values for your specific use case, you can input it in these fields, in order to improve the results' accuracy.
+                  </div>
+                </div>
+                <div
+                  v-else-if="activeCategory !== 'MonetisationFactors' && !entriesAreValid(entries)"
                   class="flex p-4 mt-5 text-sm text-yellow-800 border-t-4 border-yellow-300 bg-yellow-50 rounded-2xl"
                   role="alert"
                 >
