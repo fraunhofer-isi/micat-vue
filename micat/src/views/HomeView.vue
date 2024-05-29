@@ -318,9 +318,9 @@ const getGlobalParametersPayload = () => {
                 return result[carrierKey] === value.key;
               }
             });
-            if (existingResult) {
+            if (existingResult && value.value !== null) {
               existingResult[factor] = value.value;
-            } else {
+            } else if (value.value !== null) {
               const data = {
                 [carrierKey]: value.key,
                 [factor]: value.value
