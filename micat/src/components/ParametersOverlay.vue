@@ -49,7 +49,8 @@ const rangeIndex: {[key: string]: number} = {};
 
 // Lifecycle
 onMounted(async () => {
-  if (typeof session.parameters[props.improvement.internalId] !== 'undefined') {
+  const storedParams = JSON.parse(localStorage.getItem("parameters") || JSON.stringify({}));
+  if (typeof storedParams[props.improvement.internalId] !== 'undefined') {
     parameters[props.improvement.internalId] = session.parameters[props.improvement.internalId];
   } else {
     if (typeof parameters[props.improvement.internalId] === 'undefined') parameters[props.improvement.internalId] = {};

@@ -125,13 +125,15 @@ watch(() => session.future, (future) => {
   session.updateFuture(future);
   session.updateYears(years.value);
   session.years = years.value;
-  // If the time frame changes, we need to reset the global parameters
+  // If the time frame changes, we need to reset parameters
   session.updateGlobalParameters({});
+  session.updateParameters({});
 });
 watch(() => session.region, (region) => {
   session.updateRegion(region);
-  // If the region is changed, we need to reset the global parameters
+  // If the region is changed, we need to reset parameters
   session.updateGlobalParameters({});
+  session.updateParameters({});
 });
 watch(() => session.municipality, (municipality) => {
   session.updateMunicipality(municipality);
@@ -228,8 +230,9 @@ const addYear = () => {
   session.years = years.value;
   newYears.value = newYears.value.filter(newYear => newYear !== newYearSelected.value);
   newYearSelected.value = newYears.value[0];
-  // If the time frame changes, we need to reset the global parameters
+  // If the time frame changes, we need to reset parameters
   session.updateGlobalParameters({});
+  session.updateParameters({});
 };
 const removeYear = (year: number) => {
   if (years.value.length > 2) {
@@ -239,8 +242,9 @@ const removeYear = (year: number) => {
     session.years = years.value;
     newYears.value.push(year);
     newYears.value.sort();
-    // If the time frame changes, we need to reset the global parameters
+    // If the time frame changes, we need to reset parameters
     session.updateGlobalParameters({});
+    session.updateParameters({});
   }
 };
 const addProgram = () => {
