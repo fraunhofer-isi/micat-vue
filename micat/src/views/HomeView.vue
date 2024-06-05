@@ -465,6 +465,8 @@ const programChanged = (program: ProgramInterface, i: number) => {
   });
   programs[i] = program;
   session.updatePrograms(programs);
+  // If the sub sector changes, we need to reset parameters
+  session.updateParameters({});
 }
 
 const exportInput = () => {
@@ -893,6 +895,7 @@ const importInput = async (e: Event) => {
                       'dark:border-red-200': !improvement.id,
                     }"
                     v-model="improvement.id"
+                    @change="session.updateParameters({})"
                   >
                     <option value="0" selected disabled>Select improvement</option>
                     <option
