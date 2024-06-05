@@ -126,6 +126,12 @@ export interface DatasetInterface {
     stack?: string;
 }
 
+export interface CarrierMapping {
+    [key: string]: {
+        [key: number]: string
+    }
+}
+
 export interface ISessionState {
   currentYear: number;
   stage: number;
@@ -141,7 +147,7 @@ export interface ISessionState {
   results: ResultsInterface;
   globalParameters: GlobalParameters;
   subsectorMapping: {[key: number]: string};
-  carrierMapping: {[key: number]: string};
+  carrierMapping: CarrierMapping;
   monetisationFactorMapping: {[key: number]: string};
   parameters: Parameters;
   useRenovationRate: boolean;
@@ -232,6 +238,7 @@ export interface CbaCategoriesInterface {
 export interface GlobalParameterValue {
     key: number;
     value: number;
+    carrierType?: string;
 }
 export interface GlobalParameters {
     // Categories

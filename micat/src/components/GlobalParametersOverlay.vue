@@ -14,7 +14,7 @@ import {
 } from '@heroicons/vue/24/outline';
 import {useSessionStore} from "@/stores/session";
 import { defaultModalInject } from "@/defaults";
-import type {GlobalParameters, GlobalParameterValue, PayloadParameterEntryInterface, ModalInjectInterface} from "@/types";
+import type {CarrierMapping, GlobalParameters, GlobalParameterValue, PayloadParameterEntryInterface, ModalInjectInterface} from "@/types";
 
 const session = useSessionStore();
 
@@ -24,7 +24,7 @@ const activeSubsector = ref<number>(0);
 const loading = ref<boolean>(true);
 let globalParameters = reactive<GlobalParameters>(session.globalParameters);
 let subsectorMapping = reactive<{[key: number]: string}>(session.subsectorMapping);
-let carrierMapping = reactive<{[key: number]: string}>(session.carrierMapping);
+let carrierMapping = reactive<CarrierMapping>(session.carrierMapping);
 let monetisationFactorMapping = reactive<{[key: number]: string}>(session.monetisationFactorMapping);
 
 // Watchers
@@ -34,7 +34,7 @@ watch(globalParameters, (globalParameters: GlobalParameters) => {
 watch(subsectorMapping, (subsectorMapping: {[key: number]: string}) => {
   session.updateSubsectorMapping(subsectorMapping);
 });
-watch(carrierMapping, (carrierMapping: {[key: number]: string}) => {
+watch(carrierMapping, (carrierMapping: CarrierMapping) => {
   session.updateCarrierMapping(carrierMapping);
 });
 watch(monetisationFactorMapping, (monetisationFactorMapping: {[key: number]: string}) => {
@@ -97,10 +97,13 @@ const getAndStructureGlobalParameters = async (reset: boolean = false) => {
             // Add year key, if it doesn't exist yet
             if (!globalParameters[category][subsectorId][key]) globalParameters[category][subsectorId][key] = [];
             // Map carrier data
-            if (data['id_final_energy_carrier'] && data['Final energy carrier']) carrierMapping[data['id_final_energy_carrier']] = data['Final energy carrier'];
-            if (data['id_primary_energy_carrier'] && data['Primary energy carrier']) carrierMapping[data['id_primary_energy_carrier']] = data['Primary energy carrier'];
+            if (!carrierMapping['final']) carrierMapping['final'] = {};
+            if (!carrierMapping['primary']) carrierMapping['primary'] = {};
+            if (data['id_final_energy_carrier'] && data['Final energy carrier']) carrierMapping['final'][data['id_final_energy_carrier']] = data['Final energy carrier'];
+            if (data['id_primary_energy_carrier'] && data['Primary energy carrier']) carrierMapping['primary'][data['id_primary_energy_carrier']] = data['Primary energy carrier'];
             globalParameters[category][subsectorId][key].push({
               key: data['id_final_energy_carrier'] ? data['id_final_energy_carrier'] : data['id_primary_energy_carrier'] ? data['id_primary_energy_carrier'] : 0,
+              carrierType: data['id_final_energy_carrier'] ? 'final' : 'primary',
               value: (value as number),
             });
           }
@@ -272,7 +275,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     'grid-cols-2': entries.length == 1,
                   }"
                 >
-                  <div class="text-xs font-bold text-orange-600" v-if="entries.length > 1">{{ activeCategory === 'MonetisationFactors' ? entry.key : carrierMapping[entry.key] }}</div>
+                  <div class="text-xs font-bold text-orange-600" v-if="entries.length > 1">{{ activeCategory === 'MonetisationFactors' ? entry.key : carrierMapping[entry.carrierType!][entry.key] }}</div>
                   <div>
                     <input
                       :id="`global-parameters-years-${yearOrFactor}-${i}-range`"

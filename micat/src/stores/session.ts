@@ -4,7 +4,7 @@
 
 import { defineStore } from "pinia";
 import {defaultProgram, stages} from '@/defaults';
-import type {ProgramInterface, ISessionState, PayloadInterface, Parameters, GlobalParameters} from "@/types";
+import type {CarrierMapping, ProgramInterface, ISessionState, PayloadInterface, Parameters, GlobalParameters} from "@/types";
 
 const currentYear = new Date().getFullYear();
 const nextValidYearPast = Math.floor( currentYear / 5) * 5;
@@ -97,7 +97,7 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       localStorage.setItem("subsectorMapping", JSON.stringify(subsectorMapping));
     },
-    updateCarrierMapping(carrierMapping: {[key: number]: string}, manualChange?: boolean) {
+    updateCarrierMapping(carrierMapping: CarrierMapping, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("carrierMapping", JSON.stringify(carrierMapping));
     },
