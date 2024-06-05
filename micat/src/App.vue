@@ -77,7 +77,7 @@ const helpTexts: HelpTextInterface = {
   },
   'parameters': {
     'title': 'Advanced parameters',
-    'text': 'tba',
+    'text': '<strong>Important:</strong> Please note, that any changes are lost if you change the given region or time frame.',
     'type': 'help'
   },
   'renovation': {
