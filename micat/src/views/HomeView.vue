@@ -111,13 +111,12 @@ watch(() => session.future, (future) => {
   } else {
     // We allow to let users test with already running actions
     // Filter out years before 2000
-    years.value = years.value.filter(year => year <= 2000);
+    years.value = years.value.filter(year => year <= currentYear - 2 && year >= 2000);
     if (years.value.length == 0) {
       // Round down to nearest 5
       const nextValidYear = Math.floor(currentYear / 5) * 5;
       years.value = [nextValidYear - 10, nextValidYear - 5, nextValidYear];
     }
-    const range = currentYear - 2000 - 2;
   }
   newYears.value = getNewYears();
   newYearSelected.value = newYears.value[0];
