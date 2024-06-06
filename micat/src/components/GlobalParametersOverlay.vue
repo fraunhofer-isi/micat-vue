@@ -104,7 +104,7 @@ const getAndStructureGlobalParameters = async (reset: boolean = false) => {
             globalParameters[category][subsectorId][key].push({
               key: data['id_final_energy_carrier'] ? data['id_final_energy_carrier'] : data['id_primary_energy_carrier'] ? data['id_primary_energy_carrier'] : 0,
               carrierType: data['id_final_energy_carrier'] ? 'final' : 'primary',
-              value: (value as number),
+              value: category === 'EnergyPrice' ? null : (value as number),
             });
           }
         }
@@ -263,7 +263,8 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   @click="openModal(getCleanedMonetisationFactorName(monetisationFactorMapping[Number(yearOrFactor)]))"
                   class="inline w-6 h-6 ml-2 cursor-pointer"
                 ></InformationCircleIcon>
-                <span v-if="activeCategory === 'MonetisationFactors'" class="px-2 ml-2 bg-white rounded-xl text-sky-600">{{ getFactorUnit(monetisationFactorMapping[Number(yearOrFactor)]) }}</span>
+                <span v-if="activeCategory === 'MonetisationFactors'" class="px-2 py-1 ml-2 text-xs bg-white rounded-xl text-sky-600">{{ getFactorUnit(monetisationFactorMapping[Number(yearOrFactor)]) }}</span>
+                <span v-if="activeCategory === 'EnergyPrice'" class="px-2 py-1 ml-2 text-xs bg-white rounded-xl text-sky-600">€/ktoe</span>
               </div>
               <div class="p-4">
                 <div
