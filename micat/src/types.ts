@@ -237,7 +237,7 @@ export interface CbaCategoriesInterface {
 }
 export interface GlobalParameterValue {
     key: number;
-    value: number;
+    value: number | null;
     carrierType?: string;
 }
 export interface GlobalParameters {
