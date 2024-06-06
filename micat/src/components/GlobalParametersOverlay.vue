@@ -131,7 +131,7 @@ const reset = async () => {
 }
 const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
   // Check if all entries sum up to (almost) 1
-  return Math.abs(entries.map((entry) => entry.value).reduce((a, b) => a + b) - 1) < 0.1;
+  return Math.abs(entries.map((entry) => entry.value || 0).reduce((a, b) => a + b) - 1) < 0.1;
 };
 const entriesAreNull = (entries: Array<GlobalParameterValue>) => {
   // Check if all entries are null
@@ -283,8 +283,8 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                       type="range"
                       class="w-full h-1 bg-orange-200 rounded-lg appearance-none cursor-pointer"
                       min="0"
-                      :max="roundNumber(entry.value, `global-parameters-years-${yearOrFactor}-${i}-range`)"
-                      :step="roundNumber(entry.value, `global-parameters-years-${yearOrFactor}-${i}-range`) / 100"
+                      :max="roundNumber(entry.value || 0, `global-parameters-years-${yearOrFactor}-${i}-range`)"
+                      :step="roundNumber(entry.value || 0, `global-parameters-years-${yearOrFactor}-${i}-range`) / 100"
                       v-model.number="entry.value"
                     />
                   </div>

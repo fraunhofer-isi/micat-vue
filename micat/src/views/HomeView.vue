@@ -299,6 +299,7 @@ const getGlobalParametersPayload = () => {
     for (const [subsector, factors] of Object.entries(subsectors)) {
       for (const [factor, values] of Object.entries(factors)) {
         for (const value of values) {
+          if (!value.value) continue;
           if (category === 'MonetisationFactors') {
             const existingResult: PayloadParameterEntryInterface | undefined = results[category].find(result => {
               return result['index'] === parseInt(factor);
