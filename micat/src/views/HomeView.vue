@@ -97,33 +97,8 @@ watch(programs, (programs) => {
   session.updatePrograms(programs);
 });
 watch(() => session.future, (future) => {
-  // Check if there are valid years defined. If not add default ones.
-  let currentYear = new Date().getFullYear();
-  if (future) {
-    // We allow to let users test with already running actions
-    // Filter out years before 2000
-    years.value = years.value.filter(year => year >= 2000);
-    if (years.value.length == 0) {
-      // Round up to nearest 5
-      const nextValidYear = Math.ceil(currentYear / 5) * 5;
-      years.value = [nextValidYear, nextValidYear + 5, nextValidYear + 10];
-    }
-  } else {
-    // We allow to let users test with already running actions
-    // Filter out years before 2000
-    years.value = years.value.filter(year => year <= currentYear - 2 && year >= 2000);
-    if (years.value.length == 0) {
-      // Round down to nearest 5
-      const nextValidYear = Math.floor(currentYear / 5) * 5;
-      years.value = [nextValidYear - 10, nextValidYear - 5, nextValidYear];
-    }
-  }
-  newYears.value = getNewYears();
-  newYearSelected.value = newYears.value[0];
-  
   session.updateFuture(future);
-  session.updateYears(years.value);
-  session.years = years.value;
+  resetYears();
   // If the time frame changes, we need to reset parameters
   session.updateGlobalParameters({});
   session.updateParameters({});
@@ -245,6 +220,35 @@ const removeYear = (year: number) => {
     session.updateGlobalParameters({});
     session.updateParameters({});
   }
+};
+const resetYears = () => {
+  // Check if there are valid years defined. If not add default ones.
+  let currentYear = new Date().getFullYear();
+  if (session.future) {
+    // We allow to let users test with already running actions
+    // Filter out years before 2000
+    years.value = years.value.filter(year => year >= 2000);
+    if (years.value.length == 0) {
+      // Round up to nearest 5
+      const nextValidYear = Math.ceil(currentYear / 5) * 5;
+      console.log(nextValidYear);
+      years.value = [nextValidYear, nextValidYear + 5, nextValidYear + 10];
+    }
+  } else {
+    // We allow to let users test with already running actions
+    // Filter out years before 2000
+    years.value = years.value.filter(year => year <= currentYear - 2 && year >= 2000);
+    if (years.value.length == 0) {
+      // Round down to nearest 5
+      const nextValidYear = Math.floor(currentYear / 5) * 5;
+      years.value = [nextValidYear - 10, nextValidYear - 5, nextValidYear];
+    }
+  }
+  newYears.value = getNewYears();
+  newYearSelected.value = newYears.value[0];
+  
+  session.updateYears(years.value);
+  session.years = years.value;
 };
 const addProgram = () => {
   const clone = JSON.parse(JSON.stringify(defaultProgram));
@@ -687,7 +691,7 @@ const importInput = async (e: Event) => {
         </div>
         <button
           class="px-8 py-2 font-bold text-white uppercase bg-orange-500 rounded-full hover:bg-orange-600"
-          @click="stage = stages.full; years = session.resetYears(session.future);"
+          @click="stage = stages.full; years = []; resetYears();"
           v-if="stage === stages.home"
         >
           Start

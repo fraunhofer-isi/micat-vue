@@ -72,11 +72,6 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       localStorage.setItem("years", JSON.stringify(years));
     },
-    resetYears(future: boolean) {
-      const years = getYears(future);
-      this.updateYears(years, false);
-      return years;
-    },
     updatePrograms(programs: Array<ProgramInterface>, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("programs", JSON.stringify(programs));
