@@ -93,7 +93,7 @@ const error = ref<string>("");
 const fileUpload = ref<HTMLInputElement | null>(null);
 
 // Watchers
-watch(programs, (programs) => {
+watch(programs, (programs) => {  
   session.updatePrograms(programs);
 });
 watch(() => session.future, (future) => {
@@ -197,6 +197,23 @@ const convertValues = (unitId: number, oldUnitId: number) => {
   });
   session.updatePrograms(programs);
 };
+const updateImprovementValues = () => {
+  programs.forEach(program => {
+    program.improvements.forEach(improvement => {
+      Object.keys(improvement.values).forEach(key => {
+        if (years.value.indexOf(parseInt(key)) === -1) {
+          delete improvement.values[key];
+        }
+      });
+      years.value.forEach(year => {
+        if (!improvement.values[year.toString()]) {
+          improvement.values[year.toString()] = 0;
+        }
+      });
+    });
+  });
+  session.updatePrograms(programs);
+};
 const addYear = () => {
   years.value.push(newYearSelected.value);
   years.value.sort();
@@ -207,6 +224,7 @@ const addYear = () => {
   // If the time frame changes, we need to reset parameters
   session.updateGlobalParameters({});
   session.updateParameters({});
+  updateImprovementValues();
 };
 const removeYear = (year: number) => {
   if (years.value.length > 2) {
@@ -219,6 +237,7 @@ const removeYear = (year: number) => {
     // If the time frame changes, we need to reset parameters
     session.updateGlobalParameters({});
     session.updateParameters({});
+    updateImprovementValues();
   }
 };
 const resetYears = () => {
@@ -249,6 +268,7 @@ const resetYears = () => {
   
   session.updateYears(years.value);
   session.years = years.value;
+  updateImprovementValues();
 };
 const addProgram = () => {
   const clone = JSON.parse(JSON.stringify(defaultProgram));
@@ -346,15 +366,18 @@ const getGlobalParametersPayload = () => {
   delete results['MonetisationFactors'];
   return results;
 }
-const showParameters = (elementId: string, data: ImprovementInterface, subsectorElementId: string, subsectorId: number, program: string) => {
+const showParameters = (elementId: string, data: ImprovementInterface, subsectorElementId: string, subsectorId: number, program: string, programIndex: number) => {
   const element = document.getElementById(elementId) as HTMLSelectElement;
   const name = element.options[element.options.selectedIndex].text;
   const subsectorElement = document.getElementById(subsectorElementId) as HTMLSelectElement;
   const subsector = subsectorElement.options[subsectorElement.options.selectedIndex].text;
   const internalId = data && data.internalId ? data.internalId : 0;
+  data = session.programs[programIndex].improvements.filter(improvement => improvement.internalId === internalId)[0];
+  
   selectedImprovement.value = {
     internalId, name, subsector, subsectorId, program, data
   };
+  
   showParametersOverlay.value = true;
 };
 const analyze = async () => {
@@ -540,7 +563,7 @@ const importInput = async (e: Event) => {
 <template>
   <main>
     <GlobalParametersOverlay v-if="showGlobalParametersOverlay" @close="showGlobalParametersOverlay = false;"></GlobalParametersOverlay>
-    <ParametersOverlay v-else-if="showParametersOverlay" :improvement="selectedImprovement" :years="years" @close="showParametersOverlay = false;"></ParametersOverlay>
+    <ParametersOverlay v-else-if="showParametersOverlay" :improvement="selectedImprovement" :years="session.years" @close="showParametersOverlay = false;"></ParametersOverlay>
     <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
       <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
         <h1 class="text-4xl font-bold leading-normal dark:text-white">Assess the impacts of energy efficiency
@@ -940,7 +963,7 @@ const importInput = async (e: Event) => {
                     'cursor-not-allowed bg-gray-400 hover:bg-gray-400 dark:bg-gray-400 dark:hover:bg-gray-400': improvement.id === 0 || Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) === 0,
                     'bg-orange-400 hover:bg-orange-500 dark:bg-sky-400 dark:hover:bg-sky-500': improvement.id !== 0 && Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) > 0,
                   }"
-                  @click="showParameters(`improvement-${i}-${improvement.id}`, improvement, `subsector-${i}`, program.subsector, program.name)"
+                  @click="showParameters(`improvement-${i}-${improvement.id}`, improvement, `subsector-${i}`, program.subsector, program.name, i)"
                   :disabled="improvement.id === 0 || Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) === 0"
                 >
                   <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>

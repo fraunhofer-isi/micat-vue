@@ -84,12 +84,6 @@ const getParameters = async () => {
       "factor": units[session.unit].factor
     }
   };
-  // Since we also cache old values, we need to filter out the ones that are not in the current years selection
-  const values = Object.fromEntries(
-    Object.entries(props.improvement.data ? props.improvement.data.values : {}).filter(
-      ([key, val])=>props.years.includes(parseInt(key))
-    )
-  );
   
   const responseParameters: Response = await fetch(
     `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 4 : 2}&id_region=${session.region}`,
@@ -98,7 +92,7 @@ const getParameters = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({...values, ...body})
+      body: JSON.stringify({...props.improvement.data?.values, ...body})
     },
   );
   const results = await responseParameters.json();
