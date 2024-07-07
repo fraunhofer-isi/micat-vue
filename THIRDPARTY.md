@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -312,9 +306,9 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @vueuse/core@10.10.0
- - @vueuse/metadata@10.10.0
- - @vueuse/shared@10.10.0
+ - @vueuse/core@10.11.0
+ - @vueuse/metadata@10.11.0
+ - @vueuse/shared@10.11.0
 
 These packages each contain the following license and notice below:
 
@@ -404,8 +398,8 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @tanstack/virtual-core@3.5.1
- - @tanstack/vue-virtual@3.5.1
+ - @tanstack/virtual-core@3.8.1
+ - @tanstack/vue-virtual@3.8.1
 
 These packages each contain the following license and notice below:
 
@@ -435,7 +429,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - @heroicons/vue@2.1.3
+ - @heroicons/vue@2.1.4
 
 This package contains the following license and notice below:
 
@@ -549,16 +543,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.4.27
- - @vue/compiler-dom@3.4.27
- - @vue/compiler-sfc@3.4.27
- - @vue/compiler-ssr@3.4.27
- - @vue/reactivity@3.4.27
- - @vue/runtime-core@3.4.27
- - @vue/runtime-dom@3.4.27
- - @vue/server-renderer@3.4.27
- - @vue/shared@3.4.27
- - vue@3.4.27
+ - @vue/compiler-core@3.4.31
+ - @vue/compiler-dom@3.4.31
+ - @vue/compiler-sfc@3.4.31
+ - @vue/compiler-ssr@3.4.31
+ - @vue/reactivity@3.4.31
+ - @vue/runtime-core@3.4.31
+ - @vue/runtime-dom@3.4.31
+ - @vue/server-renderer@3.4.31
+ - @vue/shared@3.4.31
+ - vue@3.4.31
 
 These packages each contain the following license and notice below:
 
@@ -607,7 +601,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 The following npm packages may be included in this product:
 
  - pinia@2.1.7
- - vue-router@4.3.3
+ - vue-router@4.4.0
 
 These packages each contain the following license and notice below:
 
@@ -637,7 +631,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - postcss@8.4.38
+ - postcss@8.4.39
 
 This package contains the following license and notice below:
 
