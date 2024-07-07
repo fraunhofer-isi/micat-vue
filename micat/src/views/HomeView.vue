@@ -681,9 +681,12 @@ const importInput = async (e: Event) => {
                   <input v-model="session.municipality" id="municipality-2" type="radio" :value="true" name="municipality"
                          class="w-4 h-4 bg-gray-100 border-gray-300 text-sky-600 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                   <label for="municipality-2" class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300">Municipality
-                    with <input type="number" id="inhabitants"
-                                class="bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[80px]"
-                                v-model="session.inhabitants"> <span v-if="stage === stages.home">inhabitants</span><span
+                    with <VueNumberFormat
+                      :value="session.inhabitants"
+                      class="bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[80px]"
+                      id="inhabitants"
+                      @change="(e: Event) => session.updateInhabitants(parseInt((e.target as HTMLInputElement).value.replace('.', '')))"
+                    ></VueNumberFormat> <span v-if="stage === stages.home">inhabitants</span><span
                       v-else>inhab.</span></label>
                 </div>
               </div>
@@ -945,14 +948,14 @@ const importInput = async (e: Event) => {
                       year
                     }}</span>
                   <span class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600">
-                    <input
-                      v-model="improvement.values[year]"
-                      :id="`improvement-value-${improvement.id}-${year}`"
-                      type="number"
+                    <VueNumberFormat
+                      :value="improvement.values[year]"
                       :name="`improvement-value-${improvement.id}-${year}`"
                       class="bg-white border-0 text-gray-500 rounded-lg focus:ring-0 focus:border-0 px-1.5 py-0.5 inline max-w-[90px]"
                       placeholder="0"
-                    >
+                      :id="`improvement-value-${improvement.id}-${year}`"
+                      @change="(e: Event) => improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace('.', ''))"
+                    ></VueNumberFormat>
                   </span>
                 </div>
               </div>

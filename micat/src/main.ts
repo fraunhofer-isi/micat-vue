@@ -6,6 +6,7 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import VueNumberFormat from 'vue-number-format'
 
 import App from './App.vue'
 import router from './router'
@@ -14,6 +15,7 @@ export const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
+app.use(VueNumberFormat, {prefix: '', decimal: ',', thousand: '.', precision: 0})
 
 app.mount('#app')
 
