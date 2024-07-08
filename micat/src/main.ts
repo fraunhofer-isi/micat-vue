@@ -6,6 +6,7 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+// @ts-ignore: TS7016
 import VueNumberFormat from 'vue-number-format'
 
 import App from './App.vue'
