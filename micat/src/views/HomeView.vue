@@ -487,13 +487,25 @@ const analyze = async () => {
     router.push({ name: 'results' });
   }
 }
-const programChanged = (program: ProgramInterface, i: number) => {
+const programChanged = (program: ProgramInterface, i: number, subsectorId: number) => {
   program.improvements.forEach(improvement => {
     improvement.id = 0;
   });
+  const name = subsectors.value.filter(subsector => subsector.id === subsectorId)[0].name;
+  program.subsectorName = name;
   programs[i] = program;
   session.updatePrograms(programs);
   // If the sub sector changes, we need to reset parameters
+  session.updateParameters({});
+}
+const improvementChanged = (program: ProgramInterface, i: number, improvementId: number) => {
+  const name = getSubsectorImprovements(program.subsector).filter(improvement => improvement.id === improvementId)[0].name;
+  program.improvements.filter(improvement => improvement.id === improvementId).forEach(improvement => {
+    improvement.name = name;
+  });
+  programs[i] = program;
+  session.updatePrograms(programs);
+  // If the improvement changes, we need to reset parameters
   session.updateParameters({});
 }
 
@@ -888,7 +900,7 @@ const importInput = async (e: Event) => {
                 :id="`subsector-${i}`"
                 class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                 v-model="program.subsector"
-                @change="programChanged(program, i)"
+                @change="programChanged(program, i, program.subsector!)"
               >
                 <option value="0" selected disabled>Select subsector</option>
                 <option
@@ -926,7 +938,7 @@ const importInput = async (e: Event) => {
                       'dark:border-red-200': !improvement.id,
                     }"
                     v-model="improvement.id"
-                    @change="session.updateParameters({})"
+                    @change="improvementChanged(program, i, improvement.id!)"
                   >
                     <option value="0" selected disabled>Select improvement</option>
                     <option

@@ -22,6 +22,7 @@ export const defaultImprovement: ImprovementInterface = {
 export const defaultProgram: ProgramInterface = {
     name: 'Program 1',
     subsector: 0,
+    subsectorName: '',
     improvements: [{ ...defaultImprovement }]
 }
 export const chartColours: Array<string> = [

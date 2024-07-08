@@ -50,11 +50,12 @@ export interface UnitsInterface {
 export interface ProgramInterface {
     name: string;
     subsector: number;
+    subsectorName: string;
     improvements: Array<ImprovementInterface>;
 }
 
 export interface SubsectorInterface {
-    name: number | string;
+    name: string;
     id: number | string;
     improvements: Array<ImprovementInterface>;
 }

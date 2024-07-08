@@ -529,6 +529,7 @@ const exportResults = () => {
       categories,
       cbaData: cbaData.value,
       years: session.years,
+      programs: session.programs,
     }),
     headers: {
       "Content-Type": "application/json",
