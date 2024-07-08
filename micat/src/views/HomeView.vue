@@ -955,7 +955,7 @@ const importInput = async (e: Event) => {
                       placeholder="0"
                       :id="`improvement-value-${improvement.id}-${year}`"
                       @change="(e: Event) => improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace('.', ''))"
-                    ></VueNumberFormat>
+                    />
                   </span>
                 </div>
               </div>

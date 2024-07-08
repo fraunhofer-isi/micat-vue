@@ -289,12 +289,14 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                     />
                   </div>
                   <div>
-                    <input
-                      :id="`global-parameters-years-${yearOrFactor}-${i}-input`"
-                      type="number"
+                    <VueNumberFormat
+                      :value="entry.value"
                       class="bg-orange-50 border border-orange-300 text-orange-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
-                      v-model.number="entry.value"
-                    >
+                      placeholder="0"
+                      :id="`global-parameters-years-${yearOrFactor}-${i}-input`"
+                      :options="{precision: 2}"
+                      @change="(e: Event) => entry.value = parseFloat((e.target as HTMLInputElement).value.replace('.', ''))"
+                    />
                   </div>
                 </div>
                 

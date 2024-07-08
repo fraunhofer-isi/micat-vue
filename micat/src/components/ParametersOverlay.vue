@@ -236,12 +236,12 @@ const reset = () => {
                     />
                   </div>
                   <div>
-                    <input
-                      :id="`parameter-${parameter.parameters.id_parameter}-constant-input`"
-                      type="number"
+                    <VueNumberFormat
+                      :value="parameter.parameters.constants"
                       class="bg-sky-50 border border-sky-300 text-sky-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
-                      v-model.number="parameter.parameters.constants"
-                    >
+                      :id="`parameter-${parameter.parameters.id_parameter}-constant-input`"
+                      @change="(e: Event) => parameter.parameters.constants = parseFloat((e.target as HTMLInputElement).value.replace('.', ''))"
+                    />
                   </div>
                 </div>
                 <div
@@ -263,12 +263,14 @@ const reset = () => {
                     />
                   </div>
                   <div>
-                    <input
-                      :id="`parameter-${parameter.parameters.id_parameter}-${year.key}-input`"
-                      type="number"
+                    <VueNumberFormat
+                      :value="year.value"
                       class="bg-sky-50 border border-sky-300 text-sky-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
-                      v-model.number="year.value"
-                    >
+                      placeholder="0"
+                      :id="`parameter-${parameter.parameters.id_parameter}-${year.key}-input`"
+                      :options="{precision: 2}"
+                      @change="(e: Event) => year.value = parseFloat((e.target as HTMLInputElement).value.replace('.', ''))"
+                    />
                   </div>
                 </div>
               </div>
