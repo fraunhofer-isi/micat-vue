@@ -347,11 +347,11 @@ const getGlobalParametersPayload = () => {
               }
             });
             if (existingResult && value.value !== null) {
-              existingResult[factor] = value.value;
+              existingResult[factor] = category === 'FuelSplitCoefficient' ? value.value / 100 : value.value;
             } else if (value.value !== null) {
               const data = {
                 [carrierKey]: value.key,
-                [factor]: value.value
+                [factor]: category === 'FuelSplitCoefficient' ? value.value / 100 : value.value,
               }
               if (['ElectricityGeneration', 'HeatGeneration'].indexOf(category) === -1) data['id_subsector'] = parseInt(subsector);
               results[category].push(data);
@@ -364,6 +364,7 @@ const getGlobalParametersPayload = () => {
   delete results['ElectricityGeneration'];
   delete results['HeatGeneration'];
   delete results['MonetisationFactors'];
+  
   return results;
 }
 const showParameters = (elementId: string, data: ImprovementInterface, subsectorElementId: string, subsectorId: number, program: string, programIndex: number) => {
