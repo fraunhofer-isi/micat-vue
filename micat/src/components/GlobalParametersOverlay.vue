@@ -130,8 +130,9 @@ const reset = async () => {
   loading.value = false;
 }
 const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
-  // Check if all entries sum up to (almost) 1
-  return Math.abs(entries.map((entry) => entry.value || 0).reduce((a, b) => a + b) - 1) < 0.1;
+  // Check if all entries sum up to (almost) 1, or 100% in case of FuelSplitCoefficient
+  const factor = activeCategory.value === 'FuelSplitCoefficient' ? 100 : 1;
+  return Math.abs(entries.map((entry) => entry.value || 0).reduce((a, b) => a + b)) < factor;
 };
 const entriesAreNull = (entries: Array<GlobalParameterValue>) => {
   // Check if all entries are null
@@ -161,7 +162,7 @@ const getFactorTitle = (factor: string) => {
       return factor.replace(/ \[[\s\S]*?\]|/g, '');
   }
 };  
-const getFactorUnit = (factor: string) => {
+const getFactorUnit = (factor: string) => {  
   const cleaned_factor = getCleanedMonetisationFactorName(factor);
   const regExp = /\[([^)]+)\]/;
 
@@ -295,7 +296,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                       class="bg-orange-50 border border-orange-300 text-orange-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
                       placeholder="0"
                       :id="`global-parameters-years-${yearOrFactor}-${i}-input`"
-                      :options="{precision: 2}"
+                      :options="{precision: activeCategory === 'MonetisationFactors' ? 0 : ['ElectricityGeneration', 'HeatGeneration'].indexOf(activeCategory) > -1 ? 3 : 2}"
                       @change="(e: Event) => entry.value = parseFloat((e.target as HTMLInputElement).value.replace('.', ''))"
                     />
                   </div>
@@ -311,13 +312,13 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   </div>
                 </div>
                 <div
-                  v-else-if="activeCategory !== 'MonetisationFactors' && !entriesAreValid(entries)"
+                  v-else-if="['MonetisationFactors', 'ElectricityGeneration', 'HeatGeneration'].indexOf(activeCategory) === -1 && !entriesAreValid(entries)"
                   class="flex p-4 mt-5 text-sm text-yellow-800 border-t-4 border-yellow-300 bg-yellow-50 rounded-2xl"
                   role="alert"
                 >
                   <ExclamationCircleIcon class="h-7 w-7"></ExclamationCircleIcon>
                   <div class="ml-3 font-medium">
-                    The values of all energy carriers should normally sum up to 1.
+                    The values of all energy carriers should normally sum up to {{ activeCategory === 'FuelSplitCoefficient' ? "100%" : "1" }}.
                   </div>
                 </div>
               </div>

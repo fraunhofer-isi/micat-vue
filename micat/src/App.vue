@@ -98,12 +98,12 @@ const helpTexts: HelpTextInterface = {
   },
   'ElectricityGeneration': {
     'title': 'Electricity Generation',
-    'text': 'tba',
+    'text': "This specifies the average amounts of the different primary energy carriers to generate one unit of electricity. Given the typically low efficiency of thermal power plants, the sum of final energy carriers' factors can significantly surpass 1. The sum of the given values across all energy carriers is therefore equal to the average primary energy factor for the electricity generation.",
     'type': 'help'
   },
   'HeatGeneration': {
     'title': 'Heat Generation',
-    'text': 'tba',
+    'text': "This specifies the average amounts of the different primary energy carriers to generate one unit of heat. Given transformation losses in heat generation, the sum of final energy carriers' factors can surpass 1.  The sum of the given values across all energy carriers is therefore equal to the average primary energy factor for the heat generation.",
     'type': 'help'
   },
   'MonetisationFactors': {
@@ -138,17 +138,17 @@ const helpTexts: HelpTextInterface = {
   },
   'InvestmentcostsofPV': {
     'title': 'Investment costs of PV',
-    'text': 'tba',
+    'text': 'Average investment costs for the installation of 1MW of photovoltaics.',
     'type': 'help'
   },
   'Investmentcostsofonshorewind': {
     'title': 'Investment costs of onshore wind',
-    'text': 'tba',
+    'text': 'Average investment costs for the installation of 1MW of onshore wind energy.',
     'type': 'help'
   },
   'Investmentcostsofoffshorewind': {
     'title': 'Investment costs of offshore wind',
-    'text': 'tba',
+    'text': 'Average investment costs for the installation of 1MW of offshore wind energy.',
     'type': 'help'
   },
   // Advanced parameters
