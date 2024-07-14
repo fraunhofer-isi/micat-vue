@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -139,7 +133,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.24.7
+ - @babel/parser@7.24.8
 
 This package contains the following license and notice below:
 
@@ -405,8 +399,8 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @tanstack/virtual-core@3.8.2
- - @tanstack/vue-virtual@3.8.2
+ - @tanstack/virtual-core@3.8.3
+ - @tanstack/vue-virtual@3.8.3
 
 These packages each contain the following license and notice below:
 
@@ -436,7 +430,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - @heroicons/vue@2.1.4
+ - @heroicons/vue@2.1.5
 
 This package contains the following license and notice below:
 
@@ -466,7 +460,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - @jridgewell/sourcemap-codec@1.4.15
+ - @jridgewell/sourcemap-codec@1.5.0
 
 This package contains the following license and notice below:
 
