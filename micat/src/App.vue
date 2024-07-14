@@ -82,7 +82,7 @@ const helpTexts: HelpTextInterface = {
   },
   'renovation': {
     'title': 'Annual renovation rate',
-    'text': 'tba',
+    'text': 'This value states which share of the dwelling stock is renovated annually. It represents an alternative input to the number of affected dwellings and is then multiplied with the national or local dwelling stock (depending on the selection of the geographical area).',
     'type': 'help'
   },
   // Global parameters
@@ -154,207 +154,207 @@ const helpTexts: HelpTextInterface = {
   // Advanced parameters
   'advanced-parameters-40': {
     'title': 'Investment costs',
-    'text': 'tba',
+    'text': 'This figure specifies the triggered investments (which correspond to the total capital costs of the measure, rather than merely the subsidised or remaining costs) linked to the input energy savings. They should be input in total investments. The default coefficients stem from analysis of past data.',
     'type': 'help'
   },
   'advanced-parameters-35': {
     'title': 'Average subsidy rate',
-    'text': 'tba',
+    'text': 'This input specifies the average share of investment costs covered by subsidies.',
     'type': 'help'
   },
   'advanced-parameters-36': {
     'title': 'Average technology lifetime',
-    'text': 'tba',
+    'text': 'This value specifies for how long the implemented improvement actions last. Default values are deduced from standard data compiled by the European Committee for Standardization (CEN).',
     'type': 'help'
   },
   'advanced-parameters-16-1': {
     'title': 'Share of electricity among affected',
-    'text': 'tba',
+    'text': 'This value specifies the share of final energy carrier electricity among all energy carriers saved by the implemented improvement action.',
     'type': 'help'
   },
   'advanced-parameters-16-2': {
     'title': 'Share of oil among affected',
-    'text': 'tba',
+    'text': 'This value specifies the share of final energy carrier oil among all energy carriers saved by the implemented improvement action.',
     'type': 'help'
   },
   'advanced-parameters-16-3': {
     'title': 'Share of coal among affected',
-    'text': 'tba',
+    'text': 'This value specifies the share of final energy carrier coal among all energy carriers saved by the implemented improvement action.',
     'type': 'help'
   },
   'advanced-parameters-16-4': {
     'title': 'Share of gas among affected',
-    'text': 'tba',
+    'text': 'This value specifies the share of final energy carrier gas among all energy carriers saved by the implemented improvement action.',
     'type': 'help'
   },
   'advanced-parameters-16-5': {
     'title': 'Share of biomass and waste among affected',
-    'text': 'tba',
+    'text': 'This value specifies the share of final energy carrier biomass and waste among all energy carriers saved by the implemented improvement action.',
     'type': 'help'
   },
   'advanced-parameters-16-6': {
     'title': 'Share of heat among affected',
-    'text': 'tba',
+    'text': 'This value specifies the share of final energy carrier heat among all energy carriers saved by the implemented improvement action.',
     'type': 'help'
   },
   'advanced-parameters-16-7': {
     'title': 'Share of H2 and e-fuels among affected',
-    'text': 'tba',
+    'text': 'This value specifies the share of final energy carrier H2 and e-fuels among all energy carriers saved by the implemented improvement action.',
     'type': 'help'
   },
   'advanced-parameters-17-1': {
     'title': 'Share of electricity among removed',
-    'text': 'tba',
+    'text': 'This input specifies the share of electricity among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of electricity saved, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-17-2': {
     'title': 'Share of oil among removed',
-    'text': 'tba',
+    'text': 'This input specifies the share of oil among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of oil saved, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-17-3': {
     'title': 'Share of coal among removed',
-    'text': 'tba',
+    'text': 'This input specifies the share of coal among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of coal saved, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-17-4': {
     'title': 'Share of gas among removed',
-    'text': 'tba',
+    'text': 'This input specifies the share of gas among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of gas saved, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-17-5': {
     'title': 'Share of biomass and waste among removed',
-    'text': 'tba',
+    'text': 'This input specifies the share of biomass and waste among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of biomass and waste saved, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-17-6': {
     'title': 'Share of heat among removed',
-    'text': 'tba',
+    'text': 'This input specifies the share of heat among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of heat saved, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-17-7': {
     'title': 'Share of H2 and e-fuels among removed',
-    'text': 'tba',
+    'text': 'This input specifies the share of H2 and e-fuels among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of H2 and e-fuels saved, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-18-1': {
     'title': 'Share of electricity among installed',
-    'text': 'tba',
+    'text': 'This input specifies the share of electricity among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of electricity that was installed, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-18-2': {
     'title': 'Share of oil among installed',
-    'text': 'tba',
+    'text': 'This input specifies the share of oil among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of oil that was installed, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-18-3': {
     'title': 'Share of coal among installed',
-    'text': 'tba',
+    'text': 'This input specifies the share of coal among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of coal that was installed, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-18-4': {
     'title': 'Share of gas among installed',
-    'text': 'tba',
+    'text': 'This input specifies the share of gas among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of gas that was installed, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-18-5': {
     'title': 'Share of biomass and waste among installed',
-    'text': 'tba',
+    'text': 'This input specifies the share of biomass and waste among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of biomass and waste that was installed, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-18-6': {
     'title': 'Share of heat among installed',
-    'text': 'tba',
+    'text': 'This input specifies the share of heat among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of heat that was installed, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-18-7': {
     'title': 'Share of H2 and e-fuels among installed',
-    'text': 'tba',
+    'text': 'This input specifies the share of H2 and e-fuels among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of H2 and e-fuels that was installed, not the number of heaters or machines.',
     'type': 'help'
   },
   'advanced-parameters-14-1': {
     'title': 'Efficiency of removed electricity',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using electricity. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-14-2': {
     'title': 'Efficiency of removed oil',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using oil. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-14-3': {
     'title': 'Efficiency of removed coal',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using coal. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-14-4': {
     'title': 'Efficiency of removed gas',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using gas. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-14-5': {
     'title': 'Efficiency of removed biomass and waste',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using biomass and waste. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-14-6': {
     'title': 'Efficiency of removed heat',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using heat. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-14-7': {
     'title': 'Efficiency of removed H2 and e-fuels',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using H2 and e-fuels. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-15-1': {
     'title': 'Efficiency of installed electricity',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using electricity. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-15-2': {
     'title': 'Efficiency of installed oil',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using oil. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-15-3': {
     'title': 'Efficiency of installed coal',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using coal. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-15-4': {
     'title': 'Efficiency of installed gas',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using gas. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-15-5': {
     'title': 'Efficiency of installed biomass and waste',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using biomass and waste. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-15-6': {
     'title': 'Efficiency of installed heat',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using heat. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-15-7': {
     'title': 'Efficiency of installed H2 and e-fuels',
-    'text': 'tba',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using H2 and e-fuels. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.',
     'type': 'help'
   },
   'advanced-parameters-45': {
     'title': 'Number of affected dwellings',
-    'text': 'tba',
+    'text': 'This figure represents the number of different dwellings affected by the input measure. By default, this figure is calculated from input energy savings, using coefficients drawn from analysis of past data.',
     'type': 'help'
   },
   'advanced-parameters-42': {
     'title': 'Energy poverty targetednes',
-    'text': 'tba',
+    'text': 'This figure specifies the share of the generated energy savings achieved among energy poor households. By default, the national energy poverty prevalence as reported in the EU-SILC is used.',
     'type': 'help'
   },
   'advanced-parameters-43': {
     'title': 'Annual renovation rate',
-    'text': 'tba',
+    'text': 'This value states which share of the dwelling stock is renovated annually. It represents an alternative input to the number of affected dwellings and is then multiplied with the national or local dwelling stock (depending on the selection of the geographical area).',
     'type': 'help'
   },
   'advanced-parameters-32': {
@@ -364,17 +364,17 @@ const helpTexts: HelpTextInterface = {
   },
   'advanced-parameters-31': {
     'title': 'Average number of households per building',
-    'text': 'tba',
+    'text': 'This value specifies the average number of households per building. By default, national data from EU-SILC is used.',
     'type': 'help'
   },
   'advanced-parameters-29': {
     'title': 'Average rent of energy poor households',
-    'text': 'tba',
+    'text': 'This figure specifies the average rent spent by energy poor households. By default, national data from EU-SILC is used.',
     'type': 'help'
   },
   'advanced-parameters-34': {
     'title': 'Average renovation rent premium',
-    'text': 'tba',
+    'text': 'This value determines the average rent increase in percent for tenants following a major renovation. The default value stems from analysis of past data, although data availability is quite scarce.',
     'type': 'help'
   },
 };

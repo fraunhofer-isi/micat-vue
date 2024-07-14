@@ -22,6 +22,7 @@ const session = useSessionStore();
 const activeCategory = ref<string>("");
 const activeSubsector = ref<number>(0);
 const loading = ref<boolean>(true);
+
 let globalParameters = reactive<GlobalParameters>(session.globalParameters);
 let subsectorMapping = reactive<{[key: number]: string}>(session.subsectorMapping);
 let carrierMapping = reactive<CarrierMapping>(session.carrierMapping);
@@ -46,7 +47,7 @@ const rangeIndex: {[key: string]: number} = {};
 
 // Lifecycle
 onMounted(async () => {
-  if (Object.keys(JSON.parse(localStorage.getItem("globalParameters") || JSON.stringify({}))).length == 0) {
+  if (Object.keys(JSON.parse(localStorage.getItem("globalParameters") || JSON.stringify({}))).length == 0) {    
     await getAndStructureGlobalParameters(true);
   }
   activeCategory.value = Object.keys(globalParameters)[0];
@@ -312,7 +313,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   </div>
                 </div>
                 <div
-                  v-else-if="['MonetisationFactors', 'ElectricityGeneration', 'HeatGeneration'].indexOf(activeCategory) === -1 && !entriesAreValid(entries)"
+                  v-else-if="['MonetisationFactors', 'ElectricityGeneration', 'HeatGeneration', 'EnergyPrice'].indexOf(activeCategory) === -1 && !entriesAreValid(entries)"
                   class="flex p-4 mt-5 text-sm text-yellow-800 border-t-4 border-yellow-300 bg-yellow-50 rounded-2xl"
                   role="alert"
                 >

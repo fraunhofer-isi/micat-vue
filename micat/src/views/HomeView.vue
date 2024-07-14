@@ -223,7 +223,7 @@ const addYear = () => {
   newYearSelected.value = newYears.value[0];
   // If the time frame changes, we need to reset parameters
   session.updateGlobalParameters({});
-  session.updateParameters({});
+  session.updateParameters({});  
   updateImprovementValues();
 };
 const removeYear = (year: number) => {
@@ -250,7 +250,6 @@ const resetYears = () => {
     if (years.value.length == 0) {
       // Round up to nearest 5
       const nextValidYear = Math.ceil(currentYear / 5) * 5;
-      console.log(nextValidYear);
       years.value = [nextValidYear, nextValidYear + 5, nextValidYear + 10];
     }
   } else {
@@ -498,6 +497,7 @@ const programChanged = (program: ProgramInterface, i: number, subsectorId: numbe
   session.updatePrograms(programs);
   // If the sub sector changes, we need to reset parameters
   session.updateParameters({});
+  
 }
 const improvementChanged = (program: ProgramInterface, i: number, improvementId: number) => {
   const name = getSubsectorImprovements(program.subsector).filter(improvement => improvement.id === improvementId)[0].name;
@@ -555,8 +555,6 @@ const importInput = async (e: Event) => {
   session.years = years.value;
   Object.assign(programs, data.programs);
   session.updatePrograms(data.programs);
-  session.updateGlobalParameters(data.globalParameters);
-  session.updateParameters(data.parameters);
   session.updateSubsectorMapping(data.subsectorMapping);
   session.updateCarrierMapping(data.carrierMapping);
   session.updateMonetisationFactorMapping(data.monetisationFactorMapping);
@@ -569,6 +567,10 @@ const importInput = async (e: Event) => {
   session.unit = data.unit;
   setTimeout(() => {
     unitWatcher.resume();
+
+    // Updates on parameters need to be delayed, too, otherwise they will be overwritten by watcher functions
+    session.updateGlobalParameters(data.globalParameters);
+    session.updateParameters(data.parameters);
   }, 500);
 };
 </script>
