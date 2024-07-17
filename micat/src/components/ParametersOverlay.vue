@@ -220,7 +220,7 @@ const reset = () => {
                   @click="openModal(`advanced-parameters-${parameter.parameters.id_parameter}${parameter.parameters.id_final_energy_carrier ? `-${parameter.parameters.id_final_energy_carrier}` : ''}`)"
                   class="inline w-6 h-6 ml-2 cursor-pointer"
                 ></InformationCircleIcon>
-                <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">{{ parameter.parameters.unit }}</span>
+                <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600" v-if="!parameter.parameters.label.toString().toLowerCase().includes('efficiency')">{{ parameter.parameters.unit }}</span>
               </div>
               <div class="p-4">
                 <div v-if="parameter.years.length === 0" class="grid items-center grid-cols-3 gap-2 py-1">

@@ -51,6 +51,7 @@ export interface ProgramInterface {
     name: string;
     subsector: number;
     subsectorName: string;
+    showSubsectorMenu: boolean;
     improvements: Array<ImprovementInterface>;
 }
 

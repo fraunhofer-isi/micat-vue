@@ -177,6 +177,16 @@ const getFactorUnit = (factor: string) => {
 const getCleanedMonetisationFactorName = (factor: string) => { 
   return factor.replace(/ \[[\s\S]*?\]|\s/g, '');
 };
+const getMaxValue = (value: number, identifier: string) => {
+  if (activeCategory.value === 'FuelSplitCoefficient') return 100;
+  if (activeCategory.value === 'EnergyPrice') return 5000;
+  return roundNumber(value || 0, identifier)
+};
+const getStepValue = (value: number, identifier: string) => {
+  if (activeCategory.value === 'FuelSplitCoefficient') return 1;
+  if (activeCategory.value === 'EnergyPrice') return 100;
+  return roundNumber(value || 0, identifier) / 100
+};
 
 // Injections
 const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
@@ -267,7 +277,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                 ></InformationCircleIcon>
                 <span v-if="activeCategory === 'MonetisationFactors'" class="px-2 py-1 ml-2 text-xs bg-white rounded-xl text-sky-600">{{ getFactorUnit(monetisationFactorMapping[Number(yearOrFactor)]) }}</span>
                 <span v-if="activeCategory === 'EnergyPrice'" class="px-2 py-1 ml-2 text-xs bg-white rounded-xl text-sky-600">€/ktoe</span>
-                <span v-else-if="activeCategory === 'FuelSplitCoefficient'" class="px-2 py-1 ml-2 text-xs bg-white rounded-xl text-sky-600">%</span>
+                <span v-else-if="activeCategory === 'FuelSplitCoefficient'" class="px-2 py-1 ml-2 text-xs bg-white rounded-xl text-sky-600">% or absolute</span>
               </div>
               <div class="p-4">
                 <div
@@ -286,8 +296,8 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                       type="range"
                       class="w-full h-1 bg-orange-200 rounded-lg appearance-none cursor-pointer"
                       min="0"
-                      :max="activeCategory === 'FuelSplitCoefficient' ? 100 : roundNumber(entry.value || 0, `global-parameters-years-${yearOrFactor}-${i}-range`)"
-                      :step="activeCategory === 'FuelSplitCoefficient' ? 1 : roundNumber(entry.value || 0, `global-parameters-years-${yearOrFactor}-${i}-range`) / 100"
+                      :max="getMaxValue(entry.value || 0, `global-parameters-years-${yearOrFactor}-${i}-range`)"
+                      :step="getStepValue(entry.value || 0, `global-parameters-years-${yearOrFactor}-${i}-range`)"
                       v-model.number="entry.value"
                     />
                   </div>

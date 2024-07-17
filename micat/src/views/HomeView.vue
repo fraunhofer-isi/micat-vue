@@ -168,6 +168,7 @@ onMounted(async () => {
       improvements: Object.values(improvements).filter(improvement => improvement.subsectors.indexOf(subsector[0]) > -1)
     });
   });
+  subsectors.value.sort((a, b) => a.name.localeCompare(b.name))
 
   // Create internal IDs for improvements
   programs.forEach(program => {
@@ -887,6 +888,10 @@ const importInput = async (e: Event) => {
                   @click="removeProgram(i)"
                   class="inline w-5 h-5 ml-3 text-red-700 cursor-pointer"
                 ></TrashIcon>
+                <InformationCircleIcon
+                  @click="openModal('programs')"
+                  class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+                ></InformationCircleIcon>
               </div>
             </span>
           </div>
@@ -899,20 +904,60 @@ const importInput = async (e: Event) => {
               ></InformationCircleIcon>
             </div>
             <div>
-              <select
-                :id="`subsector-${i}`"
-                class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-                v-model="program.subsector"
-                @change="programChanged(program, i, program.subsector!)"
-              >
-                <option value="0" selected disabled>Select subsector</option>
-                <option
-                  v-for="subsector in subsectors" v-bind:key="`subsector-${i}-${subsector.id}`"
-                  :value="subsector.id"
+              <div class="relative inline-block text-left">
+                <div>
+                  <button 
+                    type="button" 
+                    class="inline-flex gap-2 block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 pr-2"
+                    :id="`subsector-button-${i}`" 
+                    aria-expanded="false" 
+                    aria-haspopup="true"
+                    @click="program.showSubsectorMenu = !program.showSubsectorMenu"
+                  >
+                    {{ program.subsectorName || 'Select subsector' }}
+                    <svg class="w-5 h-5 -mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+                <div 
+                  class="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-[40vh] overflow-y-auto"
+                  v-show="program.showSubsectorMenu"
+                  role="menu" 
+                  aria-orientation="vertical" 
+                  :aria-labelledby="`subsector-button-${i}`" 
+                  tabindex="-1"
                 >
-                  {{ subsector.name }}
-                </option>
-              </select>
+                  <div class="py-1" role="none">
+                    <a 
+                      href="#" 
+                      class="block px-4 py-2 text-sm font-bold text-gray-700" 
+                      role="menuitem" 
+                      tabindex="-1"
+                      :id="`subsector-${i}-${subsector.id}`" 
+                      v-for="subsector in subsectors.filter(s => s.name.toLowerCase().includes('average'))" 
+                      v-bind:key="`subsector-${i}-${subsector.id}`"
+                      @click="program.subsector = (subsector.id as number); program.showSubsectorMenu = false; programChanged(program, i, program.subsector!)"
+                    >
+                      {{ subsector.name }}
+                    </a>
+                  </div>
+                  <div class="py-1" role="none">
+                    <a 
+                      href="#" 
+                      class="block px-4 py-2 text-sm text-gray-700" 
+                      role="menuitem" 
+                      tabindex="-1"
+                      :id="`subsector-${i}-${subsector.id}`" 
+                      v-for="subsector in subsectors.filter(s => !s.name.toLowerCase().includes('average'))" 
+                      v-bind:key="`subsector-${i}-${subsector.id}`"
+                      @click="program.subsector = (subsector.id as number); program.showSubsectorMenu = false; programChanged(program, i, program.subsector!)"
+                    >
+                      {{ subsector.name }}
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="grid items-center grid-cols-2 gap-5 mt-8" v-if="program.subsector">
@@ -958,20 +1003,31 @@ const importInput = async (e: Event) => {
                     class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
                   ></InformationCircleIcon>
                 </div>
-                <div v-for="year in years" v-bind:key="year.toString()" class="rounded-full whitespace-nowrap mt-7">
-                  <span class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600">{{
-                      year
-                    }}</span>
-                  <span class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600">
-                    <VueNumberFormat
-                      :value="improvement.values[year]"
-                      :name="`improvement-value-${improvement.id}-${year}`"
-                      class="bg-white border-0 text-gray-500 rounded-lg focus:ring-0 focus:border-0 px-1.5 py-0.5 inline max-w-[90px]"
-                      placeholder="0"
-                      :id="`improvement-value-${improvement.id}-${year}`"
-                      @change="(e: Event) => improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace('.', ''))"
-                    />
-                  </span>
+                <div class="flex items-center">
+                  <div>
+                    <div v-for="year in years" v-bind:key="year.toString()" class="mt-5 mb-5 rounded-full whitespace-nowrap">
+                      <span class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600">{{
+                          year
+                        }}</span>
+                      <span class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600">
+                        <VueNumberFormat
+                          :value="improvement.values[year]"
+                          :name="`improvement-value-${improvement.id}-${year}`"
+                          class="bg-white border-0 text-gray-500 rounded-lg focus:ring-0 focus:border-0 px-1.5 py-0.5 inline max-w-[120px]"
+                          placeholder="0"
+                          :id="`improvement-value-${improvement.id}-${year}`"
+                          @change="(e: Event) => improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace('.', ''))"
+                        />
+                      </span>
+                      <span class="p-2 text-xs leading-4 text-gray-400 dark:text-slate-500">{{ units[session.unit].symbol }}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <InformationCircleIcon
+                      @click="openModal('savings')"
+                      class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+                    ></InformationCircleIcon>
+                  </div>
                 </div>
               </div>
               <div class="px-6 py-3 text-center bg-orange-200 border-t border-gray-200 dark:bg-sky-200">

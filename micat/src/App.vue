@@ -35,6 +35,11 @@ const helpTexts: HelpTextInterface = {
     'text': 'Here, you can select the years for which you want to provide data. Between these, the tool calculates linear interpolations.',
     'type': 'help'
   },
+  'programs': {
+    'title': 'Programs',
+    'text': 'tba',
+    'type': 'help'
+  },
   'subsector': {
     'title': 'Subsector',
     'text': 'This determines the sector or subsector, the program is carried out in. More details about the available (sub-)sectors are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-sector-and-id-subsector" target="_blank">here</a>.',
@@ -43,6 +48,11 @@ const helpTexts: HelpTextInterface = {
   'improvement': {
     'title': 'Improvement',
     'text': 'This specifies which improvements are part of the program. Each improvement type bundles measures that similarly affect multiple impacts (i.e. building envelope encompasses window replacements as well as wall or roof insulations). More details about the available improvements are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-action-type" target="_blank"></a>',
+    'type': 'help'
+  },
+  'savings': {
+    'title': 'Savings',
+    'text': 'Please enter the energy savings associated with the selected improvement action as total annual savings in the unit selected in the "Options" section.',
     'type': 'help'
   },
   'energy-price-sensitivity': {
@@ -77,7 +87,7 @@ const helpTexts: HelpTextInterface = {
   },
   'parameters': {
     'title': 'Advanced parameters',
-    'text': '<strong>Important:</strong> Please note, that any changes are lost if you change the given region or time frame.',
+    'text': '<strong>Important:</strong> Please note, that any changes are lost if you change the given region, time frame, subsector or improvement.',
     'type': 'help'
   },
   'renovation': {
@@ -169,107 +179,107 @@ const helpTexts: HelpTextInterface = {
   },
   'advanced-parameters-16-1': {
     'title': 'Share of electricity among affected',
-    'text': 'This value specifies the share of final energy carrier electricity among all energy carriers saved by the implemented improvement action.',
+    'text': 'This value specifies the share of final energy carrier electricity among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier. Important: Remain consistent within the template and do not mix the units (one unit for all parameters).',
     'type': 'help'
   },
   'advanced-parameters-16-2': {
     'title': 'Share of oil among affected',
-    'text': 'This value specifies the share of final energy carrier oil among all energy carriers saved by the implemented improvement action.',
+    'text': 'This value specifies the share of final energy carrier oil among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier. Important: Remain consistent within the template and do not mix the units (one unit for all parameters).',
     'type': 'help'
   },
   'advanced-parameters-16-3': {
     'title': 'Share of coal among affected',
-    'text': 'This value specifies the share of final energy carrier coal among all energy carriers saved by the implemented improvement action.',
+    'text': 'This value specifies the share of final energy carrier coal among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier. Important: Remain consistent within the template and do not mix the units (one unit for all parameters).',
     'type': 'help'
   },
   'advanced-parameters-16-4': {
     'title': 'Share of gas among affected',
-    'text': 'This value specifies the share of final energy carrier gas among all energy carriers saved by the implemented improvement action.',
+    'text': 'This value specifies the share of final energy carrier gas among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier. Important: Remain consistent within the template and do not mix the units (one unit for all parameters).',
     'type': 'help'
   },
   'advanced-parameters-16-5': {
     'title': 'Share of biomass and waste among affected',
-    'text': 'This value specifies the share of final energy carrier biomass and waste among all energy carriers saved by the implemented improvement action.',
+    'text': 'This value specifies the share of final energy carrier biomass and waste among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier. Important: Remain consistent within the template and do not mix the units (one unit for all parameters).',
     'type': 'help'
   },
   'advanced-parameters-16-6': {
     'title': 'Share of heat among affected',
-    'text': 'This value specifies the share of final energy carrier heat among all energy carriers saved by the implemented improvement action.',
+    'text': 'This value specifies the share of final energy carrier heat among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier. Important: Remain consistent within the template and do not mix the units (one unit for all parameters).',
     'type': 'help'
   },
   'advanced-parameters-16-7': {
     'title': 'Share of H2 and e-fuels among affected',
-    'text': 'This value specifies the share of final energy carrier H2 and e-fuels among all energy carriers saved by the implemented improvement action.',
+    'text': 'This value specifies the share of final energy carrier H2 and e-fuels among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier. Important: Remain consistent within the template and do not mix the units (one unit for all parameters).',
     'type': 'help'
   },
   'advanced-parameters-17-1': {
     'title': 'Share of electricity among removed',
-    'text': 'This input specifies the share of electricity among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of electricity saved, not the number of heaters or machines.',
+    'text': 'This input specifies the share of electricity among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of electricity saved, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among removed").',
     'type': 'help'
   },
   'advanced-parameters-17-2': {
     'title': 'Share of oil among removed',
-    'text': 'This input specifies the share of oil among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of oil saved, not the number of heaters or machines.',
+    'text': 'This input specifies the share of oil among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of oil saved, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among removed").',
     'type': 'help'
   },
   'advanced-parameters-17-3': {
     'title': 'Share of coal among removed',
-    'text': 'This input specifies the share of coal among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of coal saved, not the number of heaters or machines.',
+    'text': 'This input specifies the share of coal among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of coal saved, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among removed").',
     'type': 'help'
   },
   'advanced-parameters-17-4': {
     'title': 'Share of gas among removed',
-    'text': 'This input specifies the share of gas among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of gas saved, not the number of heaters or machines.',
+    'text': 'This input specifies the share of gas among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of gas saved, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among removed").',
     'type': 'help'
   },
   'advanced-parameters-17-5': {
     'title': 'Share of biomass and waste among removed',
-    'text': 'This input specifies the share of biomass and waste among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of biomass and waste saved, not the number of heaters or machines.',
+    'text': 'This input specifies the share of biomass and waste among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of biomass and waste saved, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among removed").',
     'type': 'help'
   },
   'advanced-parameters-17-6': {
     'title': 'Share of heat among removed',
-    'text': 'This input specifies the share of heat among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of heat saved, not the number of heaters or machines.',
+    'text': 'This input specifies the share of heat among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of heat saved, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among removed").',
     'type': 'help'
   },
   'advanced-parameters-17-7': {
     'title': 'Share of H2 and e-fuels among removed',
-    'text': 'This input specifies the share of H2 and e-fuels among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of H2 and e-fuels saved, not the number of heaters or machines.',
+    'text': 'This input specifies the share of H2 and e-fuels among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of H2 and e-fuels saved, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among removed").',
     'type': 'help'
   },
   'advanced-parameters-18-1': {
     'title': 'Share of electricity among installed',
-    'text': 'This input specifies the share of electricity among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of electricity that was installed, not the number of heaters or machines.',
+    'text': 'This input specifies the share of electricity among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of electricity that was installed, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among installed").',
     'type': 'help'
   },
   'advanced-parameters-18-2': {
     'title': 'Share of oil among installed',
-    'text': 'This input specifies the share of oil among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of oil that was installed, not the number of heaters or machines.',
+    'text': 'This input specifies the share of oil among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of oil that was installed, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among installed").',
     'type': 'help'
   },
   'advanced-parameters-18-3': {
     'title': 'Share of coal among installed',
-    'text': 'This input specifies the share of coal among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of coal that was installed, not the number of heaters or machines.',
+    'text': 'This input specifies the share of coal among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of coal that was installed, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among installed").',
     'type': 'help'
   },
   'advanced-parameters-18-4': {
     'title': 'Share of gas among installed',
-    'text': 'This input specifies the share of gas among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of gas that was installed, not the number of heaters or machines.',
+    'text': 'This input specifies the share of gas among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of gas that was installed, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among installed").',
     'type': 'help'
   },
   'advanced-parameters-18-5': {
     'title': 'Share of biomass and waste among installed',
-    'text': 'This input specifies the share of biomass and waste among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of biomass and waste that was installed, not the number of heaters or machines.',
+    'text': 'This input specifies the share of biomass and waste among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of biomass and waste that was installed, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among installed").',
     'type': 'help'
   },
   'advanced-parameters-18-6': {
     'title': 'Share of heat among installed',
-    'text': 'This input specifies the share of heat among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of heat that was installed, not the number of heaters or machines.',
+    'text': 'This input specifies the share of heat among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of heat that was installed, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among installed").',
     'type': 'help'
   },
   'advanced-parameters-18-7': {
     'title': 'Share of H2 and e-fuels among installed',
-    'text': 'This input specifies the share of H2 and e-fuels among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of H2 and e-fuels that was installed, not the number of heaters or machines.',
+    'text': 'This input specifies the share of H2 and e-fuels among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of H2 and e-fuels that was installed, not the number of heaters or machines. Values can be entered as percentages, shares or absolute values. Important: The units must not be mixed within a parameter category ("Share of XX among installed").',
     'type': 'help'
   },
   'advanced-parameters-14-1': {

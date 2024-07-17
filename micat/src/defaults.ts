@@ -23,6 +23,7 @@ export const defaultProgram: ProgramInterface = {
     name: 'Program 1',
     subsector: 0,
     subsectorName: '',
+    showSubsectorMenu: false,
     improvements: [{ ...defaultImprovement }]
 }
 export const chartColours: Array<string> = [
