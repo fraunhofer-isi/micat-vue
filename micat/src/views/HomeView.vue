@@ -367,16 +367,15 @@ const getGlobalParametersPayload = () => {
   
   return results;
 }
-const showParameters = (elementId: string, data: ImprovementInterface, subsectorElementId: string, subsectorId: number, program: string, programIndex: number) => {
-  const element = document.getElementById(elementId) as HTMLSelectElement;
-  const name = element.options[element.options.selectedIndex].text;
-  const subsectorElement = document.getElementById(subsectorElementId) as HTMLSelectElement;
-  const subsector = subsectorElement.options[subsectorElement.options.selectedIndex].text;
-  const internalId = data && data.internalId ? data.internalId : 0;
-  data = session.programs[programIndex].improvements.filter(improvement => improvement.internalId === internalId)[0];
-  
+const showParameters = (data: ImprovementInterface, programIndex: number) => {
+  const selectedProgram = session.programs[programIndex];
   selectedImprovement.value = {
-    internalId, name, subsector, subsectorId, program, data
+    internalId: data && data.internalId ? data.internalId : 0,
+    name: data.name, 
+    subsector: selectedProgram.subsectorName, 
+    subsectorId: selectedProgram.subsector, 
+    program: selectedProgram.name, 
+    data,
   };
   
   showParametersOverlay.value = true;
@@ -1037,7 +1036,7 @@ const importInput = async (e: Event) => {
                     'cursor-not-allowed bg-gray-400 hover:bg-gray-400 dark:bg-gray-400 dark:hover:bg-gray-400': improvement.id === 0 || Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) === 0,
                     'bg-orange-400 hover:bg-orange-500 dark:bg-sky-400 dark:hover:bg-sky-500': improvement.id !== 0 && Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) > 0,
                   }"
-                  @click="showParameters(`improvement-${i}-${improvement.id}`, improvement, `subsector-${i}`, program.subsector, program.name, i)"
+                  @click="showParameters(improvement, i)"
                   :disabled="improvement.id === 0 || Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) === 0"
                 >
                   <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
