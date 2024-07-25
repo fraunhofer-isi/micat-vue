@@ -106,7 +106,7 @@ const getParameters = async () => {
     if (
       category === 'context' || 
       category === 'residential' && [17].indexOf(props.improvement.subsectorId!) == -1 ||
-      category === 'fuelSwitch' && ['fuel switch', 'heating fuel switch'].indexOf(props.improvement.name!.toLowerCase()) == -1
+      category === 'fuelSwitch' && !props.improvement.name!.toLowerCase().includes('fuel switch')
     ) { continue; }
     // Add category key, if it doesn't exist yet
     if (!restructuredResults[category]) restructuredResults[category] = [];
