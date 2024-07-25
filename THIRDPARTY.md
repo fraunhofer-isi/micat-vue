@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -345,7 +339,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - vue-demi@0.14.8
+ - vue-demi@0.14.9
 
 This package contains the following license and notice below:
 
@@ -550,16 +544,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.4.32
- - @vue/compiler-dom@3.4.32
- - @vue/compiler-sfc@3.4.32
- - @vue/compiler-ssr@3.4.32
- - @vue/reactivity@3.4.32
- - @vue/runtime-core@3.4.32
- - @vue/runtime-dom@3.4.32
- - @vue/server-renderer@3.4.32
- - @vue/shared@3.4.32
- - vue@3.4.32
+ - @vue/compiler-core@3.4.34
+ - @vue/compiler-dom@3.4.34
+ - @vue/compiler-sfc@3.4.34
+ - @vue/compiler-ssr@3.4.34
+ - @vue/reactivity@3.4.34
+ - @vue/runtime-core@3.4.34
+ - @vue/runtime-dom@3.4.34
+ - @vue/server-renderer@3.4.34
+ - @vue/shared@3.4.34
+ - vue@3.4.34
 
 These packages each contain the following license and notice below:
 
@@ -638,7 +632,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - postcss@8.4.39
+ - postcss@8.4.40
 
 This package contains the following license and notice below:
 
