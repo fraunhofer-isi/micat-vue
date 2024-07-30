@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -139,7 +133,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.24.8
+ - @babel/parser@7.25.0
 
 This package contains the following license and notice below:
 
@@ -231,7 +225,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The following npm package may be included in this product:
 
- - magic-string@0.30.10
+ - magic-string@0.30.11
 
 This package contains the following license and notice below:
 
@@ -345,7 +339,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - vue-demi@0.14.9
+ - vue-demi@0.14.10
 
 This package contains the following license and notice below:
 
@@ -405,8 +399,8 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @tanstack/virtual-core@3.8.3
- - @tanstack/vue-virtual@3.8.3
+ - @tanstack/virtual-core@3.8.4
+ - @tanstack/vue-virtual@3.8.4
 
 These packages each contain the following license and notice below:
 
@@ -607,7 +601,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - pinia@2.1.7
+ - pinia@2.2.0
  - vue-router@4.4.0
 
 These packages each contain the following license and notice below:
