@@ -382,7 +382,7 @@ const showParameters = (data: ImprovementInterface, programIndex: number) => {
 };
 const analyze = async () => {
   loading.value = true;
-  const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${session.future ? 4 : 2}&id_region=${session.region}`
+  const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${session.future ? 2 : 4}&id_region=${session.region}`
   const payload: PayloadInterface = {
     "measures": [],
     "parameters": getGlobalParametersPayload(),

@@ -86,7 +86,7 @@ const getParameters = async () => {
   };
   
   const responseParameters: Response = await fetch(
-    `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 4 : 2}&id_region=${session.region}`,
+    `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 2 : 4}&id_region=${session.region}`,
     {
       method: "POST",
       headers: {
