@@ -86,7 +86,6 @@ export const useSessionStore = defineStore({
     },
     updateGlobalParameters(globalParameters: GlobalParameters, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      console.log("globalParameters", globalParameters);
       localStorage.setItem("globalParameters", JSON.stringify(globalParameters));
     },
     updateSubsectorMapping(subsectorMapping: {[key: number]: string}, manualChange?: boolean) {

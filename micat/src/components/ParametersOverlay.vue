@@ -51,11 +51,11 @@ const rangeIndex: {[key: string]: number} = {};
 onMounted(async () => {
   const storedParams = JSON.parse(localStorage.getItem("parameters") || JSON.stringify({}));
   if (typeof storedParams[props.improvement.internalId] !== 'undefined') {
-    parameters[props.improvement.internalId] = session.parameters[props.improvement.internalId];
+    parameters[props.improvement.internalId] = storedParams[props.improvement.internalId];
   } else {
     if (typeof parameters[props.improvement.internalId] === 'undefined') parameters[props.improvement.internalId] = {};
     await getParameters();
-  }
+  }  
   activeCategory.value = Object.keys(parameters[props.improvement.internalId])[0];
   loading.value = false;
 });
