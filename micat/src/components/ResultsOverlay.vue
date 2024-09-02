@@ -391,7 +391,7 @@ const chartOptions = computed(() => {
   };
 })
 const chartData = computed(() => {
-  const datasets: Array<ChartDataset> = [];
+  const datasets: ChartDataset[] = [];
   chartLabels.value.forEach((label, i) => {
     const dataset = {
       label: label === 'id_measure' ? '' : label,
