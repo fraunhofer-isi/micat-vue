@@ -643,12 +643,14 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
           </div>
           <div class="px-10 py-5">
             <!-- @vue-ignore -->
+            <!-- eslint-disable --> 
             <Line
               class="w-full max-w-[100%]"
               id="chart"
               :options="chartOptions"
               :data="chartData"
             />
+            <!-- eslint-enable -->
           </div>
         </div>
         <div v-else-if="activeCategory === 'aggregation'" class="w-full max-w-full p-7">
