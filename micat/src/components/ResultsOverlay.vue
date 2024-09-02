@@ -18,13 +18,12 @@ import {
   ArrowDownTrayIcon,
 } from '@heroicons/vue/24/outline';
 import { Line } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale } from 'chart.js';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale, type ChartDataset } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import type {
   CategoriesInterface,
   MeasurementInterface,
   ResultInterface,
-  DatasetInterface,
   ModalInjectInterface,
   CbaResultInterface,
   CbaData,
@@ -392,7 +391,7 @@ const chartOptions = computed(() => {
   };
 })
 const chartData = computed(() => {
-  const datasets: Array<DatasetInterface> = [];
+  const datasets: Array<ChartDataset> = [];
   chartLabels.value.forEach((label, i) => {
     const dataset = {
       label: label === 'id_measure' ? '' : label,
