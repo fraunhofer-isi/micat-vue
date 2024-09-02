@@ -59,7 +59,7 @@ const getToken = async () => {
 };
 const getCategories = async () => {
   loading.value = true;
-  if (!session.mureToken.hasOwnProperty('token') || session.mureToken.expires < Date.now()) {
+  if (!Object.prototype.hasOwnProperty.call(session.mureToken, 'token') || session.mureToken.expires < Date.now()) {
     // Refresh token
     await getToken();
   }
@@ -75,7 +75,7 @@ const getCategories = async () => {
 };
 const getCountries = async () => {
   loading.value = true;
-  if (!session.mureToken.hasOwnProperty('token') || session.mureToken.expires < Date.now()) {
+  if (!Object.prototype.hasOwnProperty.call(session.mureToken, 'token') || session.mureToken.expires < Date.now()) {
     // Refresh token
     await getToken();
   }
@@ -90,7 +90,7 @@ const getCountries = async () => {
 };
 const getMeasurements = async () => {
   loading.value = true;
-  if (!session.mureToken.hasOwnProperty('token') || session.mureToken.expires < Date.now()) {
+  if (!Object.prototype.hasOwnProperty.call(session.mureToken, 'token') || session.mureToken.expires < Date.now()) {
     // Refresh token
     await getToken();
   }
@@ -110,7 +110,7 @@ const getMeasurements = async () => {
 };
 const getMeasurementDetails = async () => {
   loading.value = true;
-  if (!session.mureToken.hasOwnProperty('token') || session.mureToken.expires < Date.now()) {
+  if (!Object.prototype.hasOwnProperty.call(session.mureToken, 'token') || session.mureToken.expires < Date.now()) {
     // Refresh token
     await getToken();
   }

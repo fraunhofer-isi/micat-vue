@@ -522,7 +522,7 @@ const selectCbaResult = (slug: string) => {
   activeCbaResult.value = slug;
 }
 const exportResults = () => {
-  const response = fetch(`${import.meta.env.VITE_API_URL}export-results`, {
+  fetch(`${import.meta.env.VITE_API_URL}export-results`, {
     method: "POST",
     body: JSON.stringify({
       results: session.results,
