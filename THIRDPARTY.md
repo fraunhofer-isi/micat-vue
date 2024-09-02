@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -139,7 +133,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.25.0
+ - @babel/parser@7.25.6
 
 This package contains the following license and notice below:
 
@@ -283,6 +277,58 @@ MIT
 
 The following npm package may be included in this product:
 
+ - to-fast-properties@2.0.0
+
+This package contains the following license and notice below:
+
+MIT License
+
+Copyright (c) 2014 Petka Antonov
+              2015 Sindre Sorhus
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-----------
+
+The following npm packages may be included in this product:
+
+ - @babel/helper-string-parser@7.24.8
+ - @babel/helper-validator-identifier@7.24.7
+ - @babel/types@7.25.6
+
+These packages each contain the following license and notice below:
+
+MIT License
+
+Copyright (c) 2014-present Sebastian McKenzie and other contributors
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-----------
+
+The following npm package may be included in this product:
+
  - vue-chartjs@5.3.1
 
 This package contains the following license and notice below:
@@ -313,9 +359,9 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @vueuse/core@10.11.0
- - @vueuse/metadata@10.11.0
- - @vueuse/shared@10.11.0
+ - @vueuse/core@10.11.1
+ - @vueuse/metadata@10.11.1
+ - @vueuse/shared@10.11.1
 
 These packages each contain the following license and notice below:
 
@@ -405,8 +451,8 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @tanstack/virtual-core@3.8.4
- - @tanstack/vue-virtual@3.8.4
+ - @tanstack/virtual-core@3.10.6
+ - @tanstack/vue-virtual@3.10.6
 
 These packages each contain the following license and notice below:
 
@@ -496,7 +542,7 @@ THE SOFTWARE.
 
 The following npm package may be included in this product:
 
- - chart.js@4.4.3
+ - chart.js@4.4.4
 
 This package contains the following license and notice below:
 
@@ -550,16 +596,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.4.34
- - @vue/compiler-dom@3.4.34
- - @vue/compiler-sfc@3.4.34
- - @vue/compiler-ssr@3.4.34
- - @vue/reactivity@3.4.34
- - @vue/runtime-core@3.4.34
- - @vue/runtime-dom@3.4.34
- - @vue/server-renderer@3.4.34
- - @vue/shared@3.4.34
- - vue@3.4.34
+ - @vue/compiler-core@3.4.38
+ - @vue/compiler-dom@3.4.38
+ - @vue/compiler-sfc@3.4.38
+ - @vue/compiler-ssr@3.4.38
+ - @vue/reactivity@3.4.38
+ - @vue/runtime-core@3.4.38
+ - @vue/runtime-dom@3.4.38
+ - @vue/server-renderer@3.4.38
+ - @vue/shared@3.4.38
+ - vue@3.4.38
 
 These packages each contain the following license and notice below:
 
@@ -607,8 +653,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - pinia@2.2.0
- - vue-router@4.4.0
+ - pinia@2.2.2
+ - vue-router@4.4.3
 
 These packages each contain the following license and notice below:
 
@@ -638,7 +684,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - postcss@8.4.40
+ - postcss@8.4.44
 
 This package contains the following license and notice below:
 
