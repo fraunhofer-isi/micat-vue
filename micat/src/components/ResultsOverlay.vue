@@ -646,7 +646,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
             <Line
               class="w-full max-w-[100%]"
               id="chart"
-              :options="(chartOptions as ChartOptions)"
+              :options="(chartOptions as any)"
               :data="(chartData as ChartData<'line'>)"
             />
           </div>
