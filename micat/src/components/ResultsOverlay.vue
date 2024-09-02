@@ -18,7 +18,7 @@ import {
   ArrowDownTrayIcon,
 } from '@heroicons/vue/24/outline';
 import { Line } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale, type ChartDataset } from 'chart.js';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale, type ChartDataset, type ChartOptions } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import type {
   CategoriesInterface,
@@ -646,7 +646,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
             <Line
               class="w-full max-w-[100%]"
               id="chart"
-              :options="chartOptions"
+              :options="(chartOptions as ChartOptions)"
               :data="(chartData as ChartData<'line'>)"
             />
           </div>
