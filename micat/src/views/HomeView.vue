@@ -9,6 +9,7 @@ import {inject, onMounted, reactive, ref, watch} from 'vue';
 import type {Ref} from 'vue';
 import { watchPausable } from '@vueuse/core';
 import router from "@/router";
+import { storeToRefs } from 'pinia';
 import {
   InformationCircleIcon,
   TrashIcon,
@@ -38,6 +39,7 @@ import { defaultImprovement, defaultModalInject, defaultProgram, stages, units }
 import { useSessionStore } from "@/stores/session";
 import GlobalParametersOverlay from "@/components/GlobalParametersOverlay.vue";
 import ParametersOverlay from "@/components/ParametersOverlay.vue";
+import MureSelection from "@/components/MureSelection.vue";
 
 const session = useSessionStore();
 
@@ -64,10 +66,8 @@ const improvementParameterMapping: { [key: number]: string } = {
 const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
 
 // Session
-const stage = ref<number>(session.stage);
-const years = ref<Array<number>>(session.years);
+const { years, stage, seedInfo } = storeToRefs(session);
 const programs = reactive<Array<ProgramInterface>>(session.programs);
-const seedInfo = ref<boolean>(session.seedInfo);
 
 // Refs
 const loading = ref<boolean>(false);
@@ -102,6 +102,10 @@ watch(() => session.future, (future) => {
   // If the time frame changes, we need to reset parameters
   session.updateGlobalParameters({});
   session.updateParameters({});
+});
+watch(() => session.mure, (mure) => {
+  session.updateMure(mure);
+  if (session.mure) updateMureData();
 });
 watch(() => session.region, (region) => {
   session.updateRegion(region);
@@ -176,6 +180,8 @@ onMounted(async () => {
       if (!improvement.internalId) improvement.internalId = getInternalId();
     });
   });
+
+  if (session.mure) updateMureData();
 })
 
 // Functions
@@ -573,6 +579,17 @@ const importInput = async (e: Event) => {
     session.updateParameters(data.parameters);
   }, 500);
 };
+const updateMureData = () => {
+  // If MURE data is used, set unit to GJ
+  session.unit = 3;
+};
+const start = () => {
+  stage.value = stages.full;
+  if (!session.mure) {
+    years.value = []; 
+    resetYears();
+  }
+};
 </script>
 
 <template>
@@ -619,7 +636,8 @@ const importInput = async (e: Event) => {
             </div>
           </div>
         </div>
-        <div class="relative px-8 py-8 mb-5 border border-gray-300 rounded-3xl dark:border-gray-400">
+        <MureSelection v-if="session.mure" :subsectors="subsectors"></MureSelection>
+        <div v-else class="relative px-8 py-8 mb-5 border border-gray-300 rounded-3xl dark:border-gray-400">
           <div class="absolute top-[-14px] left-0 w-full text-center">
             <span class="inline-block px-4 italic font-bold bg-white dark:bg-blue-950 dark:text-white">
               <span v-if="stage === stages.home">Select your use case</span>
@@ -731,9 +749,10 @@ const importInput = async (e: Event) => {
           </div>
         </div>
         <button
-          class="px-8 py-2 font-bold text-white uppercase bg-orange-500 rounded-full hover:bg-orange-600"
-          @click="stage = stages.full; years = []; resetYears();"
+          class="px-8 py-2 font-bold text-white uppercase bg-orange-500 rounded-full hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
+          @click="start();"
           v-if="stage === stages.home"
+          :disabled="session.mure && (session.mureCategory === 0 || session.mureCountry === 0 || session.mureMeasurement === 0)"
         >
           Start
         </button>
@@ -745,6 +764,22 @@ const importInput = async (e: Event) => {
         >
           Learn more
         </a>
+        <div class="relative mt-10 text-xs text-center" v-if="stage === stages.home">
+          <div class="absolute top-[-8px] w-full">
+            <p class="inline-block px-4 bg-white dark:bg-blue-950 dark:text-white">
+              <span v-if=" session.mure">or use your own inputs</span>
+              <span v-else>or select predefined values from the <a class="font-bold" href="https://www.odyssee-mure.eu/" target="_blank">ODYSEE-MURE</a> project</span>
+            </p>
+          </div>
+          <hr class="mb-5 border-gray-200 dark:border-sky-900" />
+          
+          <button
+            class="px-6 py-1 font-bold uppercase border rounded-full border-sky-600 text-sky-600 hover:border-sky-700 hover:text-sky-700 hover:dark:border-sky-500 hover:dark:text-sky-500"
+            @click="session.mure = !session.mure;"
+          >
+            {{ session.mure ? 'Deselect MURE' : 'Start with MURE' }}
+        </button>
+        </div>
         <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mt-[3rem]"
              v-if="stage === stages.full">
           <div class="absolute top-[-14px] left-0 w-full text-center">
@@ -1067,7 +1102,7 @@ const importInput = async (e: Event) => {
             ></PlusCircleIcon>
           </div>
         </div>
-        <div class="mb-5 text-center">
+        <div class="mb-5 text-center" v-if="!session.mure">
           <button
             class="py-2 pl-3 pr-4 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
             @click="addProgram()"

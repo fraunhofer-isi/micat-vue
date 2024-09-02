@@ -134,10 +134,26 @@ export interface CarrierMapping {
     }
 }
 
+export interface MureTokenInterface {
+  token: string;
+  expires: number;
+}
+
+export interface MureCategoryInterface {
+    id: number;
+    label: string;
+}
+
 export interface ISessionState {
   currentYear: number;
   stage: number;
   future: boolean;
+  mure: boolean;
+  mureToken: MureTokenInterface;
+  mureCategory: number;
+  mureCountry: number;
+  mureMeasurement: number;
+  mureData: MureMeasurementDataInterface;
   region: number;
   municipality: boolean;
   unit: number;
@@ -267,4 +283,35 @@ export interface ParameterCategory {
 }
 export interface Parameters {
     [key: number]: ParameterCategory
+}
+
+export interface MureCountryInterface {
+    id: number;
+    name: string;
+}
+
+export interface MureMeasurementInterface {
+    id: number;
+    "@id": string;
+    title: string;
+}
+
+interface MureSavingsInterface {
+    year: string;
+    calculatedPj: number;
+    calculatedKtCO2: number;
+    pj: number;
+}
+
+export interface MureMeasurementDataInterface {
+    "@id": string;
+    code: string;
+    title: string;
+    reference: string;
+    targetedEndUses: Array<{
+        evaluationMethod: string;
+        cumulativeAnnualSavings: Array<MureSavingsInterface>;
+    }>;
+    "generalDescription": string;
+    "interactionOfMeasures": string;
 }

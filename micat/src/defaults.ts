@@ -45,12 +45,16 @@ export const units: UnitsInterface = {
     name: "MJ",
     symbol: "MJ",
     factor: 41868000
-
   },
   3: {
     name: "GJ",
     symbol: "GJ",
     factor: 41868
+  },
+  5: {
+    name: "PJ",
+    symbol: "PJ",
+    factor: 0.041868
   },
   4: {
     name: "MWh",
@@ -58,3 +62,10 @@ export const units: UnitsInterface = {
     factor: 11630
   },
 }
+export const mureSubsectorMapping: { [key: number]: number } = {
+  1: 1,  // General cross-cutting *not used*
+  2: 17,  // Household <-> Average residential
+  3: 2,  // Industry <-> Average industry
+  4: 16,  // Services <-> Average tertiary
+  5: 18,  // Transport <-> Average transport
+}  
