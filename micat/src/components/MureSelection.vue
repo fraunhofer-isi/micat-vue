@@ -18,16 +18,20 @@ import { stages, mureSubsectorMapping } from "@/defaults";
 
 const props = defineProps<{
   subsectors: Array<SubsectorInterface>,
+  regions: Array<Array<number | string>>,
 }>()
 
 const session = useSessionStore();
 let categories: Array<MureCategoryInterface> = [];
 let countries: Array<MureCountryInterface> = [];
+const currentYear = new Date().getFullYear();
+const startingDates = [...Array(50).keys()].map(delta => currentYear - delta);
 
 // Refs
 const loading = ref<boolean>(true);
 const { mureCategory, mureCountry, mureMeasurement, mureData, years } = storeToRefs(session);
 const measurements = ref<Array<MureMeasurementInterface>>([]);
+const startingDate = ref<number>();
 
 // Lifecycle
 onMounted(async () => {
@@ -85,7 +89,8 @@ const getCountries = async () => {
     },
   });
   const data = await response.json();
-  countries = data["hydra:member"];
+  const regions = props.regions.map(region => region[1]);
+  countries = data["hydra:member"].filter((country: MureCountryInterface) => regions.includes(country.name));
   loading.value = false;
 };
 const getMeasurements = async () => {
@@ -101,6 +106,10 @@ const getMeasurements = async () => {
   });
   const data = await response.json();
   measurements.value = data["hydra:member"];
+  
+  if (startingDate.value) {
+    measurements.value = measurements.value.filter((measurement: MureMeasurementInterface) => parseInt(measurement.startingDate) >= startingDate.value);
+  }
   measurements.value.map((measurement: MureMeasurementInterface) => {
     const id = measurement["@id"].split("/").pop();
     if (id) measurement.id = parseInt(id);
@@ -146,7 +155,7 @@ const getMeasurementDetails = async () => {
         if (typeof value === "undefined") {
           improvement.values[year.toString()] = 0;
         } else {
-          improvement.values[year.toString()] = value.calculatedPj ? value.calculatedPj * 1000000 : value.pj ? value.pj * 1000000 : 0;
+          improvement.values[year.toString()] = value.calculatedPj ? value.calculatedPj : value.pj ? value.pj : 0;
         }
       });
     });
@@ -162,6 +171,9 @@ watch(mureCategory, (mureCategory) => {
 });
 watch(mureCountry, (mureCountry) => {  
   session.updateMureCountry(mureCountry);
+  getMeasurements();
+});
+watch(startingDate, (startingDate) => {  
   getMeasurements();
 });
 watch(mureMeasurement, (mureMeasurement) => {  
@@ -216,6 +228,24 @@ watch(mureMeasurement, (mureMeasurement) => {
           <option disabled value="">Select a country</option>
           <option v-for="country in countries" v-bind:key="`country-${country.id}`" :value="country.id">{{
               country.name
+            }}
+          </option>
+        </select>
+        <span class="text-sm font-bold text-gray-200" v-else>{{ countries.find(c => c.id === mureCountry)?.name }}</span>
+      </div>
+      <div class="col-span-2">
+        <label for="starting-date" class="text-sm dark:text-white">Starting after</label>
+      </div>
+      <div class="col-span-3">
+        <select
+          id="starting-date"
+          class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+          v-model="startingDate"
+          v-if="session.stage === stages.home"
+        >
+          <option disabled value="">Filter measurements by starting date</option>
+          <option v-for="date in startingDates" v-bind:key="`starting-date-${date}`" :value="date">{{
+              date
             }}
           </option>
         </select>

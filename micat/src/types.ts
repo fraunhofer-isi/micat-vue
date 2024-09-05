@@ -294,6 +294,7 @@ export interface MureMeasurementInterface {
     id: number;
     "@id": string;
     title: string;
+    startingDate: string;
 }
 
 interface MureSavingsInterface {

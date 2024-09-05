@@ -367,8 +367,7 @@ const getGlobalParametersPayload = () => {
       }
     }
   }
-  delete results['ElectricityGeneration'];
-  delete results['HeatGeneration'];
+  // TODO: Fix this in the backend
   delete results['MonetisationFactors'];
   
   return results;
@@ -580,8 +579,10 @@ const importInput = async (e: Event) => {
   }, 500);
 };
 const updateMureData = () => {
-  // If MURE data is used, set unit to GJ
-  session.unit = 3;
+  // If MURE data is used, set unit to PJ
+  session.unit = 5;
+  // Use ex-ante only
+  session.future = true;
 };
 const start = () => {
   stage.value = stages.full;
@@ -636,7 +637,7 @@ const start = () => {
             </div>
           </div>
         </div>
-        <MureSelection v-if="session.mure" :subsectors="subsectors"></MureSelection>
+        <MureSelection v-if="session.mure" :subsectors="subsectors" :regions="regions"></MureSelection>
         <div v-else class="relative px-8 py-8 mb-5 border border-gray-300 rounded-3xl dark:border-gray-400">
           <div class="absolute top-[-14px] left-0 w-full text-center">
             <span class="inline-block px-4 italic font-bold bg-white dark:bg-blue-950 dark:text-white">
@@ -1051,6 +1052,7 @@ const start = () => {
                           placeholder="0"
                           :id="`improvement-value-${improvement.id}-${year}`"
                           @change="(e: Event) => improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace('.', ''))"
+                          :options="{precision: session.unit === 5 ? 5 : 0}"
                         />
                       </span>
                       <span class="p-2 text-xs leading-4 text-gray-400 dark:text-slate-500">{{ units[session.unit].symbol }}</span>
