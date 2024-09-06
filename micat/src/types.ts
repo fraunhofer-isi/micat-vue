@@ -36,6 +36,7 @@ export interface ImprovementInterface {
     name?: string;
     label?: string;
     values: ImprovementValueInterface;
+    percentage?: number;
 }
 
 export interface UnitInterface {

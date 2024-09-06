@@ -142,6 +142,7 @@ const getMeasurementDetails = async () => {
   const programs = session.programs;
   programs.forEach(program => {
     program.improvements.forEach(improvement => {
+      improvement.percentage = 100;
       program.subsector = mureSubsectorMapping[session.mureCategory];
       const name = props.subsectors.filter(subsector => subsector.id === program.subsector)[0].name;
       program.subsectorName = name;
@@ -213,7 +214,7 @@ watch(mureMeasurement, (mureMeasurement) => {
             }}
           </option>
         </select>
-        <span class="text-sm font-bold text-gray-200" v-else>{{ categories.find(c => c.id === mureCategory)?.label }}</span>
+        <span class="text-sm font-bold text-gray-800 dark:text-gray-200" v-else>{{ categories.find(c => c.id === mureCategory)?.label }}</span>
       </div>
       <div class="col-span-2">
         <label for="country" class="text-sm dark:text-white">Country</label>
@@ -231,17 +232,16 @@ watch(mureMeasurement, (mureMeasurement) => {
             }}
           </option>
         </select>
-        <span class="text-sm font-bold text-gray-200" v-else>{{ countries.find(c => c.id === mureCountry)?.name }}</span>
+        <span class="text-sm font-bold text-gray-800 dark:text-gray-200" v-else>{{ countries.find(c => c.id === mureCountry)?.name }}</span>
       </div>
-      <div class="col-span-2">
-        <label for="starting-date" class="text-sm dark:text-white">Starting after</label>
+      <div class="col-span-2" v-if="session.stage === stages.home">
+        <label for="starting-date" class="text-sm dark:text-white">Starting date <span class="text-xs italic">(optional)</span></label>
       </div>
-      <div class="col-span-3">
+      <div class="col-span-3" v-if="session.stage === stages.home">
         <select
           id="starting-date"
           class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
           v-model="startingDate"
-          v-if="session.stage === stages.home"
         >
           <option disabled value="">Filter measurements by starting date</option>
           <option v-for="date in startingDates" v-bind:key="`starting-date-${date}`" :value="date">{{
@@ -249,7 +249,6 @@ watch(mureMeasurement, (mureMeasurement) => {
             }}
           </option>
         </select>
-        <span class="text-sm font-bold text-gray-200" v-else>{{ countries.find(c => c.id === mureCountry)?.name }}</span>
       </div>
       <div class="col-span-2" v-if="mureCategory && mureCountry">
         <label for="measurement" class="text-sm dark:text-white">Measurement</label>
@@ -267,7 +266,7 @@ watch(mureMeasurement, (mureMeasurement) => {
             }}
           </option>
         </select>
-        <span class="text-sm font-bold text-gray-200" v-else>{{ measurements.find(m => m.id === mureMeasurement)?.title }}</span>
+        <span class="text-sm font-bold text-gray-800 dark:text-gray-200" v-else>{{ measurements.find(m => m.id === mureMeasurement)?.title }}</span>
       </div>
     </div>  
   </div>

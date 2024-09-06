@@ -18,6 +18,7 @@ export const defaultImprovement: ImprovementInterface = {
     id: 0,
     internalId: 0,
     values: {},
+    percentage: 0,
 }
 export const defaultProgram: ProgramInterface = {
     name: 'Program 1',

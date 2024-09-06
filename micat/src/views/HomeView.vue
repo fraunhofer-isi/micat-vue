@@ -514,6 +514,33 @@ const improvementChanged = (program: ProgramInterface, i: number, improvementId:
   // If the improvement changes, we need to reset parameters
   session.updateParameters({});
 }
+const percentageDistributionChanged = (percentage: number, program: ProgramInterface, i: number) => {
+  if (percentage < 0 || percentage > 100) return;
+  // Calculate sum for each year
+  const sums: { [key: string]: number } = {};
+  program.improvements.forEach(improvement => {
+    Object.keys(improvement.values).forEach(year => {
+      if (!sums[year]) sums[year] = 0;
+      sums[year] += improvement.values[year];
+    });
+  });
+  // Set value for changed improvement
+  session.years.forEach(year => {
+    const amount = sums[year] * percentage / 100;
+    program.improvements[i].values[year] = amount;
+  });
+  program.improvements[i].percentage = percentage;
+  
+  // Distribute remaining values
+  const percentage_left = Math.ceil((100 - percentage) / (program.improvements.length - 1));  
+  program.improvements.forEach((improvement, index) => {
+    if (i === index) return;
+    Object.keys(improvement.values).forEach(year => {
+      improvement.values[year] = sums[year] * percentage_left / 100;
+    });
+    improvement.percentage = percentage_left;
+  });
+}
 
 const exportInput = () => {
   const blob = new Blob([JSON.stringify({
@@ -1065,6 +1092,18 @@ const start = () => {
                     ></InformationCircleIcon>
                   </div>
                 </div>
+              </div>
+              <div class="px-6 py-3 text-sm text-center text-gray-400 dark:text-slate-300" v-if="program.improvements.length > 1">
+                <span>Percentage distribution</span>
+                <input
+                  :value="improvement.percentage"
+                  type="number"
+                  class="bg-gray-50 border border-gray-300 text-sky-900 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 mx-2"
+                  min="0"
+                  max="100"
+                  @change="(e: Event) => percentageDistributionChanged(parseInt((e.target as HTMLInputElement).value), program, improvementIndex)"
+                >
+                <span class="text-gray-400 dark:text-slate-500">%</span>         
               </div>
               <div class="px-6 py-3 text-center bg-orange-200 border-t border-gray-200 dark:bg-sky-200">
                 <button
