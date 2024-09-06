@@ -108,7 +108,7 @@ const getMeasurements = async () => {
   measurements.value = data["hydra:member"];
   
   if (startingDate.value) {
-    measurements.value = measurements.value.filter((measurement: MureMeasurementInterface) => parseInt(measurement.startingDate) >= startingDate.value);
+    measurements.value = measurements.value.filter((measurement: MureMeasurementInterface) => parseInt(measurement.startingDate) >= startingDate.value!);
   }
   measurements.value.map((measurement: MureMeasurementInterface) => {
     const id = measurement["@id"].split("/").pop();

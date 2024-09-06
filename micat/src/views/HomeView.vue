@@ -1079,7 +1079,6 @@ const start = () => {
                           placeholder="0"
                           :id="`improvement-value-${improvement.id}-${year}`"
                           @change="(e: Event) => improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace('.', ''))"
-                          :options="{precision: session.unit === 5 ? 5 : 0}"
                         />
                       </span>
                       <span class="p-2 text-xs leading-4 text-gray-400 dark:text-slate-500">{{ units[session.unit].symbol }}</span>
