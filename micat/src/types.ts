@@ -278,6 +278,7 @@ export interface ParameterEntry {
     parameters: {
         [key: string]: string | number;
     };
+    identifier: string;
 }
 export interface ParameterCategory {
     [key: string]: Array<ParameterEntry>

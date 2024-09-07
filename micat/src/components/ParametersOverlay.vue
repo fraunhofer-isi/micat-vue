@@ -112,7 +112,11 @@ const getParameters = async () => {
     if (!restructuredResults[category]) restructuredResults[category] = [];
     for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
       if (data.id_parameter === null) continue;
-      const entry: ParameterEntry = {years: [], parameters: {}};
+      const entry: ParameterEntry = {
+        years: [], 
+        parameters: {}, 
+        identifier: `${data.id_parameter}-${data.id_sector}-${data.id_final_energy_carrier ? data.id_final_energy_carrier : 'na'}`,
+      };
       for (const [key, v] of Object.entries((data as {[key: string]: number | string}))) {
         const value: number = (v as number);
         if (yearRegex.test(key)) {
@@ -208,7 +212,7 @@ const reset = () => {
           <div class="grid grid-cols-2 px-5 py-2" v-if="activeCategory">
             <div
               v-for="parameter in parameters[props.improvement.internalId][activeCategory]"
-              v-bind:key="`parameter-${parameter.parameters.id_parameter}-${parameter.parameters.id_final_energy_carrier ? parameter.parameters.id_final_energy_carrier : 'na'}`"
+              v-bind:key="`parameter-${parameter.identifier}`"
               class="block rounded-xl bg-white border border-sky-600 m-5 max-w-[450px] self-start"
               :class="{
                 'hidden': parameter.parameters.id_parameter === 45 && useRenovationRate || [32, 43].indexOf(parameter.parameters.id_parameter as number) > -1 && !useRenovationRate,
@@ -226,12 +230,12 @@ const reset = () => {
                 <div v-if="parameter.years.length === 0" class="grid items-center grid-cols-3 gap-2 py-1">
                   <div>
                     <input
-                      :id="`parameter-${parameter.parameters.id_parameter}-constant-range`"
+                      :id="`parameter-${parameter.identifier}-constant-range`"
                       type="range"
                       class="w-full h-1 rounded-lg appearance-none cursor-pointer bg-sky-200"
                       min="0"
-                      :max="roundNumber(parameter.parameters.constants as number, `parameter-${parameter.parameters.id_parameter}-constant-range`, parameter.parameters.unit)"
-                      :step="roundNumber(parameter.parameters.constants as number, `parameter-${parameter.parameters.id_parameter}-constant-range`) / 100"
+                      :max="roundNumber(parameter.parameters.constants as number, `parameter-${parameter.identifier}-constant-range`, parameter.parameters.unit)"
+                      :step="roundNumber(parameter.parameters.constants as number, `parameter-${parameter.identifier}-constant-range`) / 100"
                       v-model.number="parameter.parameters.constants"
                     />
                   </div>
@@ -239,7 +243,7 @@ const reset = () => {
                     <VueNumberFormat
                       :value="parameter.parameters.constants"
                       class="bg-sky-50 border border-sky-300 text-sky-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
-                      :id="`parameter-${parameter.parameters.id_parameter}-constant-input`"
+                      :id="`parameter-${parameter.identifier}-constant-input`"
                       @change="(e: Event) => parameter.parameters.constants = parseFloat((e.target as HTMLInputElement).value.replace('.', ''))"
                     />
                   </div>
@@ -247,18 +251,18 @@ const reset = () => {
                 <div
                   v-else
                   v-for="year in parameter.years"
-                  v-bind:key="`parameter-${parameter.parameters.id_parameter}-${year.key}`"
+                  v-bind:key="`parameter-${parameter.identifier}-${year.key}`"
                   class="grid items-center grid-cols-3 gap-2 py-1"
                 >
                   <div class="text-xs font-bold text-sky-600">{{ year.key }}</div>
                   <div>
                     <input
-                      :id="`parameter-${parameter.parameters.id_parameter}-${year.key}-range`"
+                      :id="`parameter-${parameter.identifier}-${year.key}-range`"
                       type="range"
                       class="w-full h-1 rounded-lg appearance-none cursor-pointer bg-sky-200"
                       min="0"
-                      :max="roundNumber(year.value, `parameter-${parameter.parameters.id_parameter}-${year.key}-range`, parameter.parameters.unit)"
-                      :step="roundNumber(year.value, `parameter-${parameter.parameters.id_parameter}-${year.key}-range`) / 100"
+                      :max="roundNumber(year.value, `parameter-${parameter.identifier}-${year.key}-range`, parameter.parameters.unit)"
+                      :step="roundNumber(year.value, `parameter-${parameter.identifier}-${year.key}-range`) / 100"
                       v-model.number="year.value"
                     />
                   </div>
@@ -267,7 +271,7 @@ const reset = () => {
                       :value="year.value"
                       class="bg-sky-50 border border-sky-300 text-sky-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
                       placeholder="0"
-                      :id="`parameter-${parameter.parameters.id_parameter}-${year.key}-input`"
+                      :id="`parameter-${parameter.identifier}-${year.key}-input`"
                       :options="{precision: 2}"
                       @change="(e: Event) => year.value = parseFloat((e.target as HTMLInputElement).value.replace('.', ''))"
                     />
