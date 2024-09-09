@@ -796,7 +796,7 @@ const start = () => {
           <div class="absolute top-[-8px] w-full">
             <p class="inline-block px-4 bg-white dark:bg-blue-950 dark:text-white">
               <span v-if=" session.mure">or use your own inputs</span>
-              <span v-else>or select predefined values from the <a class="font-bold" href="https://www.odyssee-mure.eu/" target="_blank">ODYSEE-MURE</a> project</span>
+              <span v-else>or select predefined values from the <a class="font-bold" href="https://www.odyssee-mure.eu/" target="_blank">ODYSSEE-MURE</a> project</span>
             </p>
           </div>
           <hr class="mb-5 border-gray-200 dark:border-sky-900" />
@@ -1079,6 +1079,7 @@ const start = () => {
                           placeholder="0"
                           :id="`improvement-value-${improvement.id}-${year}`"
                           @change="(e: Event) => improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace('.', ''))"
+                          :options="{precision: session.unit === 5 ? 6 : 0}"
                         />
                       </span>
                       <span class="p-2 text-xs leading-4 text-gray-400 dark:text-slate-500">{{ units[session.unit].symbol }}</span>

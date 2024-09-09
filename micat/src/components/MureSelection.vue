@@ -194,7 +194,7 @@ watch(mureMeasurement, (mureMeasurement) => {
   <div v-else class="relative px-8 py-8 mb-5 border border-gray-300 rounded-3xl dark:border-gray-400">
     <div class="absolute top-[-14px] left-0 w-full text-center">
       <span class="inline-block px-4 italic font-bold bg-white dark:bg-blue-950 dark:text-white">
-        <span>ODYSEE-MURE</span>
+        <span>ODYSSEE-MURE</span>
       </span>
     </div>
     <div class="grid items-center grid-cols-5">
