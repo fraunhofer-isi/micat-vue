@@ -184,6 +184,9 @@ watch(mureMeasurement, (mureMeasurement) => {
   session.updateMureMeasurement(mureMeasurement);
   getMeasurementDetails();
 });
+const truncate = (text: string, length: number) => {
+  return text.length > length ? text.substring(0, length) + "..." : text;
+};
 </script>
 
 <template>
@@ -265,7 +268,7 @@ watch(mureMeasurement, (mureMeasurement) => {
         >
           <option disabled value="">Select a measurement</option>
           <option v-for="measurement in measurements" v-bind:key="`country-${measurement.id}`" :value="measurement.id">{{
-              measurement.title
+              truncate(measurement.title, 90)
             }}
           </option>
         </select>
