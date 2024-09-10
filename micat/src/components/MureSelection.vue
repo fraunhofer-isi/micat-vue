@@ -29,7 +29,7 @@ const startingDates = [...Array(50).keys()].map(delta => currentYear - delta);
 
 // Refs
 const loading = ref<boolean>(true);
-const { mureCategory, mureCountry, mureMeasurement, mureData, years } = storeToRefs(session);
+const { mureCategory, mureCountry, mureMeasurement, mureData, years, region } = storeToRefs(session);
 const measurements = ref<Array<MureMeasurementInterface>>([]);
 const startingDate = ref<number>();
 
@@ -172,6 +172,9 @@ watch(mureCategory, (mureCategory) => {
 });
 watch(mureCountry, (mureCountry) => {  
   session.updateMureCountry(mureCountry);
+  const mureCountryName = countries.find(country => country.id === mureCountry)?.name;
+  region.value = (props.regions.find(region => region[1] === mureCountryName)![0] as number);
+  session.updateRegion(region.value);
   getMeasurements();
 });
 watch(startingDate, (startingDate) => {  
