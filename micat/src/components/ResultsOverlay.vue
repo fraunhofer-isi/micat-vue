@@ -424,7 +424,7 @@ const interpolatedYears = computed(() => {
 const cbaData = computed(() => {
   const indicators: {[key: string]: boolean} = {};
   for (const measurement of categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === "reductionOfAirPollution"))) {
-    indicators[measurement.identifier] = activeIndicators.value.indexOf(measurement.identifier) > -1;
+    if (activeIndicators.value.indexOf(measurement.identifier) > -1) indicators[measurement.identifier] = true;
   }
 
   const userOptions = {
@@ -436,6 +436,7 @@ const cbaData = computed(() => {
     },
     indicators
   }
+  
   const results: CbaData = DataStructures.prepareResultDataStructure();
   const indicatorData = convert(session.results);
   results.supportingYears = session.years;
