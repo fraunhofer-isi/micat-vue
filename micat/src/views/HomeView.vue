@@ -107,6 +107,9 @@ watch(() => session.mure, (mure) => {
   session.updateMure(mure);
   if (session.mure) updateMureData();
 });
+watch(() => session.odyssee, (odyssee) => {
+  session.updateOdyssee(odyssee);
+});
 watch(() => session.region, (region) => {
   session.updateRegion(region);
   // If the region is changed, we need to reset parameters
@@ -606,8 +609,8 @@ const importInput = async (e: Event) => {
   }, 500);
 };
 const updateMureData = () => {
-  // If MURE data is used, set unit to PJ
-  session.unit = 5;
+  // If MURE data is used, set unit to PJ, if ODYSSEE data is used, set unit to ktoe
+  session.unit = session.odyssee ? 1 : 5;
   // Use ex-ante only
   session.future = true;
 };
@@ -780,7 +783,7 @@ const start = () => {
           class="px-8 py-2 font-bold text-white uppercase bg-orange-500 rounded-full hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
           @click="start();"
           v-if="stage === stages.home"
-          :disabled="session.mure && (session.mureCategory === 0 || session.mureCountry === 0 || session.mureMeasurement === 0)"
+          :disabled="session.mure && (session.mureCategory === 0 || session.mureCountry === 0 || (!session.odyssee && session.mureMeasurement === 0))"
         >
           Start
         </button>
@@ -802,11 +805,19 @@ const start = () => {
           <hr class="mb-5 border-gray-200 dark:border-sky-900" />
           
           <button
-            class="px-6 py-1 font-bold uppercase border rounded-full border-sky-600 text-sky-600 hover:border-sky-700 hover:text-sky-700 hover:dark:border-sky-500 hover:dark:text-sky-500"
+            v-if="!session.mure || !session.odyssee"
+            class="px-6 py-1 mx-1 font-bold uppercase border rounded-full border-sky-600 text-sky-600 hover:border-sky-700 hover:text-sky-700 hover:dark:border-sky-500 hover:dark:text-sky-500"
             @click="session.mure = !session.mure;"
           >
-            {{ session.mure ? 'Deselect MURE' : 'Start with MURE' }}
-        </button>
+            {{ session.mure && !session.odyssee ? 'Deselect MURE' : 'Start with MURE' }}
+          </button>
+          <button
+            v-if="!session.mure || session.odyssee"
+            class="px-6 py-1 mx-1 font-bold uppercase border rounded-full border-sky-600 text-sky-600 hover:border-sky-700 hover:text-sky-700 hover:dark:border-sky-500 hover:dark:text-sky-500"
+            @click="session.mure = !session.mure; session.odyssee = !session.odyssee;"
+          >
+            {{ session.mure && session.odyssee ? 'Deselect ODYSSEE' : 'Start with ODYSSEE' }}
+          </button>
         </div>
         <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mt-[3rem]"
              v-if="stage === stages.full">

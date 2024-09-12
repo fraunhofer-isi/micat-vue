@@ -26,11 +26,11 @@ export const useSessionStore = defineStore({
       stage: parseInt(localStorage.getItem("stage") || stages.home.toString()),
       future: String(localStorage.getItem("future") || "false").toLowerCase() === "true",
       mure: String(localStorage.getItem("mure") || "false").toLowerCase() === "true",
+      odyssee: String(localStorage.getItem("odyssee") || "false").toLowerCase() === "true",
       mureToken: JSON.parse(localStorage.getItem("mureToken") || JSON.stringify({})),
       mureCategory: parseInt(localStorage.getItem("mureCategory") || "0"),
       mureCountry: parseInt(localStorage.getItem("mureCountry") || "0"),
       mureMeasurement: parseInt(localStorage.getItem("mureMeasurement") || "0"),
-      mureData: JSON.parse(localStorage.getItem("mureData") || JSON.stringify({})),
       region: parseInt(localStorage.getItem("region") || "0"),
       municipality: String(localStorage.getItem("municipality") || "false").toLowerCase() === "true",
       unit: parseInt(localStorage.getItem("unit") || "1"),
@@ -62,6 +62,10 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       localStorage.setItem("mure", mure.toString());
     },
+    updateOdyssee(odyssee: boolean, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("odyssee", odyssee.toString());
+    },
     updateMureToken(mureToken: MureTokenInterface, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("mureToken", JSON.stringify(mureToken));
@@ -77,10 +81,6 @@ export const useSessionStore = defineStore({
     updateMureMeasurement(mureMeasurement: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("mureMeasurement", JSON.stringify(mureMeasurement));
-    },
-    updateMureData(mureData: MureMeasurementDataInterface, manualChange?: boolean) {
-      if (manualChange) this.resetted = false;
-      localStorage.setItem("mureData", JSON.stringify(mureData));
     },
     updateRegion(region: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
@@ -143,6 +143,7 @@ export const useSessionStore = defineStore({
       this.updateStage(stages.home, false);
       this.updateFuture(false, false);
       this.updateMure(false, false);
+      this.updateOdyssee(false, false);
       this.updateMureCategory(0, false);
       this.updateMureCountry(0, false);
       this.updateMureMeasurement(0, false);

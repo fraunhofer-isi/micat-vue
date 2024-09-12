@@ -150,11 +150,11 @@ export interface ISessionState {
   stage: number;
   future: boolean;
   mure: boolean;
+  odyssee: boolean;
   mureToken: MureTokenInterface;
   mureCategory: number;
   mureCountry: number;
   mureMeasurement: number;
-  mureData: MureMeasurementDataInterface;
   region: number;
   municipality: boolean;
   unit: number;
@@ -317,4 +317,8 @@ export interface MureMeasurementDataInterface {
     }>;
     "generalDescription": string;
     "interactionOfMeasures": string;
+}
+
+export interface OdysseeDataInterface {
+    [key: string]: number;
 }

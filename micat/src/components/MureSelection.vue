@@ -12,7 +12,9 @@ import type {
   MureCategoryInterface,
   MureCountryInterface,
   MureMeasurementInterface,
+  MureMeasurementDataInterface,
   SubsectorInterface,
+  OdysseeDataInterface,
 } from "@/types";
 import { stages, mureSubsectorMapping } from "@/defaults";
 
@@ -26,10 +28,12 @@ let categories: Array<MureCategoryInterface> = [];
 let countries: Array<MureCountryInterface> = [];
 const currentYear = new Date().getFullYear();
 const startingDates = [...Array(50).keys()].map(delta => currentYear - delta);
+let mureData: MureMeasurementDataInterface | null = null;
+let odysseeData: OdysseeDataInterface | null = null;
 
 // Refs
 const loading = ref<boolean>(true);
-const { mureCategory, mureCountry, mureMeasurement, mureData, years, region } = storeToRefs(session);
+const { mureCategory, mureCountry, mureMeasurement, years, region } = storeToRefs(session);
 const measurements = ref<Array<MureMeasurementInterface>>([]);
 const startingDate = ref<number>();
 
@@ -37,7 +41,7 @@ const startingDate = ref<number>();
 onMounted(async () => {
   await getCategories();
   await getCountries();
-  if (mureCategory.value && mureCountry.value) {
+  if (mureCategory.value && mureCountry.value && !session.odyssee) {
     await getMeasurements();
   }
 });
@@ -129,13 +133,13 @@ const getMeasurementDetails = async () => {
     },
   });
   const data = await response.json();
-  mureData.value = data;
+  mureData = data;
   
   // Set years
-  if (mureData.value.targetedEndUses[0].cumulativeAnnualSavings.length == 1) {
-    years.value = [2020, parseInt(mureData.value.targetedEndUses.filter((x) => x.cumulativeAnnualSavings.length > 0)[0].cumulativeAnnualSavings[0].year)];
+  if (mureData!.targetedEndUses[0].cumulativeAnnualSavings.length == 1) {
+    years.value = [2020, parseInt(mureData!.targetedEndUses.filter((x) => x.cumulativeAnnualSavings.length > 0)[0].cumulativeAnnualSavings[0].year)];
   } else {
-    years.value = mureData.value.targetedEndUses.filter((x) => x.cumulativeAnnualSavings.length > 0)[0].cumulativeAnnualSavings.map((savings: any) => parseInt(savings.year));
+    years.value = mureData!.targetedEndUses.filter((x) => x.cumulativeAnnualSavings.length > 0)[0].cumulativeAnnualSavings.map((savings: any) => parseInt(savings.year));
   }
   session.updateYears(years.value);
   // Set subsector for programs and values
@@ -152,7 +156,7 @@ const getMeasurementDetails = async () => {
         }
       });
       years.value.forEach(year => {
-        const value = mureData.value.targetedEndUses.filter((x) => x.cumulativeAnnualSavings.length > 0)[0].cumulativeAnnualSavings.find((savings: any) => savings.year === year.toString());
+        const value = mureData!.targetedEndUses.filter((x) => x.cumulativeAnnualSavings.length > 0)[0].cumulativeAnnualSavings.find((savings: any) => savings.year === year.toString());
         if (typeof value === "undefined") {
           improvement.values[year.toString()] = 0;
         } else {
@@ -164,18 +168,56 @@ const getMeasurementDetails = async () => {
   session.updatePrograms(programs);
   loading.value = false;
 };
+const getOdysseeData = async () => {
+  if (!mureCountry.value || !mureCategory.value) return;
+  const response = await fetch(`${import.meta.env.VITE_API_URL}odyssee?region=${countries.find(c => c.id === mureCountry.value)?.name}&category=${mureCategory.value}`);
+  const data = await response.json();
+  odysseeData = data;
+  
+  // Set years
+  years.value = Object.keys(odysseeData!).map(year => parseInt(year));
+  session.updateYears(years.value);
+  // Set subsector for programs and values
+  const programs = session.programs;
+  programs.forEach(program => {
+    program.improvements.forEach(improvement => {
+      improvement.percentage = 100;
+      program.subsector = mureSubsectorMapping[session.mureCategory];
+      const name = props.subsectors.filter(subsector => subsector.id === program.subsector)[0].name;
+      program.subsectorName = name;
+      Object.keys(improvement.values).forEach(key => {
+        if (years.value.indexOf(parseInt(key)) === -1) {
+          delete improvement.values[key];
+        }
+      });
+      years.value.forEach(year => {
+        improvement.values[year.toString()] = odysseeData![year];
+      });
+    });
+  });
+  session.updatePrograms(programs);
+  loading.value = false;
+};
 
 // Watchers
 watch(mureCategory, (mureCategory) => {  
   session.updateMureCategory(mureCategory);
-  getMeasurements();
+  if (session.odyssee) {
+    getOdysseeData();
+  } else {
+    getMeasurements();
+  }
 });
 watch(mureCountry, (mureCountry) => {  
   session.updateMureCountry(mureCountry);
   const mureCountryName = countries.find(country => country.id === mureCountry)?.name;
   region.value = (props.regions.find(region => region[1] === mureCountryName)![0] as number);
   session.updateRegion(region.value);
-  getMeasurements();
+  if (session.odyssee) {
+    getOdysseeData();
+  } else {
+    getMeasurements();
+  }
 });
 watch(startingDate, (startingDate) => {  
   getMeasurements();
@@ -240,10 +282,10 @@ const truncate = (text: string, length: number) => {
         </select>
         <span class="text-sm font-bold text-gray-800 dark:text-gray-200" v-else>{{ countries.find(c => c.id === mureCountry)?.name }}</span>
       </div>
-      <div class="col-span-2" v-if="session.stage === stages.home">
+      <div class="col-span-2" v-if="session.stage === stages.home && !session.odyssee">
         <label for="starting-date" class="text-sm dark:text-white">Starting date <span class="text-xs italic">(optional)</span></label>
       </div>
-      <div class="col-span-3" v-if="session.stage === stages.home">
+      <div class="col-span-3" v-if="session.stage === stages.home && !session.odyssee">
         <select
           id="starting-date"
           class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
@@ -256,10 +298,10 @@ const truncate = (text: string, length: number) => {
           </option>
         </select>
       </div>
-      <div class="col-span-2" v-if="mureCategory && mureCountry">
+      <div class="col-span-2" v-if="mureCategory && mureCountry && !session.odyssee">
         <label for="measurement" class="text-sm dark:text-white">Measurement</label>
       </div>
-      <div class="col-span-3" v-if="mureCategory && mureCountry">
+      <div class="col-span-3" v-if="mureCategory && mureCountry && !session.odyssee">
         <select
           id="measurement"
           class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
