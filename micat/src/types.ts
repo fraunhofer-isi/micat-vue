@@ -155,6 +155,8 @@ export interface ISessionState {
   mureCategory: number;
   mureCountry: number;
   mureMeasurement: number;
+  odysseeStartYear: number;
+  odysseeEndYear: number;
   region: number;
   municipality: boolean;
   unit: number;

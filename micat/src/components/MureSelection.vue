@@ -28,12 +28,13 @@ let categories: Array<MureCategoryInterface> = [];
 let countries: Array<MureCountryInterface> = [];
 const currentYear = new Date().getFullYear();
 const startingDates = [...Array(50).keys()].map(delta => currentYear - delta);
+const odysseeYears = [...Array(23).keys()].map(delta => 2022 - delta);
 let mureData: MureMeasurementDataInterface | null = null;
 let odysseeData: OdysseeDataInterface | null = null;
 
 // Refs
 const loading = ref<boolean>(true);
-const { mureCategory, mureCountry, mureMeasurement, years, region } = storeToRefs(session);
+const { mureCategory, mureCountry, mureMeasurement, years, region, odysseeStartYear, odysseeEndYear } = storeToRefs(session);
 const measurements = ref<Array<MureMeasurementInterface>>([]);
 const startingDate = ref<number>();
 
@@ -170,7 +171,7 @@ const getMeasurementDetails = async () => {
 };
 const getOdysseeData = async () => {
   if (!mureCountry.value || !mureCategory.value) return;
-  const response = await fetch(`${import.meta.env.VITE_API_URL}odyssee?region=${countries.find(c => c.id === mureCountry.value)?.name}&category=${mureCategory.value}`);
+  const response = await fetch(`${import.meta.env.VITE_API_URL}odyssee?region=${countries.find(c => c.id === mureCountry.value)?.name}&category=${mureCategory.value}&start=${odysseeStartYear.value}&end=${odysseeEndYear.value}`);
   const data = await response.json();
   odysseeData = data;
   
@@ -225,6 +226,14 @@ watch(startingDate, (startingDate) => {
 watch(mureMeasurement, (mureMeasurement) => {  
   session.updateMureMeasurement(mureMeasurement);
   getMeasurementDetails();
+});
+watch(odysseeStartYear, (odysseeStartYear) => {
+  session.updateOdysseeStartYear(odysseeStartYear);
+  getOdysseeData();
+});
+watch(odysseeEndYear, (odysseeEndYear) => {
+  session.updateOdysseeEndYear(odysseeEndYear);
+  getOdysseeData();
 });
 const truncate = (text: string, length: number) => {
   return text.length > length ? text.substring(0, length) + "..." : text;
@@ -294,6 +303,38 @@ const truncate = (text: string, length: number) => {
           <option disabled value="">Filter measurements by starting date</option>
           <option v-for="date in startingDates" v-bind:key="`starting-date-${date}`" :value="date">{{
               date
+            }}
+          </option>
+        </select>
+      </div>
+      <div class="col-span-2" v-if="session.stage === stages.home && session.odyssee">
+        <label for="odyssee-start-year" class="text-sm dark:text-white">Starting year</label>
+      </div>
+      <div class="col-span-3" v-if="session.stage === stages.home && session.odyssee">
+        <select
+          id="odyssee-start-year"
+          class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+          v-model="odysseeStartYear"
+        >
+          <option disabled value="">Starting year</option>
+          <option v-for="year in odysseeYears" v-bind:key="`odyssee-start-year-${year}`" :value="year">{{
+              year
+            }}
+          </option>
+        </select>
+      </div>
+      <div class="col-span-2" v-if="session.stage === stages.home && session.odyssee">
+        <label for="odyssee-end-year" class="text-sm dark:text-white">End year</label>
+      </div>
+      <div class="col-span-3" v-if="session.stage === stages.home && session.odyssee">
+        <select
+          id="odyssee-end-year"
+          class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+          v-model="odysseeEndYear"
+        >
+          <option disabled value="">End year</option>
+          <option v-for="year in odysseeYears" v-bind:key="`odyssee-end-year-${year}`" :value="year">{{
+              year
             }}
           </option>
         </select>

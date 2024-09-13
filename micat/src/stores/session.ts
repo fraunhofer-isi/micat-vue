@@ -31,6 +31,8 @@ export const useSessionStore = defineStore({
       mureCategory: parseInt(localStorage.getItem("mureCategory") || "0"),
       mureCountry: parseInt(localStorage.getItem("mureCountry") || "0"),
       mureMeasurement: parseInt(localStorage.getItem("mureMeasurement") || "0"),
+      odysseeStartYear: parseInt(localStorage.getItem("odysseeStartYear") || "2000"),
+      odysseeEndYear: parseInt(localStorage.getItem("odysseeEndYear") || "2022"),
       region: parseInt(localStorage.getItem("region") || "0"),
       municipality: String(localStorage.getItem("municipality") || "false").toLowerCase() === "true",
       unit: parseInt(localStorage.getItem("unit") || "1"),
@@ -81,6 +83,14 @@ export const useSessionStore = defineStore({
     updateMureMeasurement(mureMeasurement: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("mureMeasurement", JSON.stringify(mureMeasurement));
+    },
+    updateOdysseeStartYear(odysseeStartYear: number, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("odysseeStartYear", JSON.stringify(odysseeStartYear));
+    },
+    updateOdysseeEndYear(odysseeEndYear: number, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("odysseeEndYear", JSON.stringify(odysseeEndYear));
     },
     updateRegion(region: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
@@ -147,6 +157,8 @@ export const useSessionStore = defineStore({
       this.updateMureCategory(0, false);
       this.updateMureCountry(0, false);
       this.updateMureMeasurement(0, false);
+      this.updateOdysseeStartYear(2000, false);
+      this.updateOdysseeEndYear(2022, false);
       this.updateRegion(0, false);
       this.updateMunicipality(false, false);
       this.updateUnit(1, false);
