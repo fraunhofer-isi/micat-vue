@@ -228,10 +228,16 @@ watch(mureMeasurement, (mureMeasurement) => {
   getMeasurementDetails();
 });
 watch(odysseeStartYear, (odysseeStartYear) => {
+  if (odysseeStartYear > odysseeEndYear.value) {
+    odysseeEndYear.value = odysseeStartYear;
+  }
   session.updateOdysseeStartYear(odysseeStartYear);
   getOdysseeData();
 });
 watch(odysseeEndYear, (odysseeEndYear) => {
+  if (odysseeEndYear < odysseeStartYear.value) {
+    odysseeStartYear.value = odysseeEndYear;
+  }
   session.updateOdysseeEndYear(odysseeEndYear);
   getOdysseeData();
 });
