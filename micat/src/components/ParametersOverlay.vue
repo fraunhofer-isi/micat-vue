@@ -86,7 +86,7 @@ const getParameters = async () => {
   };
   
   const responseParameters: Response = await fetch(
-    `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 2 : 4}&id_region=${session.region}`,
+    `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 2 : 4}&id_region=${session.region}&id_subsector=${props.improvement.subsectorId}`,
     {
       method: "POST",
       headers: {
@@ -115,7 +115,7 @@ const getParameters = async () => {
       const entry: ParameterEntry = {
         years: [], 
         parameters: {}, 
-        identifier: `${data.id_parameter}-${data.id_sector}-${data.id_final_energy_carrier ? data.id_final_energy_carrier : 'na'}`,
+        identifier: `${data.id_parameter}-${data.id_final_energy_carrier ? data.id_final_energy_carrier : 'na'}`,
       };
       for (const [key, v] of Object.entries((data as {[key: string]: number | string}))) {
         const value: number = (v as number);
