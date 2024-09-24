@@ -611,8 +611,8 @@ const importInput = async (e: Event) => {
 const updateMureData = () => {
   // If MURE data is used, set unit to PJ, if ODYSSEE data is used, set unit to ktoe
   session.unit = session.odyssee ? 1 : 5;
-  // Use ex-ante only
-  session.future = true;
+  // Use ex-ante for MURE and ex-post for ODYSSEE only
+  session.future = !session.odyssee;
 };
 const start = () => {
   stage.value = stages.full;
