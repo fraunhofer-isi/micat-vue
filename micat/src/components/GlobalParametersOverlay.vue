@@ -157,7 +157,7 @@ const getFactorTitle = (factor: string) => {
   const cleaned_factor = getCleanedMonetisationFactorName(factor);
   switch (cleaned_factor) {
     case 'CostpertonofemittedCO2':
-      return 'Cost of CO2-emissions [€/tCO2]';
+      return 'Cost of CO2-emissions';
     default:
       // Remove units
       return factor.replace(/ \[[\s\S]*?\]|/g, '');
@@ -169,7 +169,7 @@ const getFactorUnit = (factor: string) => {
 
   switch (cleaned_factor) {
     case 'CostpertonofemittedCO2':
-      return '€/tCO2';
+      return '€/ktCO2';
     default:
       return regExp.exec(factor)![1];
   }
