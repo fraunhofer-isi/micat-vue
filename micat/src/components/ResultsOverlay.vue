@@ -175,7 +175,7 @@ const categories: CategoriesInterface = {
         title: "Primary savings by fuel",
         description: "This indicator describes the energy saved in terms of primary energy carriers with the proposed measures. The conversion processes necessary for the generation of hydrogen and synthetic fuels, electricity, and heat are taken into account. The energy mix of these conversion processes comes from past data from Eurostat and projections from PRIMES.",
         identifier: "energySaving",
-        yAxis: "Value in €"
+        yAxis: "Value in ktoe"
       },
       {
         subcategory: "Ecologic",
@@ -209,7 +209,7 @@ const categories: CategoriesInterface = {
   },
   "monetization": {
     icon: "CurrencyEuroIcon",
-    title: "Monetization",
+    title: "Monetisation",
     subtitle: "monetary values",
     subcategories: [],
     measurements: [
@@ -223,45 +223,45 @@ const categories: CategoriesInterface = {
         title: "Premature deaths due to air pollution",
         description: "This graph shows the monetary impacts of air pollution by attributing cases of premature deaths with statistical costs. As basis for the monetisation, the World Health Organisation's figures for country-specific Value of Statistical Life (VSL) are used.",
         identifier: "reductionOfMortalityMorbidityMonetization",
-        yAxis: "Value in M€"
+        yAxis: "Value in €"
       },
       {
         title: "Avoided lost working days due to air pollution",
         description: "Lost working days can be monetised using the WHO coefficients for the value of lost working days.",
         identifier: "reductionOfLostWorkDaysMonetization",
-        yAxis: "Value in M€"
+        yAxis: "Value in €"
       },
       {
         title: "Reduction of greenhouse gas emissions",
         description: "This graph displays the monetary benefits associated with reduced greenhouse gas emissions. The costs of greenhouse gas emissions can be monetised in several ways, inter alia with the costs of carbon in carbon certificate schemes such as the EU Emission Trading System (ETS), the cost of removal or the cost of avoidance for future generations. The MICATool uses societal costs of carbon as a calculation basis, which are calculated in line with common evaluation methodologies by the German Federal Environmental Agency.",
         identifier: "reductionOfGreenHouseGasEmissionMonetization",
-        yAxis: "Value in M€"
+        yAxis: "Value in €"
       },
       {
         title: "Impact on RES targets",
         description: "The impact of energy efficiency on RES targets is assessed by calculating the costs of achieving the same objective through the acquisition of statistical transfers of RES. Thereby, underachieving Member States can statistically buy other Member States' statistical overachievement towards their target. A monetisation factor has been calculated from past public statistical transfers of RES.",
         identifier: "impactOnResTargetsMonetization",
-        yAxis: "Value in M€"
+        yAxis: "Value in €"
       },
       {
         title: "Reduction of additional capacities",
         description: "The reduction in necessary investments in additional capacities is monetised by looking at the specific investment costs of the main renewable energy sources, solar, onshore wind, and offshore wind. Their costs are weighted using their national prevalence.",
         identifier: "reductionOfAdditionalCapacitiesInGridMonetization",
-        yAxis: "Value in M€"
+        yAxis: "Value in €"
       },
       {
         title: "Avoided asthma cases",
         description: '<p class="mb-2">In order to monetise the impact of improved air quality on asthma cases, the value of a .\n' +
           'disability-adjusted life year (DALY), as provided by the WHO is used as factor.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/micat-project-wAssets/docs/publications/factsheets/Social-impact-Avoided-burden-of-Asthma.pdf">PDF</a>.</p>',
         identifier: "reductionInDisabilityAdjustedLifeYearsMonetization",
-        yAxis: "Value in M€"
+        yAxis: "Value in €"
       },
       {
         title: "Avoided excess cold winter mortality",
         description: '<p class="mb-2">The monetary impact of avoided excess cold winter mortality is evaluated with the use of statistical figures .\n' +
           'provided by the WHO regarding the value of statistical life (VSL).</p><p> The fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Reduced-or-avoided-excess-cold-weather-mortality-due-to-energy-efficiency-improvements-in-the-residential-building-sector.pdf">PDF</a>.</p>',
         identifier: "avoidedExcessColdWeatherMortalityMonetization",
-        yAxis: "Value in M€"
+        yAxis: "Value in €"
       }
     ]
   },
