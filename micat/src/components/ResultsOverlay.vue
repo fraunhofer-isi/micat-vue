@@ -217,7 +217,7 @@ const categories: CategoriesInterface = {
         title: "Reduction of energy costs",
         description: "This indicator describes the reduction in energy costs for end users to be expected from energy saving measures. It is calculated from final energy savings, differentiating between energy carriers and sectors, taking lower taxes and rates for commerce and industry into account. In case the energy mix has not been specified in the measure specific parameters, it is calculated from Eurostat and PRIMES data, accounting for the higher prevalence of certain energy carriers in specific improvement actions.",
         identifier: "reductionOfEnergyCost",
-        yAxis: "Savings in M€"
+        yAxis: "Savings in €"
       },
       {
         title: "Premature deaths due to air pollution",
