@@ -258,7 +258,8 @@ const categories: CategoriesInterface = {
       },
       {
         title: "Avoided excess cold winter mortality",
-        description: "The monetary impact of avoided excess cold winter mortality is evaluated with the use of statistical figures provided by the WHO regarding the value of statistical life (VSL)."
+        description: '<p class="mb-2">The monetary impact of avoided excess cold winter mortality is evaluated with the use of statistical figures .\n' +
+          'provided by the WHO regarding the value of statistical life (VSL).</p><p> The fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Reduced-or-avoided-excess-cold-weather-mortality-due-to-energy-efficiency-improvements-in-the-residential-building-sector.pdf">PDF</a>.</p>',
         identifier: "avoidedExcessColdWeatherMortalityMonetization",
         yAxis: "Value in M€"
       }
