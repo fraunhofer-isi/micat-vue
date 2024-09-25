@@ -80,22 +80,22 @@ const categories: CategoriesInterface = {
       },
       {
         subcategory: "Social",
-        title: "Alleviation of energy poverty (2M)",
-        description: "This indicator shows how energy efficiency improvement actions in the residential sector can help lift people out of energy poverty. In order to calculate it, national energy poverty gaps for affected deciles (gap between the energy expenses of the decile and the energy poverty threshold) are compared to the expected energy cost savings, taking lifetimes, subsidy rates, average rent of energy poor households, and many more parameters into account.",
+        title: "Alleviation of energy poverty (M/2)",
+        description: "This indicator shows how energy efficiency improvement actions in the residential sector can help lift people out of energy poverty. M/2 examines the share of households spending less than half the median household's expenditure on energy, assuming the inability to spend more due to financial constraints. In order to calculate it, national energy poverty gaps for affected deciles (gap between the energy expenses of the decile and the energy poverty threshold) are compared to the expected energy cost savings, taking lifetimes, subsidy rates, average rent of energy poor households, and many more parameters into account.",
         identifier: "alleviationOfEnergyPoverty2M",
         yAxis: "People lifted out of energy poverty"
       },
       {
         subcategory: "Social",
-        title: "Alleviation of energy poverty (2/M)",
-        description: "This indicator shows how energy efficiency improvement actions in the residential sector can help lift people out of energy poverty. In order to calculate it, national energy poverty gaps for affected deciles (gap between the energy expenses of the decile and the energy poverty threshold) are compared to the expected energy cost savings, taking lifetimes, subsidy rates, average rent of energy poor households, and many more parameters into account.",
+        title: "Alleviation of energy poverty (2M)",
+        description: "This indicator shows how energy efficiency improvement actions in the residential sector can help lift people out of energy poverty. 2M assesses  the proportion of households spending more than double the median household's expenditure on energy, assuming a very bad housing stock requiring excessive heating. In order to calculate it, national energy poverty gaps for affected deciles (gap between the energy expenses of the decile and the energy poverty threshold) are compared to the expected energy cost savings, taking lifetimes, subsidy rates, average rent of energy poor households, and many more parameters into account.",
         identifier: "alleviationOfEnergyPovertyM2",
         yAxis: "People lifted out of energy poverty"
       },
       {
         subcategory: "Social",
-        title: "Health indoor climate (Asthma)",
-        description: '<p class="mb-2">For now, health impacts linked to improved indoor climate are assessed by looking at the reduction in asthma cases.\n' +
+        title: "Avoided asthma cases",
+        description: '<p class="mb-2">Inter alia, health impacts linked to improved indoor climate are assessed by looking at the reduction in asthma cases.\n' +
           'To do so, assumptions regarding the share of renovations occurring in damp and mouldy buildings as well as the share\n' +
           'of renovations constituting medium and deep renovations. As defaults, the projected rates in PRIMES and the current\n' +
           'national prevalence of damp and mould buildings are being used. Finally, a national coefficient describing the number of\n' +
@@ -105,8 +105,8 @@ const categories: CategoriesInterface = {
       },
       {
         subcategory: "Social",
-        title: "Indoor health II",
-        description: "More information will follow shortly.",
+        title: "Reduction in excess cold weather mortality",
+        description: "Energy efficiency improvements in the residential sector can tackle the issue of excess cold weather mortality. The calculation is inter alia based on the issue's national prevalence, the measure's focus on the relevant energy poor target group, and the depth of the implemented renovations.",
         identifier: "avoidedExcessColdWeatherMortality",
         yAxis: "Avoided excess cold weather mortality"
       },
@@ -201,9 +201,9 @@ const categories: CategoriesInterface = {
       {
         subcategory: "Ecologic",
         title: "Reduction of additional capacities in grid",
-        description: "More information will follow shortly.",
+        description: "As a consequence of energy efficiency measures, fewer new supply-side capacities need to be installed. Assuming that new capacities would alternatively be renewable energies, this indicator assesses the avoided generation capacity..",
         identifier: "reductionOfAdditionalCapacitiesInGrid",
-        yAxis: "Reduction in ktoe"
+        yAxis: "Reduction in MW"
       }
     ],
   },
@@ -227,7 +227,7 @@ const categories: CategoriesInterface = {
       },
       {
         title: "Avoided lost working days due to air pollution",
-        description: "Lost working days can be considered a proxy to examine cases of morbidity (although excluding certain groups, such as children, unemployed, etc.). This indicator shows the reduction of lost working days linked to air pollution. Based on IIASA's GAINS model, it takes air pollution data and societal aspects, such as employment and national health levels, into account.",
+        description: "Lost working days can be monetised using the WHO coefficients for the value of lost working days.",
         identifier: "reductionOfLostWorkDaysMonetization",
         yAxis: "Value in M€"
       },
@@ -239,29 +239,27 @@ const categories: CategoriesInterface = {
       },
       {
         title: "Impact on RES targets",
-        description: "This indicator examines how energy efficiency can support in achieving the target share of energy originating from renewable energy sources (RES) stated in the Renewable Energy Directive (RED). By reducing the overall energy consumption, the share of renewable energy carriers is increased, assuming the energy savings mainly affect non-renewable energy sources.",
+        description: "The impact of energy efficiency on RES targets is assessed by calculating the costs of achieving the same objective through the acquisition of statistical transfers of RES. Thereby, underachieving Member States can statistically buy other Member States' statistical overachievement towards their target. A monetisation factor has been calculated from past public statistical transfers of RES.",
         identifier: "impactOnResTargetsMonetization",
         yAxis: "Value in M€"
       },
       {
         title: "Reduction of additional capacities",
-        description: "As a consequence of energy efficiency measures, fewer new supply-side capacities need to be installed. Assuming that new capacities would alternatively be renewable energies, this indicator assesses the avoided generation capacity.",
+        description: "The reduction in necessary investments in additional capacities is monetised by looking at the specific investment costs of the main renewable energy sources, solar, onshore wind, and offshore wind. Their costs are weighted using their national prevalence.",
         identifier: "reductionOfAdditionalCapacitiesInGridMonetization",
         yAxis: "Value in M€"
       },
       {
-        title: "Health indoor climate (Asthma)",
-        description: '<p class="mb-2">For now, health impacts linked to improved indoor climate are assessed by looking at the reduction in asthma cases.\n' +
-          'To do so, assumptions regarding the share of renovations occurring in damp and mouldy buildings as well as the share\n' +
-          'of renovations constituting medium and deep renovations. As defaults, the projected rates in PRIMES and the current\n' +
-          'national prevalence of damp and mould buildings are being used. Finally, a national coefficient describing the number of\n' +
-          'disability-adjusted life years lost per damp or mould building has been calculated from past data as impact factor.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/micat-project-wAssets/docs/publications/factsheets/Social-impact-Avoided-burden-of-Asthma.pdf">PDF</a>.</p>',
+        title: "Avoided asthma cases",
+        description: '<p class="mb-2">In order to monetise the impact of improved air quality on asthma cases, the value of a .\n' +
+          'disability-adjusted life year (DALY), as provided by the WHO is used as factor.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/micat-project-wAssets/docs/publications/factsheets/Social-impact-Avoided-burden-of-Asthma.pdf">PDF</a>.</p>',
         identifier: "reductionInDisabilityAdjustedLifeYearsMonetization",
         yAxis: "Value in M€"
       },
       {
-        title: "Indoor health II",
-        description: "More information will follow shortly.",
+        title: "Avoided excess cold winter mortality",
+        description: '<p class="mb-2">The monetary impact of avoided excess cold winter mortality is evaluated with the use of statistical figures .\n' +
+          'provided by the WHO regarding the value of statistical life (VSL).</p><p> The fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Reduced-or-avoided-excess-cold-weather-mortality-due-to-energy-efficiency-improvements-in-the-residential-building-sector.pdf">PDF</a>.</p>'
         identifier: "avoidedExcessColdWeatherMortalityMonetization",
         yAxis: "Value in M€"
       }
@@ -269,7 +267,7 @@ const categories: CategoriesInterface = {
   },
   "aggregation": {
     icon: "BanknotesIcon",
-    title: "Aggregation",
+    title: "Overview",
     subtitle: "monetary values per year",
     subcategories: [],
     measurements: []
