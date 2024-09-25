@@ -212,8 +212,8 @@ const aggregationChartData: any = computed(() => {
 
 <template>
   <div class="p-4 my-5 text-white rounded-lg bg-sky-600 mx-7">
-    <h3 class="mb-2 font-bold text-md">Aggregation</h3>
-    <div class="text-sm text-sky-200">More information will follow shortly.</div>
+    <h3 class="mb-2 font-bold text-md">Overview</h3>
+    <div class="text-sm text-sky-200">This tab shows an overview of the monetised indicators for the selected years. All values are in €.</div>
   </div>
   <div id="aggregation-legend"></div>
   <Bar
