@@ -54,6 +54,9 @@ export interface ProgramInterface {
     subsectorName: string;
     showSubsectorMenu: boolean;
     improvements: Array<ImprovementInterface>;
+    mureTotal?: {
+        [key: string]: number;
+    };
 }
 
 export interface SubsectorInterface {

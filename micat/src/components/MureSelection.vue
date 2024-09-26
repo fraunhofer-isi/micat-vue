@@ -146,6 +146,7 @@ const getMeasurementDetails = async () => {
   // Set subsector for programs and values
   const programs = session.programs;
   programs.forEach(program => {
+    program.mureTotal = {};
     program.improvements.forEach(improvement => {
       improvement.percentage = 100;
       program.subsector = mureSubsectorMapping[session.mureCategory];
@@ -162,6 +163,7 @@ const getMeasurementDetails = async () => {
           improvement.values[year.toString()] = 0;
         } else {
           improvement.values[year.toString()] = value.calculatedPj ? value.calculatedPj : value.pj ? value.pj : 0;
+          program.mureTotal![year.toString()] = improvement.values[year.toString()];
         }
       });
     });
@@ -181,6 +183,7 @@ const getOdysseeData = async () => {
   // Set subsector for programs and values
   const programs = session.programs;
   programs.forEach(program => {
+    program.mureTotal = {};
     program.improvements.forEach(improvement => {
       improvement.percentage = 100;
       program.subsector = mureSubsectorMapping[session.mureCategory];
@@ -193,6 +196,7 @@ const getOdysseeData = async () => {
       });
       years.value.forEach(year => {
         improvement.values[year.toString()] = odysseeData![year];
+        program.mureTotal![year.toString()] = odysseeData![year];
       });
     });
   });
