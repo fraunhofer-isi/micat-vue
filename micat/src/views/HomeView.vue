@@ -332,7 +332,7 @@ const getGlobalParametersPayload = () => {
     for (const [subsector, factors] of Object.entries(subsectors)) {
       for (const [factor, values] of Object.entries(factors)) {
         for (const value of values) {
-          if (!value.value) continue;
+          if (value.value === null) continue;
           if (category === 'MonetisationFactors') {
             const existingResult: PayloadParameterEntryInterface | undefined = results[category].find(result => {
               return result['index'] === parseInt(factor);
@@ -342,7 +342,8 @@ const getGlobalParametersPayload = () => {
             } else {
               const data = {
                 'index': parseInt(factor),
-                [value.key === 0 ? 'Value' : value.key]: value.value
+                [value.key === 0 ? 'Value' : value.key]: value.value,
+                'identifier': session.monetisationFactorMapping[parseInt(factor)],
               }
               results[category].push(data);
             }
@@ -370,9 +371,6 @@ const getGlobalParametersPayload = () => {
       }
     }
   }
-  // TODO: Fix this in the backend
-  delete results['MonetisationFactors'];
-  
   return results;
 }
 const showParameters = (data: ImprovementInterface, programIndex: number) => {

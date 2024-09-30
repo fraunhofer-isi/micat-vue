@@ -75,7 +75,7 @@ const getAndStructureGlobalParameters = async (reset: boolean = false) => {
       if (!globalParameters[category][subsectorId]) globalParameters[category][subsectorId] = {};
 
       if (category === 'MonetisationFactors') {
-        if (!data['Monetisation factor'] || typeof data['Value'] === 'undefined' || !data['index']) continue;
+        if (!data['Monetisation factor'] || typeof data['Value'] === 'undefined' || data['index'] === null || typeof data['index'] === 'undefined') continue;
         monetisationFactorMapping[data['index']] = data['Monetisation factor'];
         globalParameters[category][subsectorId][data['index']] = [];
         if (data['Value'] !== null) {
@@ -92,7 +92,7 @@ const getAndStructureGlobalParameters = async (reset: boolean = false) => {
         if (yearRegex.test(key)) {
           if (category === 'MonetisationFactors') {
             // monetisation factors are handled differently
-            if (value === null || !data['index']) continue;
+            if (value === null || data['index'] === null || typeof data['index'] === 'undefined') continue;
             globalParameters[category][subsectorId][data['index']].push({key: parseInt((key as string)), value: (value as number)});
           } else if (data['id_final_energy_carrier'] || data['id_primary_energy_carrier']) {
             // Add year key, if it doesn't exist yet
@@ -133,7 +133,7 @@ const reset = async () => {
 const entriesAreValid = (entries: Array<GlobalParameterValue>) => {
   // Check if all entries sum up to (almost) 1, or 100% in case of FuelSplitCoefficient
   const factor = activeCategory.value === 'FuelSplitCoefficient' ? 100 : 1;
-  return Math.abs(entries.map((entry) => entry.value || 0).reduce((a, b) => a + b)) < factor;
+  return Math.abs(entries.map((entry) => entry.value || 0).reduce((a, b) => a + b)) == factor;
 };
 const entriesAreNull = (entries: Array<GlobalParameterValue>) => {
   // Check if all entries are null
