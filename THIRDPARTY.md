@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -602,16 +596,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.5.8
- - @vue/compiler-dom@3.5.8
- - @vue/compiler-sfc@3.5.8
- - @vue/compiler-ssr@3.5.8
- - @vue/reactivity@3.5.8
- - @vue/runtime-core@3.5.8
- - @vue/runtime-dom@3.5.8
- - @vue/server-renderer@3.5.8
- - @vue/shared@3.5.8
- - vue@3.5.8
+ - @vue/compiler-core@3.5.10
+ - @vue/compiler-dom@3.5.10
+ - @vue/compiler-sfc@3.5.10
+ - @vue/compiler-ssr@3.5.10
+ - @vue/reactivity@3.5.10
+ - @vue/runtime-core@3.5.10
+ - @vue/runtime-dom@3.5.10
+ - @vue/server-renderer@3.5.10
+ - @vue/shared@3.5.10
+ - vue@3.5.10
 
 These packages each contain the following license and notice below:
 
@@ -659,7 +653,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - pinia@2.2.2
+ - pinia@2.2.3
  - vue-router@4.4.5
 
 These packages each contain the following license and notice below:
