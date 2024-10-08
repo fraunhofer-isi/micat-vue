@@ -136,6 +136,11 @@ const helpTexts: HelpTextInterface = {
     'text': 'This factor is based on the World Health Organization\'s (WHO) publication of Value of work loss days (WLD) factors for European countries within their 2018 Carbon Reduction Benefits on Health Tool (CaRBonH). It describes the social costs of absences from work, for instance due to illness.',
     'type': 'help'
   },
+  'Hospitalisationmonetisation': {
+    'title': 'Hospitalisation Monetisation',
+    'text': '...',
+    'type': 'help'
+  },
   'CostpertonofemittedCO2': {
     'title': 'Cost of CO2-emissions',
     'text': 'The valuation of the cost of CO2 emissions is based on societal costs of carbon emissions, including all costs to alleviate their consequences. However, no discounting of the opportunity to emit CO2 for future generations is included in the provided default figure. The latter as well as a figure including generational discounting are calculated by the <a class="font-bold" href="https://www.umweltbundesamt.de/daten/umwelt-wirtschaft/gesellschaftliche-kosten-von-umweltbelastungen#klimakosten-von-treibhausgas-emissionen" target="_blank">German Federal Environmental Agency (UBA)</a>.<br /><br />Alternatively, one could also use the market price of emission rights traded within the EU Emission Trading Scheme, the European Union\'s cap and trade scheme for carbon dioxide emissions. Inter alia, current prices can be found on the <a class="font-bold" href="https://www.eex.com/en/market-data/environmentals/spot" target="_blank">European Energy Exchange\'s (EEX) website</a>.',
