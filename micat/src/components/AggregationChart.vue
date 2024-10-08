@@ -190,8 +190,8 @@ const aggregationChartData: any = computed(() => {
       aggregationData.rows.forEach(row => {
         row.splice(0, 1);
         row.forEach((measure, iM) => {
-          // Sum up measurements
-          values[iM] += measure;
+          // Sum up measurements; impacts on gross domestic product are in million €
+          values[iM] += measurement.identifier === 'impactOnGrossDomesticProduct' ? measure * 1000000 : measure;
         });
       });
       datasets.push({
