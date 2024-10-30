@@ -577,7 +577,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               'rounded-bl-3xl': activeCategory === key && i === Object.keys(categories).length - 1,
               'pr-16': !category.subcategories,
             }"
-            v-for="([key, category], i) in Object.entries(categories)"
+            v-for="([key, category], i) in Object.entries(categories).filter(([key, value])=> session.showCBA ? true : key !== 'cba')"
             v-bind:key="`category-${key}`"
           >
             <div>
@@ -621,7 +621,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   'hover:bg-orange-700': activeMeasurement.identifier !== measurement.identifier,
                   'hover:rounded-br-3xl': activeMeasurement.identifier !== measurement.identifier
                 }"
-                v-for="measurement in categories[activeCategory].measurements.filter(measurement => !measurement.subcategory || measurement.subcategory === activeSubcategory)"
+                v-for="measurement in categories[activeCategory].measurements.filter(measurement => (!measurement.subcategory || measurement.subcategory === activeSubcategory) && measurement.identifier !== 'changeInUnitCostsOfProduction')"
                 v-bind:key="`measurement-${measurement.identifier}`"
               >
                 <span class="mr-8 font-bold grow whitespace-nowrap">{{ measurement.title }}</span>
@@ -649,7 +649,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
         <div v-else-if="activeCategory === 'aggregation'" class="w-full max-w-full p-7">
           <AggregationChart :categories="categories"></AggregationChart>
         </div>
-        <div v-if="activeCategory === 'cba'" class="w-full">
+        <div v-if="activeCategory === 'cba' && session.showCBA" class="w-full">
           <div class="flex w-full">
             <div class="self-start pl-2 border-l border-white bg-sky-600 rounded-br-3xl">
               <h3 class="p-2 font-bold bg-white text-sky-600">Indicators</h3>

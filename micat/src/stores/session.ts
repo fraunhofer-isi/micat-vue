@@ -49,6 +49,7 @@ export const useSessionStore = defineStore({
       parameters: JSON.parse(localStorage.getItem("parameters") || JSON.stringify({})),
       useRenovationRate: String(localStorage.getItem("useRenovationRate") || "false").toLowerCase() === "true",
       seedInfo: String(localStorage.getItem("seedInfo") || "true").toLowerCase() === "true",
+      showCBA: String(localStorage.getItem("showCBA") || "false").toLowerCase() === "true",
     }
   },
   actions: {
