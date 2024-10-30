@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -139,7 +133,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.25.7
+ - @babel/parser@7.26.1
 
 This package contains the following license and notice below:
 
@@ -231,7 +225,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The following npm package may be included in this product:
 
- - magic-string@0.30.11
+ - magic-string@0.30.12
 
 This package contains the following license and notice below:
 
@@ -247,7 +241,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm package may be included in this product:
 
- - picocolors@1.1.0
+ - picocolors@1.1.1
 
 This package contains the following license and notice below:
 
@@ -281,30 +275,11 @@ MIT
 
 -----------
 
-The following npm package may be included in this product:
-
- - to-fast-properties@2.0.0
-
-This package contains the following license and notice below:
-
-MIT License
-
-Copyright (c) 2014 Petka Antonov
-              2015 Sindre Sorhus
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
------------
-
 The following npm packages may be included in this product:
 
- - @babel/helper-string-parser@7.25.7
- - @babel/helper-validator-identifier@7.25.7
- - @babel/types@7.25.7
+ - @babel/helper-string-parser@7.25.9
+ - @babel/helper-validator-identifier@7.25.9
+ - @babel/types@7.26.0
 
 These packages each contain the following license and notice below:
 
@@ -548,7 +523,7 @@ THE SOFTWARE.
 
 The following npm package may be included in this product:
 
- - chart.js@4.4.4
+ - chart.js@4.4.6
 
 This package contains the following license and notice below:
 
@@ -566,7 +541,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm package may be included in this product:
 
- - chartjs-plugin-annotation@3.0.1
+ - chartjs-plugin-annotation@3.1.0
 
 This package contains the following license and notice below:
 
@@ -602,16 +577,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.5.11
- - @vue/compiler-dom@3.5.11
- - @vue/compiler-sfc@3.5.11
- - @vue/compiler-ssr@3.5.11
- - @vue/reactivity@3.5.11
- - @vue/runtime-core@3.5.11
- - @vue/runtime-dom@3.5.11
- - @vue/server-renderer@3.5.11
- - @vue/shared@3.5.11
- - vue@3.5.11
+ - @vue/compiler-core@3.5.12
+ - @vue/compiler-dom@3.5.12
+ - @vue/compiler-sfc@3.5.12
+ - @vue/compiler-ssr@3.5.12
+ - @vue/reactivity@3.5.12
+ - @vue/runtime-core@3.5.12
+ - @vue/runtime-dom@3.5.12
+ - @vue/server-renderer@3.5.12
+ - @vue/shared@3.5.12
+ - vue@3.5.12
 
 These packages each contain the following license and notice below:
 
@@ -659,7 +634,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - pinia@2.2.4
+ - pinia@2.2.5
  - vue-router@4.4.5
 
 These packages each contain the following license and notice below:
