@@ -621,7 +621,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   'hover:bg-orange-700': activeMeasurement.identifier !== measurement.identifier,
                   'hover:rounded-br-3xl': activeMeasurement.identifier !== measurement.identifier
                 }"
-                v-for="measurement in categories[activeCategory].measurements.filter(measurement => (!measurement.subcategory || measurement.subcategory === activeSubcategory) && measurement.identifier !== 'changeInUnitCostsOfProduction')"
+                v-for="measurement in categories[activeCategory].measurements.filter(measurement => (!measurement.subcategory || measurement.subcategory === activeSubcategory) && measurement.identifier !== 'changeInUnitCostsOfProduction' && (!session.future || measurement.identifier !== 'changeInSupplierDiversityByEnergyEfficiencyImpact'))"
                 v-bind:key="`measurement-${measurement.identifier}`"
               >
                 <span class="mr-8 font-bold grow whitespace-nowrap">{{ measurement.title }}</span>
