@@ -17,7 +17,7 @@ import {
   InformationCircleIcon,
   ArrowDownTrayIcon,
 } from '@heroicons/vue/24/outline';
-import { Line } from 'vue-chartjs';
+import { Bar } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale, type ChartDataset, type ChartOptions } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import type {
@@ -371,10 +371,6 @@ const chartOptions = computed(() => {
           display: false,
           text: 'Years'
         },
-        type: 'time',
-        time: {
-            unit: 'year'
-        }
       },
       y: {
         ticks: {
@@ -642,7 +638,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
           </div>
           <div class="px-10 py-5">
             <!-- @vue-ignore -->
-            <Line
+            <Bar
               class="w-full max-w-[100%]"
               id="chart"
               :options="(chartOptions as any)"
