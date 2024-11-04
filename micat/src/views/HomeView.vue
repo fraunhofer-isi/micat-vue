@@ -1160,7 +1160,7 @@ const start = () => {
                   </svg>
                   <span class="sr-only">Loading...</span>
               </div>
-              <span v-else>Analyze</span>
+              <span v-else>Analyse</span>
             </button>
           </div>
         </div>
