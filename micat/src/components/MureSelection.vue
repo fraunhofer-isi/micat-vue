@@ -350,7 +350,7 @@ const truncate = (text: string, length: number) => {
         </select>
       </div>
       <div class="col-span-2" v-if="mureCategory && mureCountry && !session.odyssee">
-        <label for="measurement" class="text-sm dark:text-white">Measurement</label>
+        <label for="measurement" class="text-sm dark:text-white">Measure</label>
       </div>
       <div class="col-span-3" v-if="mureCategory && mureCountry && !session.odyssee">
         <select
@@ -359,7 +359,7 @@ const truncate = (text: string, length: number) => {
           v-model="mureMeasurement"
           v-if="session.stage === stages.home"
         >
-          <option disabled value="">Select a measurement</option>
+          <option disabled value="">Select a policy</option>
           <option v-for="measurement in measurements" v-bind:key="`country-${measurement.id}`" :value="measurement.id">{{
               truncate(measurement.title, 90)
             }}

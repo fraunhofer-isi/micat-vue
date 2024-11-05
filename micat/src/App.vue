@@ -103,17 +103,17 @@ const helpTexts: HelpTextInterface = {
   },
   'EnergyPrice': {
     'title': 'Energy prices',
-    'text': 'These parameters specify the costs of different energy carriers per kiloton of oil equivalent (ktoe). This data stems from a wide range of sources, oftentimes adjusted to account for projected price developments. <br /><br /><i>For ex-post evaluations, default values have been compiled by e3m. For ex-ante evaluations, past values are projected into the future using the price development projections from the IEA's World Energy Outlook.</i><br /><br />Since some default values are confidential, the respective fields might be blank. Nonetheless, you have the possibility to input your own value, which overrides the database\'s default value.',
+    'text': 'These parameters specify the costs of different energy carriers per kiloton of oil equivalent (ktoe). This data stems from a wide range of sources, oftentimes adjusted to account for projected price developments. <br /><br /><i>For ex-post evaluations, default values have been compiled by e3m. For ex-ante evaluations, past values are projected into the future using the price development projections from the IEA\'s World Energy Outlook.</i><br /><br />Since some default values are confidential, the respective fields might be blank. Nonetheless, you have the possibility to input your own value, which overrides the database\'s default value.',
     'type': 'help'
   },
   'ElectricityGeneration': {
     'title': 'Electricity Generation',
-    'text': "This specifies the average amounts of the different primary energy carriers to generate one unit of electricity. Given the typically low efficiency of thermal power plants, the sum of final energy carriers' factors can significantly surpass 1. The sum of the given values across all energy carriers is therefore equal to the average primary energy factor for the electricity generation. How this impacts assumed energy mixes and how these values are calculated is described in more detail <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html" target="_blank">here</a>.<br /><br /><i>For ex-post measures, these values are calculated from Eurostat's Complete Energy Balances. For ex-ante, the calculation is based on results from the EU Reference Scenario 2020 modelled using PRIMES.</i>",
+    'text': 'This specifies the average amounts of the different primary energy carriers to generate one unit of electricity. Given the typically low efficiency of thermal power plants, the sum of final energy carriers\' factors can significantly surpass 1. The sum of the given values across all energy carriers is therefore equal to the average primary energy factor for the electricity generation. How this impacts assumed energy mixes and how these values are calculated is described in more detail <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html" target="_blank">here</a>.<br /><br /><i>For ex-post measures, these values are calculated from Eurostat\'s Complete Energy Balances. For ex-ante, the calculation is based on results from the EU Reference Scenario 2020 modelled using PRIMES.</i>',
     'type': 'help'
   },
   'HeatGeneration': {
     'title': 'Heat Generation',
-    'text': "This specifies the average amounts of the different primary energy carriers to generate one unit of heat. Given transformation losses in heat generation, the sum of final energy carriers' factors can surpass 1.  The sum of the given values across all energy carriers is therefore equal to the average primary energy factor for the heat generation. How this impacts assumed energy mixes is described in more detail <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html" target="_blank">here</a>.<br /><br /><i>For ex-post measures, these values are calculated from Eurostat's Complete Energy Balances. For ex-ante, the calculation is based on results from the EU Reference Scenario 2020 modelled using PRIMES.</i>",
+    'text': 'This specifies the average amounts of the different primary energy carriers to generate one unit of heat. Given transformation losses in heat generation, the sum of final energy carriers\' factors can surpass 1.  The sum of the given values across all energy carriers is therefore equal to the average primary energy factor for the heat generation. How this impacts assumed energy mixes is described in more detail <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html" target="_blank">here</a>.<br /><br /><i>For ex-post measures, these values are calculated from Eurostat\'s Complete Energy Balances. For ex-ante, the calculation is based on results from the EU Reference Scenario 2020 modelled using PRIMES.</i>',
     'type': 'help'
   },
   'MonetisationFactors': {
@@ -184,37 +184,37 @@ const helpTexts: HelpTextInterface = {
   },
   'advanced-parameters-16-1': {
     'title': 'Share of electricity among affected',
-    'text': 'This value specifies the share of final energy carrier electricity among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat's Complete Energy Balances for ex-post and from PRIMES' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    'text': 'This value specifies the share of final energy carrier electricity among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
     'type': 'help'
   },
   'advanced-parameters-16-2': {
     'title': 'Share of oil among affected',
-    'text': 'This value specifies the share of final energy carrier oil among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat's Complete Energy Balances for ex-post and from PRIMES' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    'text': 'This value specifies the share of final energy carrier oil among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
     'type': 'help'
   },
   'advanced-parameters-16-3': {
     'title': 'Share of coal among affected',
-    'text': 'This value specifies the share of final energy carrier coal among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat's Complete Energy Balances for ex-post and from PRIMES' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    'text': 'This value specifies the share of final energy carrier coal among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
     'type': 'help'
   },
   'advanced-parameters-16-4': {
     'title': 'Share of gas among affected',
-    'text': 'This value specifies the share of final energy carrier gas among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat's Complete Energy Balances for ex-post and from PRIMES' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    'text': 'This value specifies the share of final energy carrier gas among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
     'type': 'help'
   },
   'advanced-parameters-16-5': {
     'title': 'Share of biomass and waste among affected',
-    'text': 'This value specifies the share of final energy carrier biomass and waste among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat's Complete Energy Balances for ex-post and from PRIMES' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    'text': 'This value specifies the share of final energy carrier biomass and waste among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
     'type': 'help'
   },
   'advanced-parameters-16-6': {
     'title': 'Share of heat among affected',
-    'text': 'This value specifies the share of final energy carrier heat among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat's Complete Energy Balances for ex-post and from PRIMES' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    'text': 'This value specifies the share of final energy carrier heat among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
     'type': 'help'
   },
   'advanced-parameters-16-7': {
     'title': 'Share of H2 and e-fuels among affected',
-    'text': 'This value specifies the share of final energy carrier H2 and e-fuels among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat's Complete Energy Balances for ex-post and from PRIMES' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    'text': 'This value specifies the share of final energy carrier H2 and e-fuels among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
     'type': 'help'
   },
   'advanced-parameters-17-1': {
@@ -289,72 +289,72 @@ const helpTexts: HelpTextInterface = {
   },
   'advanced-parameters-14-1': {
     'title': 'Efficiency of removed electricity',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using electricity. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using electricity. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-14-2': {
     'title': 'Efficiency of removed oil',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using oil.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using oil.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-14-3': {
     'title': 'Efficiency of removed coal',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using coal.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using coal.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-14-4': {
     'title': 'Efficiency of removed gas',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using gas.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using gas.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-14-5': {
     'title': 'Efficiency of removed biomass and waste',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using biomass and waste.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using biomass and waste.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-14-6': {
     'title': 'Efficiency of removed heat',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using heat.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using heat.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-14-7': {
     'title': 'Efficiency of removed H2 and e-fuels',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using H2 and e-fuels.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the removed technologies using H2 and e-fuels.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-15-1': {
     'title': 'Efficiency of installed electricity',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using electricity. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using electricity. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-15-2': {
     'title': 'Efficiency of installed oil',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using oil.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using oil.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-15-3': {
     'title': 'Efficiency of installed coal',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using coal.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using coal.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-15-4': {
     'title': 'Efficiency of installed gas',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using gas.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using gas.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-15-5': {
     'title': 'Efficiency of installed biomass and waste',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using biomass and waste.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using biomass and waste.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-15-6': {
     'title': 'Efficiency of installed heat',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using heat.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using heat.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-15-7': {
     'title': 'Efficiency of installed H2 and e-fuels',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using H2 and e-fuels.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency's Technology Catalogues</a>.</i>',
+    'text': 'This value specifies the assumed efficiency of the newly installed technologies using H2 and e-fuels.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
     'type': 'help'
   },
   'advanced-parameters-45': {
@@ -369,7 +369,7 @@ const helpTexts: HelpTextInterface = {
   },
   'advanced-parameters-43': {
     'title': 'Annual renovation rate',
-    'text': 'This value states which share of the dwelling stock is renovated annually. It represents an alternative input to the number of affected dwellings and is then multiplied with the national or local dwelling stock (depending on the selection of the geographical area).<br /<br /><i>The default value is based on PRIMES projections.</i>.,
+    'text': 'This value states which share of the dwelling stock is renovated annually. It represents an alternative input to the number of affected dwellings and is then multiplied with the national or local dwelling stock (depending on the selection of the geographical area).<br /<br /><i>The default value is based on PRIMES projections.</i>.',
     'type': 'help'
   },
   'advanced-parameters-32': {
