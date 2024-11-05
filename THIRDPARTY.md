@@ -11,7 +11,7 @@ The following npm package may be included in this product:
 
  - source-map-js@1.2.1
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 Copyright (c) 2009-2011, Mozilla Foundation and contributors
 All rights reserved.
@@ -47,7 +47,7 @@ The following npm package may be included in this product:
 
  - @types/web-bluetooth@0.0.20
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 MIT License
 
@@ -77,7 +77,7 @@ The following npm package may be included in this product:
 
  - typescript@5.4.5
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 Apache License
 
@@ -139,9 +139,9 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.26.1
+ - @babel/parser@7.26.2
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 Copyright (C) 2012-2014 by various contributors (see AUTHORS)
 
@@ -169,7 +169,7 @@ The following npm package may be included in this product:
 
  - estree-walker@2.0.2
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 Copyright (c) 2015-20 [these people](https://github.com/Rich-Harris/estree-walker/graphs/contributors)
 
@@ -185,7 +185,7 @@ The following npm package may be included in this product:
 
  - csstype@3.1.3
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 Copyright (c) 2017-2018 Fredrik Nicol
 
@@ -213,7 +213,7 @@ The following npm package may be included in this product:
 
  - entities@4.5.0
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 Copyright (c) Felix Böhm
 All rights reserved.
@@ -233,7 +233,7 @@ The following npm package may be included in this product:
 
  - magic-string@0.30.12
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 Copyright 2018 Rich Harris
 
@@ -249,7 +249,7 @@ The following npm package may be included in this product:
 
  - picocolors@1.1.1
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 ISC License
 
@@ -275,7 +275,7 @@ The following npm packages may be included in this product:
  - @vue/devtools-api@6.6.4
  - vue-number-format@1.3.1
 
-These packages each contain the following license and notice below:
+These packages each contain the following license:
 
 MIT
 
@@ -287,7 +287,7 @@ The following npm packages may be included in this product:
  - @babel/helper-validator-identifier@7.25.9
  - @babel/types@7.26.0
 
-These packages each contain the following license and notice below:
+These packages each contain the following license:
 
 MIT License
 
@@ -316,9 +316,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 The following npm package may be included in this product:
 
- - vue-chartjs@5.3.1
+ - vue-chartjs@5.3.2
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 MIT License
 
@@ -350,7 +350,7 @@ The following npm packages may be included in this product:
  - @vueuse/metadata@10.11.1
  - @vueuse/shared@10.11.1
 
-These packages each contain the following license and notice below:
+These packages each contain the following license:
 
 MIT License
 
@@ -380,7 +380,7 @@ The following npm package may be included in this product:
 
  - vue-demi@0.14.10
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 MIT License
 
@@ -410,7 +410,7 @@ The following npm package may be included in this product:
 
  - date-fns@3.6.0
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 MIT License
 
@@ -441,7 +441,7 @@ The following npm packages may be included in this product:
  - @tanstack/virtual-core@3.10.8
  - @tanstack/vue-virtual@3.10.8
 
-These packages each contain the following license and notice below:
+These packages each contain the following license:
 
 MIT License
 
@@ -471,7 +471,7 @@ The following npm package may be included in this product:
 
  - @heroicons/vue@2.1.5
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 MIT License
 
@@ -501,7 +501,7 @@ The following npm package may be included in this product:
 
  - @jridgewell/sourcemap-codec@1.5.0
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 The MIT License
 
@@ -531,7 +531,7 @@ The following npm package may be included in this product:
 
  - chart.js@4.4.6
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 The MIT License (MIT)
 
@@ -549,7 +549,7 @@ The following npm package may be included in this product:
 
  - chartjs-plugin-annotation@3.1.0
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 The MIT License (MIT)
 
@@ -567,7 +567,7 @@ The following npm package may be included in this product:
 
  - @kurkle/color@0.3.2
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 The MIT License (MIT)
 
@@ -594,7 +594,7 @@ The following npm packages may be included in this product:
  - @vue/shared@3.5.12
  - vue@3.5.12
 
-These packages each contain the following license and notice below:
+These packages each contain the following license:
 
 The MIT License (MIT)
 
@@ -624,7 +624,7 @@ The following npm package may be included in this product:
 
  - chartjs-adapter-date-fns@3.0.0
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 The MIT License (MIT)
 
@@ -640,10 +640,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - pinia@2.2.5
+ - pinia@2.2.6
  - vue-router@4.4.5
 
-These packages each contain the following license and notice below:
+These packages each contain the following license:
 
 The MIT License (MIT)
 
@@ -673,7 +673,7 @@ The following npm package may be included in this product:
 
  - postcss@8.4.47
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 The MIT License (MIT)
 
@@ -702,7 +702,7 @@ The following npm package may be included in this product:
 
  - nanoid@3.3.7
 
-This package contains the following license and notice below:
+This package contains the following license:
 
 The MIT License (MIT)
 
