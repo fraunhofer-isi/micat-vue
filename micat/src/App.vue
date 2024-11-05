@@ -364,7 +364,7 @@ const helpTexts: HelpTextInterface = {
   },
   'advanced-parameters-42': {
     'title': 'Energy poverty target',
-    'text': 'This figure specifies the share of the generated energy savings achieved among energy poor households.<br /><br /><i>By default, the national energy poverty prevalence in terms of households unable to keep their home adequately warm as reported in the EU-SILC is used.</i>',
+    'text': 'This figure specifies the share of the generated energy savings achieved among energy poor households.<br /><br /><i>By default, the national energy poverty prevalence in terms of households unable to keep their home adequately warm as reported in the <a class="font-bold" href="https://ec.europa.eu/eurostat/web/microdata/european-union-statistics-on-income-and-living-conditions/" target="_blank">EU Statistics on Income and Living Conditions (EU-SILC)</a> is used.</i>',
     'type': 'help'
   },
   'advanced-parameters-43': {

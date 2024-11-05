@@ -61,7 +61,7 @@ const categories: CategoriesInterface = {
   "quantification": {
     icon: "UserGroupIcon",
     title: "Quantification",
-    subtitle: "physical values",
+    subtitle: "Physical values",
     subcategories: ["Social", "Economic", "Environmental"],
     measurements: [
       {
@@ -163,6 +163,13 @@ const categories: CategoriesInterface = {
         yAxis: "Change in supplier diversity in %"
       },
       {
+        subcategory: "Economic",
+        title: "Reduction of additionally needed generation capacity",
+        description: '<p class="mb-2">As a consequence of energy efficiency measures, fewer new supply-side capacities need to be installed. Assuming that new capacities would alternatively be renewable energies, this indicator assesses the avoided generation capacity..</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/avoided_additional_capacity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Avoided-additional-energy-generation-capacity.pdf">PDF</a>.</p>',
+        identifier: "reductionOfAdditionalCapacitiesInGrid",
+        yAxis: "Reduction in MW"
+      },
+      {
         subcategory: "Environmental",
         title: "Primary savings by fuel",
         description: '<p class="mb-2">This indicator describes the energy saved in terms of primary energy carriers with the proposed measures. The conversion processes necessary for the generation of electricity, heat, and hydrogen and synthetic fuels (assumed to be hydrogen generated from electricity) are taken into account. The energy mix of these conversion processes comes from past data from Eurostat and projections from PRIMES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/PEC_FEC_savings.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-Energy-cost-savings.pdf">PDF</a>.</p>',
@@ -189,13 +196,6 @@ const categories: CategoriesInterface = {
         description: '<p class="mb-2">This indicator examines how energy efficiency can support in achieving the target share of energy originating from renewable energy sources (RES) stated in the Renewable Energy Directive (RED). By reducing the overall energy consumption, the share of renewable energy carriers is increased, assuming the energy savings affect non-renewable energy sources.</p><p>The fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
         identifier: "renewableEnergyDirectiveTargets",
         yAxis: "Change in share in %-points"
-      },
-      {
-        subcategory: "Environmental",
-        title: "Reduction of additional capacities in grid",
-        description: '<p class="mb-2">As a consequence of energy efficiency measures, fewer new supply-side capacities need to be installed. Assuming that new capacities would alternatively be renewable energies, this indicator assesses the avoided generation capacity..</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/avoided_additional_capacity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Avoided-additional-energy-generation-capacity.pdf">PDF</a>.</p>',
-        identifier: "reductionOfAdditionalCapacitiesInGrid",
-        yAxis: "Reduction in MW"
       }
     ],
   },
