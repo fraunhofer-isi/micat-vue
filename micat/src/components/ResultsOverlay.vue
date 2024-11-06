@@ -104,7 +104,7 @@ const categories: CategoriesInterface = {
         title: "Reduction in excess cold weather mortality",
         description: '<p class="mb-2">Energy efficiency improvements in the residential sector can tackle the issue of excess cold weather mortality, which occurs when indoor temperature is below adequate levels. This phenomenon is often linked to inferior building states and residents\' financial inability to heat their dwelling adequately. The calculation is inter alia based on the national prevalence of excess cold weather mortality, the measure\'s focus on the relevant energy poor target group, and the depth of the implemented renovations.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Reduced-or-avoided-excess-cold-weather-mortality-due-to-energy-efficiency-improvements-in-the-residential-building-sector.pdf">PDF</a>.</p>',
         identifier: "avoidedExcessColdWeatherMortality",
-        yAxis: "Avoided excess cold weather mortality"
+        yAxis: "Reduction in casualties"
       },
       {
         subcategory: "Economic",
@@ -165,7 +165,7 @@ const categories: CategoriesInterface = {
       {
         subcategory: "Economic",
         title: "Reduction of additionally needed generation capacity",
-        description: '<p class="mb-2">As a consequence of energy efficiency measures, fewer new supply-side capacities need to be installed. Assuming that new capacities would alternatively be renewable energies, this indicator assesses the avoided generation capacity..</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/avoided_additional_capacity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Avoided-additional-energy-generation-capacity.pdf">PDF</a>.</p>',
+        description: '<p class="mb-2">As a consequence of energy efficiency measures, fewer new supply-side capacities need to be installed. Assuming that new capacities would alternatively be renewable energies, this indicator assesses the avoided generation capacity. The utilisation factors are calculated from Eurostat\'s Complete Energy Balances (for ex-post) and PRIMES EU Reference Scenario 2020 (for ex-ante).</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/avoided_additional_capacity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Avoided-additional-energy-generation-capacity.pdf">PDF</a>.</p>',
         identifier: "reductionOfAdditionalCapacitiesInGrid",
         yAxis: "Reduction in MW"
       },
@@ -195,7 +195,7 @@ const categories: CategoriesInterface = {
         title: "Impact on RES targets",
         description: '<p class="mb-2">This indicator examines how energy efficiency can support in achieving the target share of energy originating from renewable energy sources (RES) stated in the Renewable Energy Directive (RED). By reducing the overall energy consumption, the share of renewable energy carriers is increased, assuming the energy savings affect non-renewable energy sources.</p><p>The fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
         identifier: "renewableEnergyDirectiveTargets",
-        yAxis: "Change in share in %-points"
+        yAxis: "Change in RES share in %-points"
       }
     ],
   },
@@ -231,13 +231,13 @@ const categories: CategoriesInterface = {
       },
       {
         title: "Impact on RES targets",
-        description: '<p class="mb-2">The impact of energy efficiency on RES targets is assessed by calculating the costs of achieving the same objective through the acquisition of statistical transfers of RES. Thereby, underachieving Member States can statistically buy other Member States\' statistical overachievement towards their target. A monetisation factor has been calculated from past public statistical transfers of RES.</p><p>The fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
+        description: '<p class="mb-2">The impact of energy efficiency on RES targets is assessed by calculating the costs of achieving the same objective through the acquisition of statistical transfers of RES. Thereby, underachieving Member States can statistically buy other Member States\' statistical overachievement towards their target. A monetisation factor has been calculated from past public statistical transfers of RES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/Impact_RES_targets.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
         identifier: "impactOnResTargetsMonetization",
         yAxis: "Value in €"
       },
       {
         title: "Reduction of additional capacities",
-        description: '<p class="mb-2">The reduction of necessary investments in additional capacities is monetised by looking at the specific investment costs of the main renewable energy sources, solar, onshore wind, and offshore wind. Their costs are weighted using their national prevalence, with data being an average of values from a 2016 IRENA study and a study commissioned by the European Commission (Tsiropoulos I, Tarvydas, D, Zucker 2017).</p><p>The fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
+        description: '<p class="mb-2">The reduction of necessary investments in additional capacities is monetised by looking at the specific investment costs of the main renewable energy sources, solar, onshore wind, and offshore wind. Their costs are weighted using their national prevalence, with data being an average of values from a 2016 IRENA study and a study commissioned by the European Commission (Tsiropoulos I, Tarvydas, D, Zucker 2017).</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/avoided_additional_capacity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
         identifier: "reductionOfAdditionalCapacitiesInGridMonetization",
         yAxis: "Value in €"
       },

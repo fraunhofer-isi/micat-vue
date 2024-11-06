@@ -91,8 +91,8 @@ const helpTexts: HelpTextInterface = {
     'type': 'help'
   },
   'renovation': {
-    'title': 'Annual renovation rate',
-    'text': 'This value states which share of the dwelling stock is renovated annually. It represents an alternative input to the number of affected dwellings and is then multiplied with the national or local dwelling stock (depending on the selection of the geographical area). <i>The default value is based on PRIMES projections.</i>.',
+    'title': 'Switch between number of affected dwellings and annual renovation rate',
+    'text': 'This switch allows to swap the standard input of number of affected dwellings by the provision of an annual renovation rate (which is then multiplied with the total number of dwellings). Thus, this switch allows you to choose the input that suits your data and needs.',
     'type': 'help'
   },
   // Global parameters
