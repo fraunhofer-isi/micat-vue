@@ -193,7 +193,7 @@ const categories: CategoriesInterface = {
       {
         subcategory: "Environmental",
         title: "Impact on RES targets",
-        description: '<p class="mb-2">This indicator examines how energy efficiency can support in achieving the target share of energy originating from renewable energy sources (RES) stated in the Renewable Energy Directive (RED). By reducing the overall energy consumption, the share of renewable energy carriers is increased, assuming the energy savings affect non-renewable energy sources.</p><p>The fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
+        description: '<p class="mb-2">This indicator examines how energy efficiency can support in achieving the target share of energy originating from renewable energy sources (RES) stated in the Renewable Energy Directive (RED). By reducing the overall energy consumption, the share of renewable energy carriers is increased, assuming the energy savings affect non-renewable energy sources.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/impact_res_targets.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
         identifier: "renewableEnergyDirectiveTargets",
         yAxis: "Change in RES share in %-points"
       }
