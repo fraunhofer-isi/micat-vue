@@ -111,7 +111,7 @@ const categories: CategoriesInterface = {
         title: "Impact on energy intensity",
         description: '<p class="mb-2">Energy intensity describes the amount of energy necessary to generate a unit of gross domestic product (GDP) in an economy. This graph shows the effect energy efficiency has in reducing it. It is calculated by dividing gross available energy by GDP. The scenario with measures is compared to a scenario populated with past data from Eurostat (ex-post) and projections from PRIMES (ex-ante).</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/energy_intensity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Energy-Intensity.pdf">PDF</a>.</p>',
         identifier: "energyIntensity",
-        yAxis: "Energy intensity in ktoe / €"
+        yAxis: "Energy intensity in ktoe / M€"
       },
       {
         subcategory: "Economic",
