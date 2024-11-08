@@ -729,7 +729,7 @@ const start = () => {
                       :value="session.inhabitants"
                       class="bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[80px]"
                       id="inhabitants"
-                      @change="(e: Event) => session.updateInhabitants(parseInt((e.target as HTMLInputElement).value.replace('.', '')))"
+                      @change="(e: Event) => session.updateInhabitants(parseInt((e.target as HTMLInputElement).value.replace(',', '')))"
                     ></VueNumberFormat> <span v-if="stage === stages.home">inhabitants</span><span
                       v-else>inhab.</span></label>
                 </div>
@@ -1069,7 +1069,7 @@ const start = () => {
                           class="bg-white border-0 text-gray-500 rounded-lg focus:ring-0 focus:border-0 px-1.5 py-0.5 inline max-w-[120px]"
                           placeholder="0"
                           :id="`improvement-value-${improvement.id}-${year}`"
-                          @change="(e: Event) => improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace('.', ''))"
+                          @change="(e: Event) => improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace(',', ''))"
                           :options="{precision: session.unit === 5 ? 6 : 0}"
                         />
                       </span>
@@ -1146,7 +1146,7 @@ const start = () => {
         <div
           class="sticky bottom-0 text-center"
         >
-          <div class="p-4 mx-2" style="backdrop-filter: blur(2px);">
+          <div class="flex justify-center p-4 mx-2" style="backdrop-filter: blur(2px);">
             <button
               class="px-8 py-2 text-xl font-bold uppercase rounded-full bg-amber-300 hover:bg-amber-400"
               @click="analyze()"
@@ -1162,6 +1162,11 @@ const start = () => {
               </div>
               <span v-else>Analyse</span>
             </button>
+            <button
+              class="ml-3 text-xs font-semibold bg-transparent dark:text-gray-400"
+              @click="reset()"
+              :disabled="loading"
+            ><XCircleIcon class="h-5 w-5 mt-[-3px] inline dark:text-gray-400"></XCircleIcon> back to start</button>
           </div>
         </div>
       </div>

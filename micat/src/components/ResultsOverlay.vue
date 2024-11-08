@@ -376,7 +376,7 @@ const chartOptions = computed(() => {
       },
       y: {
         ticks: {
-          callback: (label: number | string) => typeof label === "number" ? label < 1 && label >= 0 ? scientificFormatter.format(label) : formatter.format(label) : label,
+          callback: (label: number | string) => typeof label === "number" ? formatter.format(label) : label,
         },
         title: {
           display: true,
