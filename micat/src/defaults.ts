@@ -35,6 +35,8 @@ export const chartColours: Array<string> = [
   "rgb(244,122,32)",
   "rgb(31,149,178)",
   "rgb(255,242,92)",
+  "rgb(150,40,99)",
+  "rgb(90,114,131)",
 ];
 export const units: UnitsInterface = {
   1: {

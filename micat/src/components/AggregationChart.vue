@@ -45,6 +45,9 @@ const htmlLegendPlugin = {
   id: 'htmlLegend',
   afterUpdate(chart: any, args: any, options: any) {
     const ul = getOrCreateLegendList(chart, options.containerID);
+    ul!.style.flexWrap = 'wrap';
+    ul!.style.marginBottom = '1rem';
+    
     if (!ul) {
       return;
     }
@@ -64,6 +67,7 @@ const htmlLegendPlugin = {
       li.style.display = 'flex';
       li.style.flexDirection = 'row';
       li.style.marginLeft = '10px';
+      li.style.marginLeft = '20px';
 
       li.onclick = () => {
         const {type} = chart.config;
@@ -163,8 +167,7 @@ const aggregationChartOptions: any = {
 // Computed
 const aggregationChartData: any = computed(() => {
   const datasets: Array<DatasetInterface> = [];
-  let measurements = props.categories.monetization.measurements
-  measurements = measurements.concat(props.categories.quantification.measurements.filter(measurement => measurement.identifier === "impactOnGrossDomesticProduct"));
+  const measurements = props.categories.monetization.measurements.filter(measurement => measurement.identifier !== "addedAssetValueOfBuildings");
   measurements.forEach((measurement, i) => {
     const aggregationData: ResultInterface = JSON.parse(JSON.stringify(session.results[measurement.identifier]));
     if (measurement.identifier === 'reductionOfEnergyCost') {
