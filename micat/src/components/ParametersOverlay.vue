@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 <script setup lang="ts">
 import {onMounted, reactive, ref, watch, inject} from "vue";
-import {XCircleIcon, ArrowsRightLeftIcon, InformationCircleIcon} from '@heroicons/vue/24/outline';
+import {XCircleIcon, ArrowsRightLeftIcon, InformationCircleIcon, ExclamationCircleIcon} from '@heroicons/vue/24/outline';
 import {useSessionStore} from "@/stores/session";
 import type {
   ParameterCategory,
@@ -32,6 +32,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
 // Refs
 const activeCategory = ref<string>("");
 const loading = ref<boolean>(true);
+const energyCarrierSumValid = ref<boolean>(true);
 const useRenovationRate = ref<boolean>(session.useRenovationRate);
 const parameters = reactive<Parameters>(session.parameters);
 
@@ -122,12 +123,20 @@ const getParameters = async () => {
         if (yearRegex.test(key)) {
           // If there's a value for a year, we always take it; alternative values might have null values, but they don't
           // have constants defined, so we also set them
-          if (value !== null || typeof data.constants === 'undefined') entry.years.push({key, value});
+          if (value !== null || typeof data.constants === 'undefined') {
+            entry.years.push({key, value});
+          }  
         } else {
           entry.parameters[key] = value;
         }
       }
       restructuredResults[category].push(entry);
+      // Use real percentage values for the carrier values
+      if (entry.parameters.id_parameter === 16) {
+        for (const year of entry.years) {
+          year.value = year.value * 100;
+        }
+      }
     }
   }
   if (restructuredResults['fuelSwitch']) {
@@ -149,10 +158,22 @@ const roundNumber = (value: number, id: string, unit: string | number | undefine
   // If the unit is a percentage, we need to make sure the range is capped at 100
   return unit && unit === '%' ? Math.min(rangeIndex[id], 100) : rangeIndex[id];
 };
+const checkEnergyCarrierValues = () => {
+  if (activeCategory.value === 'main') {
+    energyCarrierSumValid.value = true;
+    for (const year of props.years) {
+      const sum = parameters[props.improvement.internalId]['main'].filter((entry) => entry.parameters.id_parameter === 16 && entry.years.length > 0).reduce((acc, entry) => {
+        return acc + entry.years.find(y => y.key === year.toString())!.value;
+      }, 0);
+      if (sum > 100) energyCarrierSumValid.value = false;
+    }  
+  }
+};
 const reset = () => {
   getParameters();
   activeCategory.value = Object.keys(parameters[props.improvement.internalId])[0];
   loading.value = false;
+  energyCarrierSumValid.value = true;
 }
 </script>
 
@@ -209,6 +230,16 @@ const reset = () => {
               <span class="ml-2 mr-4 font-bold text-white">{{ improvement.name }}</span>
             </div>
           </div>
+          <div
+            v-if="activeCategory === 'main' && !energyCarrierSumValid"
+            class="sticky flex p-4 mx-6 mt-3 text-sm text-yellow-800 border-t-4 border-yellow-300 top-2 bg-yellow-50 rounded-2xl"
+            role="alert"
+          >
+            <ExclamationCircleIcon class="h-7 w-7"></ExclamationCircleIcon>
+            <div class="ml-3 font-medium">
+              The values of all energy carriers should normally sum up to 100%.
+            </div>
+          </div>
           <div class="grid grid-cols-2 px-5 py-2" v-if="activeCategory">
             <div
               v-for="parameter in parameters[props.improvement.internalId][activeCategory]"
@@ -244,7 +275,7 @@ const reset = () => {
                       :value="parameter.parameters.constants"
                       class="bg-sky-50 border border-sky-300 text-sky-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
                       :id="`parameter-${parameter.identifier}-constant-input`"
-                      @change="(e: Event) => parameter.parameters.constants = parseFloat((e.target as HTMLInputElement).value.replace('.', '').replace(',', '.'))"
+                      @change="(e: Event) => parameter.parameters.constants = parseFloat((e.target as HTMLInputElement).value.replace(',', ''))"
                     />
                   </div>
                 </div>
@@ -264,6 +295,7 @@ const reset = () => {
                       :max="roundNumber(year.value, `parameter-${parameter.identifier}-${year.key}-range`, parameter.parameters.unit)"
                       :step="roundNumber(year.value, `parameter-${parameter.identifier}-${year.key}-range`) / 100"
                       v-model.number="year.value"
+                      @change="checkEnergyCarrierValues"
                     />
                   </div>
                   <div>
@@ -273,7 +305,10 @@ const reset = () => {
                       placeholder="0"
                       :id="`parameter-${parameter.identifier}-${year.key}-input`"
                       :options="{precision: 2}"
-                      @change="(e: Event) => year.value = parseFloat((e.target as HTMLInputElement).value.replace('.', '').replace(',', '.'))"
+                      @change="(e: Event) => {
+                        year.value = parseFloat((e.target as HTMLInputElement).value.replace(',', ''));
+                        if (parameter.parameters.id_parameter === 16) checkEnergyCarrierValues();
+                      }"
                     />
                   </div>
                 </div>
@@ -287,11 +322,11 @@ const reset = () => {
                     class="h-4 w-4 mt-[-3px] inline mr-1"
                   ></ArrowsRightLeftIcon>
                   Switch to <span class="italic font-bold">{{ useRenovationRate ? "affected dwellings" : "annual renovation rate" }}</span>
-                  <InformationCircleIcon
-                    @click="openModal('renovation')"
-                    class="h-5 w-5 ml-1 cursor-pointer inline mt-[-3px]"
-                  ></InformationCircleIcon>
                 </button>
+                <InformationCircleIcon
+                  @click="openModal('renovation')"
+                  class="h-5 w-5 ml-1 cursor-pointer inline mt-[-3px]"
+                ></InformationCircleIcon>
               </div>
             </div>
           </div>

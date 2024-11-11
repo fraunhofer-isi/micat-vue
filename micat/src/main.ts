@@ -16,7 +16,7 @@ export const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
-app.use(VueNumberFormat, {prefix: '', decimal: ',', thousand: '.', precision: 0})
+app.use(VueNumberFormat, {prefix: '', decimal: '.', thousand: ',', precision: 0})
 
 app.mount('#app')
 
