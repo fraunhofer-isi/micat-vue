@@ -311,6 +311,10 @@ const addImprovement = (program: ProgramInterface) => {
   const newImprovement = JSON.parse(JSON.stringify(defaultImprovement));
   newImprovement.internalId = getInternalId();
   program.improvements.push(newImprovement);
+  if (program.improvements.length === 2) {
+    // If a 2nd improvement is added, set the first one to 100%
+    program.improvements[0].percentage = 100;
+  }
 }
 const removeImprovement = (program: ProgramInterface, i: number) => {
   if (program.improvements.length >= 2) {
@@ -519,10 +523,15 @@ const percentageDistributionChanged = (percentage: number, program: ProgramInter
   if (percentage < 0 || percentage > 100) return;
   // Set value for changed improvement
   session.years.forEach(year => {
-    const amount = program.mureTotal![year] * percentage / 100;
+    let amount = 0;
+    if (session.mure) {
+      amount = program.mureTotal![year] * percentage / 100;
+    } else {
+      amount = program.improvements[0]["values"][year] * 100 / program.improvements[0].percentage! * percentage / 100;
+    }
     program.improvements[i].values[year] = amount;
   });
-  program.improvements[i].percentage = percentage;
+  program.improvements[i].percentage = percentage; 
 }
 
 const exportInput = () => {
@@ -1084,7 +1093,7 @@ const start = () => {
                   </div>
                 </div>
               </div>
-              <div class="px-6 py-3 text-sm text-center text-gray-400 dark:text-slate-300" v-if="session.mure">
+              <div class="px-6 py-3 text-sm text-center text-gray-400 dark:text-slate-300" v-if="program.improvements.length > 1">
                 <span>Percentage distribution</span>
                 <input
                   :value="improvement.percentage"
