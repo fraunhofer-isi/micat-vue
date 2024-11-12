@@ -419,7 +419,7 @@ const interpolatedYears = computed(() => {
 });
 const cbaData = computed(() => {
   const indicators: {[key: string]: boolean} = {};
-  for (const measurement of categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === "reductionOfAirPollution"))) {
+  for (const measurement of categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === "reductionOfAirPollution")).filter(measurement => measurement.identifier !== "addedAssetValueOfBuildings" && measurement.identifier !== "impactOnGrossDomesticProduct")) {
     if (activeIndicators.value.indexOf(measurement.identifier) > -1) indicators[measurement.identifier] = true;
   }
 
@@ -668,7 +668,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   'hover:bg-sky-700': activeIndicators.indexOf(measurement.identifier) === -1,
                   'rounded-br-3xl': i === categories['monetization'].measurements.length || activeIndicators.indexOf(measurement.identifier) === -1
                 }"
-                v-for="(measurement, i) in categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === 'reductionOfAirPollution'))"
+                v-for="(measurement, i) in categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === 'reductionOfAirPollution')).filter(measurement => measurement.identifier !== 'addedAssetValueOfBuildings' && measurement.identifier !== 'impactOnGrossDomesticProduct')"
                 v-bind:key="`measurement-cba-${measurement.identifier}`"
               >
                 <span class="mr-8 font-bold grow whitespace-nowrap">{{ measurement.title }}</span>
