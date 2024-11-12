@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -671,7 +665,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - postcss@8.4.48
+ - postcss@8.4.49
 
 This package contains the following license:
 
