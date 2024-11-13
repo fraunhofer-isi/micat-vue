@@ -616,18 +616,19 @@ const start = () => {
   <main>
     <GlobalParametersOverlay v-if="showGlobalParametersOverlay" @close="showGlobalParametersOverlay = false;"></GlobalParametersOverlay>
     <ParametersOverlay v-else-if="showParametersOverlay" :improvement="selectedImprovement" :years="session.years" @close="showParametersOverlay = false;"></ParametersOverlay>
-    <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-8 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
-      <div class="col col-span-5 pr-[7rem]" v-if="stage === stages.home">
-        <h1 class="text-4xl font-bold leading-normal dark:text-white">Assess the impacts of energy efficiency
-          projects</h1>
-        <p class="mt-6 text-lg font-light dark:text-white">Select a suitable scenario from the world of energy
-          efficiency, optionally add your own values and receive a comprehensive analysis for your region.</p>
+    <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-5 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
+      <div class="col col-span-4 pr-[7rem]" v-if="stage === stages.home">
+        <h1 class="text-4xl font-bold leading-snug dark:text-white">{{ session.mure ? "Assess the impacts of past energy savings or specific policies" : "Assess the impacts of any energy efficiency project" }}</h1>
+        <p class="mt-6 text-lg font-light dark:text-white">
+          <span v-if="session.mure">Browse through statistical data of past energy savings from the <a class="font-bold" target="_blank" href="https://www.indicators.odyssee-mure.eu/">ODYSSEE</a> database or predefined policies and measures with provided energy savings from the <a target="_blank" class="font-bold" href="https://www.measures.odyssee-mure.eu/">MURE</a> database and analyse their multiple impacts.</span>
+          <span v-else>Build your own suitable use case or scenario with your own values and receive a comprehensive multiple impact analysis.</span>
+        </p>
       </div>
       <div
         class="relative col"
         :class="{
             'col-span-4': stage === stages.full,
-            'col-span-5': stage === stages.home,
+            'col-span-6': stage === stages.home,
           }"
       >
         <div v-if="seedInfo" class="absolute inset-[-1rem] z-10 bg-white/80 dark:bg-blue-950/80 transition-opacity min-h-full">
@@ -784,29 +785,40 @@ const start = () => {
         >
           Learn more
         </a>
-        <div class="relative mt-10 text-xs text-center" v-if="stage === stages.home">
-          <div class="absolute top-[-8px] w-full">
-            <p class="inline-block px-4 bg-white dark:bg-blue-950 dark:text-white">
-              <span v-if=" session.mure">or use your own inputs</span>
-              <span v-else>or select predefined values from the <a class="font-bold" href="https://www.odyssee-mure.eu/" target="_blank">ODYSSEE-MURE</a> project</span>
+        <div class="relative mt-20 text-center" v-if="stage === stages.home">
+          <div class="absolute top-[-1.8rem] w-full">
+            <p class="inline-block px-4 italic font-semibold bg-white dark:bg-blue-950 dark:text-white" :class="{
+              'max-w-[40%]': !session.mure,
+              'max-w-[30%]': session.mure,
+            }">
+              <span v-if="session.mure">Do you want to use your own inputs?</span>
+              <span v-else>Do you want to select data from a predefined use case?</span>
             </p>
           </div>
-          <hr class="mb-5 border-gray-200 dark:border-sky-900" />
+          <hr class="mb-10 border-gray-200 dark:border-sky-900" />
           
-          <button
-            v-if="!session.mure || !session.odyssee"
-            class="px-6 py-1 mx-1 font-bold uppercase border rounded-full border-sky-600 text-sky-600 hover:border-sky-700 hover:text-sky-700 hover:dark:border-sky-500 hover:dark:text-sky-500"
-            @click="session.mure = !session.mure;"
-          >
-            {{ session.mure && !session.odyssee ? 'Deselect MURE' : 'Start with MURE' }}
-          </button>
-          <button
-            v-if="!session.mure || session.odyssee"
-            class="px-6 py-1 mx-1 font-bold uppercase border rounded-full border-sky-600 text-sky-600 hover:border-sky-700 hover:text-sky-700 hover:dark:border-sky-500 hover:dark:text-sky-500"
-            @click="session.mure = !session.mure; session.odyssee = !session.odyssee;"
-          >
-            {{ session.mure && session.odyssee ? 'Deselect ODYSSEE' : 'Start with ODYSSEE' }}
-          </button>
+          <div class="flex items-center justify-center gap-5">
+            <div class="text-left dark:text-white" v-if="!session.mure && !session.odyssee">
+              <h3 class="mb-2 font-semibold">Assess the impacts of past energy savings or specific policies</h3>
+              <p class="text-xs">The statistical data of past energy savings originates from the <a class="font-bold" href="https://www.indicators.odyssee-mure.eu/energy-efficiency-database.html" target="_blank">ODYSSEE database</a>, whereas the predefined real policies with provided energy savings stem from the <a class="font-bold" href="https://www.measures.odyssee-mure.eu/energy-efficiency-policies-database.html" target="_blank">MURE database</a>. Both have been developed and maintained in the course of the long-running <a class="font-bold" href="https://www.odyssee-mure.eu/" target="_blank">ODYSSEE-MURE EU-Project</a></p>
+            </div>
+            <div>
+              <button
+                v-if="!session.mure || session.odyssee"
+                class="px-6 py-1 mx-1 mb-4 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
+                @click="session.mure = !session.mure; session.odyssee = !session.odyssee;"
+              >
+                {{ session.mure && session.odyssee ? 'Deselect' : 'Start with statistical data' }}<span class="block font-bold text-white">ODYSSEE</span>
+              </button>
+              <button
+                v-if="!session.mure || !session.odyssee"
+                class="px-6 py-1 mx-1 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
+                @click="session.mure = !session.mure;"
+              >
+                {{ session.mure && !session.odyssee ? 'Deselect' : 'Start with a policy' }}<span class="block font-bold text-white">MURE</span>
+              </button>
+            </div>  
+          </div>
         </div>
         <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mt-[3rem]"
              v-if="stage === stages.full">
