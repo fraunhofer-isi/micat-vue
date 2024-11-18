@@ -5,9 +5,12 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue";
+import {onMounted, ref, watch, inject} from "vue";
 import { storeToRefs } from 'pinia';
 import {useSessionStore} from "@/stores/session";
+import {
+  InformationCircleIcon,
+} from '@heroicons/vue/24/outline';
 import type {
   MureCategoryInterface,
   MureCountryInterface,
@@ -15,8 +18,9 @@ import type {
   MureMeasurementDataInterface,
   SubsectorInterface,
   OdysseeDataInterface,
+  ModalInjectInterface,
 } from "@/types";
-import { stages, mureSubsectorMapping } from "@/defaults";
+import { stages, mureSubsectorMapping, defaultModalInject } from "@/defaults";
 
 const props = defineProps<{
   subsectors: Array<SubsectorInterface>,
@@ -37,6 +41,9 @@ const loading = ref<boolean>(true);
 const { mureCategory, mureCountry, mureMeasurement, years, region, odysseeStartYear, odysseeEndYear } = storeToRefs(session);
 const measurements = ref<Array<MureMeasurementInterface>>([]);
 const startingDate = ref<number>();
+
+// Injections
+const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
 
 // Lifecycle
 onMounted(async () => {
@@ -261,12 +268,16 @@ const truncate = (text: string, length: number) => {
   <div v-else class="relative px-8 py-8 mb-5 border border-gray-300 rounded-3xl dark:border-gray-400">
     <div class="absolute top-[-14px] left-0 w-full text-center">
       <span class="inline-block px-4 italic font-bold bg-white dark:bg-blue-950 dark:text-white">
-        <span>ODYSSEE-MURE</span>
+        <span>{{ !session.odyssee ? 'Select a policy from MURE' : 'Select statistical data from ODYSSEE' }}</span>
       </span>
     </div>
     <div class="grid items-center grid-cols-5">
       <div class="col-span-2">
         <label for="category" class="text-sm dark:text-white">Sector</label>
+        <InformationCircleIcon
+          @click="openModal('mure-sector')"
+          class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+        ></InformationCircleIcon>
       </div>
       <div class="col-span-3">
         <select
@@ -285,6 +296,10 @@ const truncate = (text: string, length: number) => {
       </div>
       <div class="col-span-2">
         <label for="country" class="text-sm dark:text-white">Country</label>
+        <InformationCircleIcon
+          @click="openModal('mure-country')"
+          class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+        ></InformationCircleIcon>
       </div>
       <div class="col-span-3">
         <select
@@ -303,6 +318,10 @@ const truncate = (text: string, length: number) => {
       </div>
       <div class="col-span-2" v-if="session.stage === stages.home && !session.odyssee">
         <label for="starting-date" class="text-sm dark:text-white">Starting date <span class="text-xs italic">(optional)</span></label>
+        <InformationCircleIcon
+          @click="openModal('mure-starting-date')"
+          class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+        ></InformationCircleIcon>
       </div>
       <div class="col-span-3" v-if="session.stage === stages.home && !session.odyssee">
         <select
@@ -319,6 +338,10 @@ const truncate = (text: string, length: number) => {
       </div>
       <div class="col-span-2" v-if="session.stage === stages.home && session.odyssee">
         <label for="odyssee-start-year" class="text-sm dark:text-white">Starting year</label>
+        <InformationCircleIcon
+          @click="openModal('mure-starting-year')"
+          class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+        ></InformationCircleIcon>
       </div>
       <div class="col-span-3" v-if="session.stage === stages.home && session.odyssee">
         <select
@@ -335,6 +358,10 @@ const truncate = (text: string, length: number) => {
       </div>
       <div class="col-span-2" v-if="session.stage === stages.home && session.odyssee">
         <label for="odyssee-end-year" class="text-sm dark:text-white">End year</label>
+        <InformationCircleIcon
+          @click="openModal('mure-end-year')"
+          class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+        ></InformationCircleIcon>
       </div>
       <div class="col-span-3" v-if="session.stage === stages.home && session.odyssee">
         <select
@@ -351,6 +378,10 @@ const truncate = (text: string, length: number) => {
       </div>
       <div class="col-span-2" v-if="mureCategory && mureCountry && !session.odyssee">
         <label for="measurement" class="text-sm dark:text-white">Measure</label>
+        <InformationCircleIcon
+          @click="openModal('measure')"
+          class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+        ></InformationCircleIcon>
       </div>
       <div class="col-span-3" v-if="mureCategory && mureCountry && !session.odyssee">
         <select

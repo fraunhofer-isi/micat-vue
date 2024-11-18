@@ -392,6 +392,37 @@ const helpTexts: HelpTextInterface = {
     'text': 'This value determines the average rent increase (in percent of the investment sum) for tenants following a major renovation.<br /><br /><i>The default value stems from a Wuppertal Institute analysis of past data, although data availability is quite scarce.</i>',
     'type': 'help'
   },
+  // MURE
+  'mure-sector': {
+    'title': 'Sector',
+    'text': 'Please select the sector in which the predefined use case has been implemented. Since the MICATool is using the disaggregation used in the ODYSSEE-MURE project, only the four main sectors are available for selection, with agriculture considered a part of the industrial sector.',
+    'type': 'help'
+  },
+  'mure-country': {
+    'title': 'Country',
+    'text': 'Please select the country in which you want to assess a policy or measure. Since no EU27 policies and measures are assessed across the continent (often the national parts are assessed separately), EU27 is not selectable. Moreover, since major regional measures are listed on the national level, no scaling is possible for predefined use cases.',
+    'type': 'help'
+  },
+  'mure-starting-year': {
+    'title': 'Starting year',
+    'text': 'This defines the first year from the database that is included.',
+    'type': 'help'
+  },
+  'mure-starting-date': {
+    'title': 'Starting date',
+    'text': 'Using this optional prompt allows you to filter all policies and measures corresponding to your selected sector and country by its starting date. Thus, it merely simplifies the selection of the desired policy.',
+    'type': 'help'
+  },
+  'mure-end-year': {
+    'title': 'End year',
+    'text': 'This defines the last year from the database that is included.',
+    'type': 'help'
+  },
+  'mure-measure': {
+    'title': 'End year',
+    'text': 'This list comprises all policies and measures corresponding to your selected search criteria. Note: for now, cross-sectoral use cases are not yet selectable and are therefore not included in this list.',
+    'type': 'help'
+  },
 };
 
 const showModal = ref<Boolean>(false);
