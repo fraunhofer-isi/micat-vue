@@ -1,9 +1,3 @@
-<!--
-© 2024 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -231,7 +225,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The following npm package may be included in this product:
 
- - magic-string@0.30.12
+ - magic-string@0.30.13
 
 This package contains the following license:
 
@@ -469,7 +463,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - @heroicons/vue@2.1.5
+ - @heroicons/vue@2.2.0
 
 This package contains the following license:
 
