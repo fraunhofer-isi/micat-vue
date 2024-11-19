@@ -30,7 +30,6 @@ import type {
 } from "@/types";
 import { defaultModalInject, chartColours } from "@/defaults";
 import AggregationChart from "@/components/AggregationChart.vue";
-import CbaSection from "@/components/CbaSection.vue";
 import { formatter, labelFormatter, scientificFormatter } from "@/helpers";
 import {
   DataStructures,
@@ -425,7 +424,7 @@ const interpolatedSavingsData = computed(() => {
 const interpolatedYears = computed(() => {
   return Parameters.yearsFromSavingsData(interpolatedSavingsData.value);
 });
-const cbaData = computed(() => {
+const cbaData = computed(() : CbaData => {
   // Last year
   const lastYear = session.years[session.years.length - 1];
   // AEC_(m,y​)
@@ -467,7 +466,7 @@ const cbaData = computed(() => {
     program.improvements.forEach(improvement => {
       // Get investment costs (inv_(m,y)) and average technology lifetime (LT_m)
       const parameters = session.parameters[improvement.internalId!];
-      investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)?.years.at(-1).value;
+      investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
       const averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants;
       for (const t of [...Array(averageTechnologyLifetime).keys()]) {
         annualMultipleImpacts += totalIndicators / ((1 + discountRate.value / 100) ** (1 / t));
@@ -890,11 +889,6 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                           </select>
                         </div>
                       </div>
-                      <CbaSection
-                        :activeCbaResult="activeCbaResult"
-                        :data="cbaData"
-                        :year="cbaYear"
-                      ></CbaSection>
                     </div>
                   </div>
                 </div> -->
