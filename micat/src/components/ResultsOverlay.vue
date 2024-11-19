@@ -32,17 +32,8 @@ import { defaultModalInject, chartColours } from "@/defaults";
 import AggregationChart from "@/components/AggregationChart.vue";
 import { formatter, labelFormatter, scientificFormatter } from "@/helpers";
 import {
-  DataStructures,
   Parameters,
   SavingsInterpolation,
-  NetPresentValue,
-  CostBenefitRatio,
-  FundingEfficiency,
-  MarginalCostCurves,
-  CostBenefitAnalysisFacility,
-  LevelisedCosts,
-  convert,
-  Interpolation,
 } from "@/cba.js";
 import { useSessionStore } from "@/stores/session";
 import router from "@/router";
@@ -425,12 +416,10 @@ const interpolatedYears = computed(() => {
   return Parameters.yearsFromSavingsData(interpolatedSavingsData.value);
 });
 const cbaData = computed(() : CbaData => {
-  // Last year
-  const lastYear = session.years[session.years.length - 1];
-  // AEC_(m,y​)
-  let annualEnergyCosts = 0;
   // AMI_(m,y)
   let annualMultipleImpacts = 0
+  // AEC_(m,y)
+  let annualEnergyCosts = 0;
 
   // inv_(m,y)
   let investments = 0;

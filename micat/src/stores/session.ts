@@ -4,7 +4,7 @@
 
 import { defineStore } from "pinia";
 import {defaultProgram, stages} from '@/defaults';
-import type {CarrierMapping, ProgramInterface, ISessionState, PayloadInterface, Parameters, GlobalParameters, MureTokenInterface, MureMeasurementDataInterface} from "@/types";
+import type {CarrierMapping, ProgramInterface, ISessionState, PayloadInterface, Parameters, GlobalParameters, MureTokenInterface} from "@/types";
 
 const currentYear = new Date().getFullYear();
 const nextValidYearPast = Math.floor( currentYear / 5) * 5;
