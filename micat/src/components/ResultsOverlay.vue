@@ -27,8 +27,10 @@ import type {
   ModalInjectInterface,
   CbaResultInterface,
   CbaData,
+  ImprovementInterface,
+  ParameterEntry,
 } from "@/types";
-import { defaultModalInject, chartColours } from "@/defaults";
+import { defaultModalInject, chartColours, units } from "@/defaults";
 import AggregationChart from "@/components/AggregationChart.vue";
 import { formatter, labelFormatter, scientificFormatter } from "@/helpers";
 import {
@@ -415,6 +417,36 @@ const interpolatedSavingsData = computed(() => {
 const interpolatedYears = computed(() => {
   return Parameters.yearsFromSavingsData(interpolatedSavingsData.value);
 });
+const getParameters = async (subsectorId: number, improvement: ImprovementInterface) => {
+  const body = {
+    "id": improvement.internalId,
+    "active": true,
+    "subsector": {
+      "id": subsectorId,
+    },
+    "action_type": {
+    "id": improvement.id,
+    },
+    "details": {},
+    "unit": {
+      // "name": "kilotonne of oil equivalent",
+      "symbol": units[session.unit].symbol,
+      "factor": units[session.unit].factor
+    }
+  };
+  
+  const responseParameters: Response = await fetch(
+    `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 2 : 4}&id_region=${session.region}&id_subsector=${subsectorId}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({...improvement.values, ...body})
+    },
+  );
+  return await responseParameters.json();
+};
 const cbaData = computed(() : CbaData => {
   // AMI_(m,y)
   let annualMultipleImpacts = 0
@@ -455,8 +487,16 @@ const cbaData = computed(() : CbaData => {
     program.improvements.forEach(improvement => {
       // Get investment costs (inv_(m,y)) and average technology lifetime (LT_m)
       const parameters = session.parameters[improvement.internalId!];
-      investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
-      const averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants;
+      let averageTechnologyLifetime: string | number = 0;
+      if (parameters) {
+        investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
+        averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants || 0;
+      } else {
+        getParameters(program.subsector, improvement).then(parameters => {
+          investments += parameters.main.find((parameter: ParameterEntry) => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
+          averageTechnologyLifetime = parameters.main.find((parameter: ParameterEntry) => parameter.parameters.id_parameter === 36)?.parameters.constants || 0;
+        });
+      }
       for (const t of [...Array(averageTechnologyLifetime).keys()]) {
         annualMultipleImpacts += totalIndicators / ((1 + discountRate.value / 100) ** (1 / t));
         annualEnergyCosts += reductionOfEnergyCost / ((1 + discountRate.value / 100) ** (1 / t));
