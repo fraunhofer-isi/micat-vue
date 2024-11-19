@@ -281,14 +281,14 @@ const cbaResults: Array<CbaResultInterface> = [
     title: "Net present value",
     slug: "netPresentValue",
   },
-  {
-    title: "Annual energy costs",
-    slug: "annualEnergyCosts",
-  },
-  {
-    title: "Annual multiple impacts",
-    slug: "annualMultipleImpacts",
-  },
+  // {
+  //   title: "Annual energy costs",
+  //   slug: "annualEnergyCosts",
+  // },
+  // {
+  //   title: "Annual multiple impacts",
+  //   slug: "annualMultipleImpacts",
+  // },
   // {
   //   title: "Cost benefit ratio",
   //   slug: "costBenefitRatio",
