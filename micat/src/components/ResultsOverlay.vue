@@ -283,30 +283,38 @@ const categories: CategoriesInterface = {
   }
 };
 const cbaResults: Array<CbaResultInterface> = [
-  {
-    title: "Cost benefit analysis facility",
-    slug: "costBenefitAnalysisFacility",
-  },
+  // {
+  //   title: "Cost benefit analysis facility",
+  //   slug: "costBenefitAnalysisFacility",
+  // },
   {
     title: "Net present value",
     slug: "netPresentValue",
   },
   {
-    title: "Cost benefit ratio",
-    slug: "costBenefitRatio",
+    title: "Annual energy costs",
+    slug: "annualEnergyCosts",
   },
   {
-    title: "Levelised costs",
-    slug: "levelisedCosts",
+    title: "Annual multiple impacts",
+    slug: "annualMultipleImpacts",
   },
-  {
-    title: "Funding efficiency",
-    slug: "fundingEfficiency",
-  },
-  {
-    title: "Marginal cost curves",
-    slug: "marginalCostCurves",
-  },
+  // {
+  //   title: "Cost benefit ratio",
+  //   slug: "costBenefitRatio",
+  // },
+  // {
+  //   title: "Levelised costs",
+  //   slug: "levelisedCosts",
+  // },
+  // {
+  //   title: "Funding efficiency",
+  //   slug: "fundingEfficiency",
+  // },
+  // {
+  //   title: "Marginal cost curves",
+  //   slug: "marginalCostCurves",
+  // },
 ];
 
 // Refs
@@ -418,83 +426,137 @@ const interpolatedYears = computed(() => {
   return Parameters.yearsFromSavingsData(interpolatedSavingsData.value);
 });
 const cbaData = computed(() => {
-  const indicators: {[key: string]: boolean} = {};
-  for (const measurement of categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === "reductionOfAirPollution")).filter(measurement => measurement.identifier !== "addedAssetValueOfBuildings" && measurement.identifier !== "impactOnGrossDomesticProduct")) {
-    if (activeIndicators.value.indexOf(measurement.identifier) > -1) indicators[measurement.identifier] = true;
-  }
+  // Last year
+  const lastYear = session.years[session.years.length - 1];
+  // AEC_(m,y​)
+  let annualEnergyCosts = 0;
+  // AMI_(m,y)
+  let annualMultipleImpacts = 0
 
-  const userOptions = {
-    'parameters': {
-      'energyPriceSensivity': energyPriceSensitivity.value,
-      'investmentsSensivity': investmentsSensitivity.value,
-      'discountRate': discountRate.value,
-      'year': cbaYear.value,
-    },
-    indicators
-  }
-  
-  const results: CbaData = DataStructures.prepareResultDataStructure();
-  const indicatorData = convert(session.results);
-  results.supportingYears = session.years;
-  results.years = interpolatedYears.value;
+  // inv_(m,y)
+  let investments = 0;
+  // EC_(m,y)
+  let reductionOfEnergyCost = 0;
+  // MI_(m,y)
+  let totalIndicators = 0;
+  // RAC_(m,y)
+  let reductionOfAdditionalCapacities = 0;
 
-  for (const measure of interpolatedSavingsData.value.measures) {
-    const measureSpecificResults = DataStructures.prepareMeasureSpecificResultsDataStructure(measure.id);
-    const measureSpecificParameters = Parameters.measureSpecificParameters(
-      measure,
-      indicatorData,
-      userOptions
-    );
-    measureSpecificParameters.subsidyRate = Interpolation.annualLinearInterpolation(measureSpecificParameters.subsidyRate);
-
-    for (const year of results.years) {
-      const annualMeasureSpecificParameters =
-        Parameters.annualMeasureSpecificParameters(year, measure);
-      // Do not change the calculation order, because a calculation depends on the results of the previous one(s)!
-      CostBenefitAnalysisFacility.calculateCostBenefitAnalysisFacility(
-        measureSpecificParameters,
-        annualMeasureSpecificParameters,
-        measureSpecificResults,
-        userOptions
-      );
-      NetPresentValue.calculateNetPresentValue(
-        measureSpecificParameters,
-        annualMeasureSpecificParameters,
-        measureSpecificResults,
-        userOptions
-      );
-      CostBenefitRatio.calculateCostBenefitRatio(
-        measureSpecificParameters,
-        annualMeasureSpecificParameters,
-        measureSpecificResults,
-        userOptions
-      );
-      LevelisedCosts.calculateLevelisedCosts(
-        measureSpecificParameters,
-        annualMeasureSpecificParameters,
-        measureSpecificResults,
-        userOptions
-      );
-      FundingEfficiency.calculateFundingEfficiency(
-        measureSpecificParameters,
-        annualMeasureSpecificParameters,
-        measureSpecificResults,
-        userOptions
-      );
-      MarginalCostCurves.calculateMarginalCostCurves(
-        measureSpecificParameters,
-        annualMeasureSpecificParameters,
-        measureSpecificResults,
-        userOptions
-      );
+  const measurements = categories.monetization.measurements.filter(measurement => activeIndicators.value.indexOf(measurement.identifier) > -1);
+  measurements.forEach((measurement, i) => {
+    const data: ResultInterface = JSON.parse(JSON.stringify(session.results[measurement.identifier]));
+    if (measurement.identifier === 'reductionOfEnergyCost') {
+      data.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
+        data.rows.filter(row => row[1] === label).forEach(row => {
+          // Sum up values from last year only
+          reductionOfEnergyCost += row[row.length - 1];
+        });
+      });
+    } else if (measurement.identifier === 'reductionOfAdditionalCapacitiesInGridMonetization') {
+      data.rows.forEach(row => {
+        reductionOfAdditionalCapacities += row[row.length - 1];
+      });
+    } else {
+      data.rows.forEach(row => {
+        totalIndicators += row[row.length - 1];
+      });
     }
+  });
 
-    DataStructures.appendMeasureSpecificResults(
-      measureSpecificResults,
-      results
-    );
-  }
-  return results;
+  session.programs.forEach(program => {
+    program.improvements.forEach(improvement => {
+      // Get investment costs (inv_(m,y)) and average technology lifetime (LT_m)
+      const parameters = session.parameters[improvement.internalId!];
+      investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)?.years.at(-1).value;
+      const averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants;
+      for (const t of [...Array(averageTechnologyLifetime).keys()]) {
+        annualMultipleImpacts += totalIndicators / ((1 + discountRate.value / 100) ** (1 / t));
+        annualEnergyCosts += reductionOfEnergyCost / ((1 + discountRate.value / 100) ** (1 / t));
+      }
+    });
+  });
+
+  return {
+    "annualMultipleImpacts": annualMultipleImpacts,
+    "annualEnergyCosts": annualEnergyCosts,
+    // NPV_m
+    "netPresentValue":  -investments * 1000000 * investmentsSensitivity.value / 100 + annualEnergyCosts * energyPriceSensitivity.value / 100 + annualMultipleImpacts + reductionOfAdditionalCapacities,
+  };
+  // const indicators: {[key: string]: boolean} = {};
+  // for (const measurement of categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === "reductionOfAirPollution")).filter(measurement => measurement.identifier !== "addedAssetValueOfBuildings" && measurement.identifier !== "impactOnGrossDomesticProduct")) {
+  //   if (activeIndicators.value.indexOf(measurement.identifier) > -1) indicators[measurement.identifier] = true;
+  // }
+  // const userOptions = {
+  //   'parameters': {
+  //     'energyPriceSensivity': energyPriceSensitivity.value,
+  //     'investmentsSensivity': investmentsSensitivity.value,
+  //     'discountRate': discountRate.value,
+  //     'year': cbaYear.value,
+  //   },
+  //   indicators
+  // }
+  
+  // const results: CbaData = DataStructures.prepareResultDataStructure();
+  // const indicatorData = convert(session.results);
+  // results.supportingYears = session.years;
+  // results.years = interpolatedYears.value;
+
+  // for (const measure of interpolatedSavingsData.value.measures) {
+  //   const measureSpecificResults = DataStructures.prepareMeasureSpecificResultsDataStructure(measure.id);
+  //   const measureSpecificParameters = Parameters.measureSpecificParameters(
+  //     measure,
+  //     indicatorData,
+  //     userOptions
+  //   );
+  //   measureSpecificParameters.subsidyRate = Interpolation.annualLinearInterpolation(measureSpecificParameters.subsidyRate);
+
+  //   for (const year of results.years) {
+  //     const annualMeasureSpecificParameters =
+  //       Parameters.annualMeasureSpecificParameters(year, measure);
+  //     // Do not change the calculation order, because a calculation depends on the results of the previous one(s)!
+  //     CostBenefitAnalysisFacility.calculateCostBenefitAnalysisFacility(
+  //       measureSpecificParameters,
+  //       annualMeasureSpecificParameters,
+  //       measureSpecificResults,
+  //       userOptions
+  //     );
+  //     NetPresentValue.calculateNetPresentValue(
+  //       measureSpecificParameters,
+  //       annualMeasureSpecificParameters,
+  //       measureSpecificResults,
+  //       userOptions
+  //     );
+  //     CostBenefitRatio.calculateCostBenefitRatio(
+  //       measureSpecificParameters,
+  //       annualMeasureSpecificParameters,
+  //       measureSpecificResults,
+  //       userOptions
+  //     );
+  //     LevelisedCosts.calculateLevelisedCosts(
+  //       measureSpecificParameters,
+  //       annualMeasureSpecificParameters,
+  //       measureSpecificResults,
+  //       userOptions
+  //     );
+  //     FundingEfficiency.calculateFundingEfficiency(
+  //       measureSpecificParameters,
+  //       annualMeasureSpecificParameters,
+  //       measureSpecificResults,
+  //       userOptions
+  //     );
+  //     MarginalCostCurves.calculateMarginalCostCurves(
+  //       measureSpecificParameters,
+  //       annualMeasureSpecificParameters,
+  //       measureSpecificResults,
+  //       userOptions
+  //     );
+  //   }
+
+  //   DataStructures.appendMeasureSpecificResults(
+  //     measureSpecificResults,
+  //     results
+  //   );
+  // }
 });
 
 // Functions
@@ -565,7 +627,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
         <XCircleIcon class="text-sky-700 dark:text-sky-300 h-9 w-9"></XCircleIcon>
       </div>
       <div class="flex">
-        <div class="bg-sky-800 rounded-l-3xl min-w-[325px] self-stretch">
+        <div class="bg-sky-800 rounded-l-3xl">
           <div
             class="flex items-center cursor-pointer pl-7"
             @click="selectCategory(key)"
@@ -593,7 +655,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               <div
                 v-for="(subcategory, i) in category.subcategories"
                 v-bind:key="`subcategory-${key}-${i}`"
-                class="px-4 py-2 text-sm font-bold"
+                class="px-4 py-2 ml-5 text-sm font-bold"
                 :class="{
                   'text-white': activeSubcategory !== subcategory,
                   'text-sky-700': activeSubcategory === subcategory,
@@ -651,12 +713,12 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
         <div v-else-if="activeCategory === 'aggregation'" class="w-full max-w-full p-7">
           <AggregationChart :categories="categories"></AggregationChart>
         </div>
-        <div v-if="activeCategory === 'cba' && session.showCBA" class="w-full">
-          <div class="flex w-full">
+        <div v-if="activeCategory === 'cba' && session.showCBA">
+          <div class="flex">
             <div class="self-start pl-2 border-l border-white bg-sky-600 rounded-br-3xl">
               <h3 class="p-2 font-bold bg-white text-sky-600">Indicators</h3>
               <div
-                class="flex items-center py-4 pl-5 pr-3 text-sm cursor-pointer"
+                class="flex items-center py-3 pl-4 pr-2 text-sm cursor-pointer"
                 @click="toggleIndicator(measurement.identifier)"
                 @mouseover="indicatorInfo = measurement.description;"
                 @mouseleave="indicatorInfo = '';"
@@ -668,7 +730,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   'hover:bg-sky-700': activeIndicators.indexOf(measurement.identifier) === -1,
                   'rounded-br-3xl': i === categories['monetization'].measurements.length || activeIndicators.indexOf(measurement.identifier) === -1
                 }"
-                v-for="(measurement, i) in categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === 'reductionOfAirPollution')).filter(measurement => measurement.identifier !== 'addedAssetValueOfBuildings' && measurement.identifier !== 'impactOnGrossDomesticProduct')"
+                v-for="(measurement, i) in categories['monetization'].measurements.filter(measurement => measurement.identifier !== 'addedAssetValueOfBuildings' && measurement.identifier !== 'impactOnGrossDomesticProduct')"
                 v-bind:key="`measurement-cba-${measurement.identifier}`"
               >
                 <span class="mr-8 font-bold grow whitespace-nowrap">{{ measurement.title }}</span>
@@ -676,8 +738,15 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                 <CursorArrowRaysIcon v-else class="w-5 h-5"></CursorArrowRaysIcon>
               </div>
             </div>
-            <div class="grow">
-              <div class="p-4 text-sm text-white bg-orange-600 rounded-lg mx-7 my-7">
+            <div class="relative flex-wrap">
+              <div
+                v-html="indicatorInfo"
+                class="absolute p-4 text-sm text-white rounded-lg bg-sky-600 top-5 left-5"
+                :class="{
+                  'hidden': !indicatorInfo,
+                }"
+              ></div>
+              <div class="p-4 mx-5 my-5 text-sm text-white bg-orange-600 rounded-lg">
                 <h3 class="mb-2 font-bold">Parameters</h3>
                 <div class="flex gap-5 mt-2">
                   <div>
@@ -749,76 +818,88 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   </div>
                 </div>
               </div>
-              <div
-                v-html="indicatorInfo"
-                class="p-4 text-sm text-white rounded-lg bg-sky-600 mx-7 my-7"
-                :class="{
-                  'hidden': !indicatorInfo,
-                }"
-              ></div>
-            </div>
-          </div>
-          <div class="px-10 py-5">
-            <div class="relative my-3 bg-white border border-gray-300 rounded-3xl">
-              <div class="flex">
+            
+              <div class="flex flex-wrap">
                 <div
-                  class="bg-orange-700 rounded-l-3xl self-stretch text-white min-w-[235px]"
+                  v-for="result in cbaResults"
+                  v-bind:key="`cba-${result.slug}`"
+                  class="rounded-xl bg-white border border-sky-600 mt-2 mb-5 mx-5 max-w-[450px] self-start"
                 >
-                  <div
-                    class="px-4 py-2 text-sm font-bold cursor-pointer"
-                    :class="{
-                      'rounded-tl-3xl': iC === 0,
-                      'bg-opacity-5': iC === 0 && activeCbaResult !== result.slug,
-                      'bg-opacity-10': iC === 1 && activeCbaResult !== result.slug,
-                      'bg-opacity-20': iC === 2 && activeCbaResult !== result.slug,
-                      'bg-opacity-25': iC === 3 && activeCbaResult !== result.slug,
-                      'bg-opacity-30': iC === 4 && activeCbaResult !== result.slug,
-                      'bg-opacity-40': iC === 5 && activeCbaResult !== result.slug,
-                      'bg-opacity-50': iC === 6 && activeCbaResult !== result.slug,
-                      'bg-opacity-60': iC === 7 && activeCbaResult !== result.slug,
-                      'text-orange-700': activeCbaResult === result.slug,
-                      'bg-white': activeCbaResult === result.slug,
-                      'bg-orange-300': activeCbaResult !== result.slug,
-                    }"
-                    v-for="(result, iC) in cbaResults"
-                    v-bind:key="`cba-${result.slug}`"
-                    @click="selectCbaResult(result.slug)"
-                  >
-                    {{ result.title }}
+                  <div class="flex items-center px-4 py-2 text-sm text-white justify-items-start bg-sky-600 rounded-t-xl">
+                    <span class="grow">{{ result.title }}</span>
+                    <InformationCircleIcon
+                      @click="openModal(`cba-${result.slug}`)"
+                      class="inline w-6 h-6 ml-2 cursor-pointer"
+                    ></InformationCircleIcon>
+                    <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">absolute</span>
                   </div>
-                </div>
-                <div class="p-5 grow">
-                  <div class="flex items-center gap-5 mb-6" v-if="activeCbaResult === 'marginalCostCurves'">
-                    <div>
-                      <label for="cba-year" class="text-sm dark:text-white">Year</label>
-                      <InformationCircleIcon
-                        @click="openModal('cba-year')"
-                        class="inline w-6 h-6 ml-2 cursor-pointer"
-                      ></InformationCircleIcon>
-                    </div>
-                    <div class="grow">
-                      <select
-                        id="cba-year"
-                        class="py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
-                        v-model="cbaYear"
+                  <div class="p-4">
+                    <div class="text-gray-300">{{ formatter.format(cbaData[result.slug]) }}</div>
+                    <span class="font-bold">{{ labelFormatter.format(cbaData[result.slug]) }}</span>
+                  </div>
+                </div>  
+                <!-- <div class="relative my-3 bg-white border border-gray-300 rounded-3xl">
+                  <div class="flex">
+                    <div
+                      class="bg-orange-700 rounded-l-3xl self-stretch text-white min-w-[235px]"
+                    >
+                      <div
+                        class="px-4 py-2 text-sm font-bold cursor-pointer"
+                        :class="{
+                          'rounded-tl-3xl': iC === 0,
+                          'bg-opacity-5': iC === 0 && activeCbaResult !== result.slug,
+                          'bg-opacity-10': iC === 1 && activeCbaResult !== result.slug,
+                          'bg-opacity-20': iC === 2 && activeCbaResult !== result.slug,
+                          'bg-opacity-25': iC === 3 && activeCbaResult !== result.slug,
+                          'bg-opacity-30': iC === 4 && activeCbaResult !== result.slug,
+                          'bg-opacity-40': iC === 5 && activeCbaResult !== result.slug,
+                          'bg-opacity-50': iC === 6 && activeCbaResult !== result.slug,
+                          'bg-opacity-60': iC === 7 && activeCbaResult !== result.slug,
+                          'text-orange-700': activeCbaResult === result.slug,
+                          'bg-white': activeCbaResult === result.slug,
+                          'bg-orange-300': activeCbaResult !== result.slug,
+                        }"
+                        v-for="(result, iC) in cbaResults"
+                        v-bind:key="`cba-${result.slug}`"
+                        @click="selectCbaResult(result.slug)"
                       >
-                        <option
-                          v-for="year in interpolatedYears" v-bind:key="year" :value="year"
-                          :selected="year == cbaYear"
-                        >
-                          {{ year }}
-                        </option>
-                      </select>
+                        {{ result.title }}
+                      </div>
+                    </div>
+                    <div class="p-5 grow">
+                      <div class="flex items-center gap-5 mb-6" v-if="activeCbaResult === 'marginalCostCurves'">
+                        <div>
+                          <label for="cba-year" class="text-sm dark:text-white">Year</label>
+                          <InformationCircleIcon
+                            @click="openModal('cba-year')"
+                            class="inline w-6 h-6 ml-2 cursor-pointer"
+                          ></InformationCircleIcon>
+                        </div>
+                        <div class="grow">
+                          <select
+                            id="cba-year"
+                            class="py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
+                            v-model="cbaYear"
+                          >
+                            <option
+                              v-for="year in interpolatedYears" v-bind:key="year" :value="year"
+                              :selected="year == cbaYear"
+                            >
+                              {{ year }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <CbaSection
+                        :activeCbaResult="activeCbaResult"
+                        :data="cbaData"
+                        :year="cbaYear"
+                      ></CbaSection>
                     </div>
                   </div>
-                  <CbaSection
-                    :activeCbaResult="activeCbaResult"
-                    :data="cbaData"
-                    :year="cbaYear"
-                  ></CbaSection>
-                </div>
+                </div> -->
               </div>
-            </div>
+            </div>  
           </div>
         </div>
       </div>

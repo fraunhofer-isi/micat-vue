@@ -423,6 +423,22 @@ const helpTexts: HelpTextInterface = {
     'text': 'This list comprises all policies and measures corresponding to your selected search criteria. Note: for now, cross-sectoral use cases are not yet selectable and are therefore not included in this list.',
     'type': 'help'
   },
+  // CBA
+  'cba-netPresentValue': {
+    'title': 'Net present value',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'cba-annualEnergyCosts': {
+    'title': 'Annual energy costs',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'cba-annualMultipleImpacts': {
+    'title': 'Annual multiple impacts',
+    'text': 'tba',
+    'type': 'help'
+  }
 };
 
 const showModal = ref<Boolean>(false);

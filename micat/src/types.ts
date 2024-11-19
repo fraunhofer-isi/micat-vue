@@ -193,6 +193,9 @@ export interface CbaResultInterface {
     slug: string;
 }
 export interface CbaData {
+    [key: string]: number;
+}
+export interface CbaDataOld {
     years:                       string[];
     supportingYears:             number[];
     costBenefitAnalysisFacility: CostBenefitAnalysisFacility;

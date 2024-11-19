@@ -227,7 +227,7 @@ const chartData = computed(() => {
         v-for="chart in charts"
         v-bind:key="`cba-chart-${chart.title}`"
       >
-        <h3 class="font-bold mb-2 text-center">
+        <h3 class="mb-2 font-bold text-center">
           {{ titleMapping[chart.title] }}
           <span v-if="category === 'marginalCostCurves'">for {{ props.year }}</span>
         </h3>
