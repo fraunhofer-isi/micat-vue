@@ -5,7 +5,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 <script setup lang="ts">
-import { ref, computed, inject } from 'vue';
+import { ref, computed, inject, type Ref } from 'vue';
+import { computedAsync } from '@vueuse/core'
 import {
   UserGroupIcon,
   XCircleIcon,
@@ -26,13 +27,10 @@ import type {
   ResultInterface,
   ModalInjectInterface,
   CbaResultInterface,
-  CbaData,
-  ImprovementInterface,
-  ParameterEntry,
 } from "@/types";
 import { defaultModalInject, chartColours, units } from "@/defaults";
 import AggregationChart from "@/components/AggregationChart.vue";
-import { formatter, labelFormatter, scientificFormatter } from "@/helpers";
+import { formatter, labelFormatter, scientificFormatter, restructureParameters } from "@/helpers";
 import {
   Parameters,
   SavingsInterpolation,
@@ -417,175 +415,184 @@ const interpolatedSavingsData = computed(() => {
 const interpolatedYears = computed(() => {
   return Parameters.yearsFromSavingsData(interpolatedSavingsData.value);
 });
-const getParameters = async (subsectorId: number, improvement: ImprovementInterface) => {
-  const body = {
-    "id": improvement.internalId,
-    "active": true,
-    "subsector": {
-      "id": subsectorId,
-    },
-    "action_type": {
-    "id": improvement.id,
-    },
-    "details": {},
-    "unit": {
-      // "name": "kilotonne of oil equivalent",
-      "symbol": units[session.unit].symbol,
-      "factor": units[session.unit].factor
-    }
-  };
-  
-  const responseParameters: Response = await fetch(
-    `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 2 : 4}&id_region=${session.region}&id_subsector=${subsectorId}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({...improvement.values, ...body})
-    },
-  );
-  return await responseParameters.json();
-};
-const cbaData = computed(() : CbaData => {
-  // AMI_(m,y)
-  let annualMultipleImpacts = 0
-  // AEC_(m,y)
-  let annualEnergyCosts = 0;
+const cbaData: Ref<{ [key: string]: number }> = computedAsync(
+  async () => {
+    // AMI_(m,y)
+    let annualMultipleImpacts = 0
+    // AEC_(m,y)
+    let annualEnergyCosts = 0;
 
-  // inv_(m,y)
-  let investments = 0;
-  // EC_(m,y)
-  let reductionOfEnergyCost = 0;
-  // MI_(m,y)
-  let totalIndicators = 0;
-  // RAC_(m,y)
-  let reductionOfAdditionalCapacities = 0;
+    // inv_(m,y)
+    let investments = 0;
+    // EC_(m,y)
+    let reductionOfEnergyCost = 0;
+    // MI_(m,y)
+    let totalIndicators = 0;
+    // RAC_(m,y)
+    let reductionOfAdditionalCapacities = 0;
 
-  const measurements = categories.monetization.measurements.filter(measurement => activeIndicators.value.indexOf(measurement.identifier) > -1);
-  measurements.forEach((measurement, i) => {
-    const data: ResultInterface = JSON.parse(JSON.stringify(session.results[measurement.identifier]));
-    if (measurement.identifier === 'reductionOfEnergyCost') {
-      data.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
-        data.rows.filter(row => row[1] === label).forEach(row => {
-          // Sum up values from last year only
-          reductionOfEnergyCost += row[row.length - 1];
+    // Sum up MI_(m,y) and EC_(m,y)
+    const measurements = categories.monetization.measurements.filter(measurement => activeIndicators.value.indexOf(measurement.identifier) > -1);
+    measurements.forEach((measurement, i) => {
+      const data: ResultInterface = JSON.parse(JSON.stringify(session.results[measurement.identifier]));
+      if (measurement.identifier === 'reductionOfEnergyCost') {
+        data.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
+          data.rows.filter(row => row[1] === label).forEach(row => {
+            // Sum up values from last year only
+            reductionOfEnergyCost += row[row.length - 1];
+          });
         });
-      });
-    } else if (measurement.identifier === 'reductionOfAdditionalCapacitiesInGridMonetization') {
-      data.rows.forEach(row => {
-        reductionOfAdditionalCapacities += row[row.length - 1];
-      });
-    } else {
-      data.rows.forEach(row => {
-        totalIndicators += row[row.length - 1];
-      });
-    }
-  });
-
-  session.programs.forEach(program => {
-    program.improvements.forEach(improvement => {
-      // Get investment costs (inv_(m,y)) and average technology lifetime (LT_m)
-      const parameters = session.parameters[improvement.internalId!];
-      let averageTechnologyLifetime: string | number = 0;
-      if (parameters) {
-        investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
-        averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants || 0;
+      } else if (measurement.identifier === 'reductionOfAdditionalCapacitiesInGridMonetization') {
+        data.rows.forEach(row => {
+          reductionOfAdditionalCapacities += row[row.length - 1];
+        });
       } else {
-        getParameters(program.subsector, improvement).then(parameters => {
-          investments += parameters.main.find((parameter: ParameterEntry) => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
-          averageTechnologyLifetime = parameters.main.find((parameter: ParameterEntry) => parameter.parameters.id_parameter === 36)?.parameters.constants || 0;
+        data.rows.forEach(row => {
+          totalIndicators += row[row.length - 1];
         });
-      }
-      for (const t of [...Array(averageTechnologyLifetime).keys()]) {
-        annualMultipleImpacts += totalIndicators / ((1 + discountRate.value / 100) ** (1 / t));
-        annualEnergyCosts += reductionOfEnergyCost / ((1 + discountRate.value / 100) ** (1 / t));
       }
     });
-  });
 
-  return {
-    "annualMultipleImpacts": annualMultipleImpacts,
-    "annualEnergyCosts": annualEnergyCosts,
-    // NPV_m
-    "netPresentValue":  -investments * 1000000 * investmentsSensitivity.value / 100 + annualEnergyCosts * energyPriceSensitivity.value / 100 + annualMultipleImpacts + reductionOfAdditionalCapacities,
-  };
-  // const indicators: {[key: string]: boolean} = {};
-  // for (const measurement of categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === "reductionOfAirPollution")).filter(measurement => measurement.identifier !== "addedAssetValueOfBuildings" && measurement.identifier !== "impactOnGrossDomesticProduct")) {
-  //   if (activeIndicators.value.indexOf(measurement.identifier) > -1) indicators[measurement.identifier] = true;
-  // }
-  // const userOptions = {
-  //   'parameters': {
-  //     'energyPriceSensivity': energyPriceSensitivity.value,
-  //     'investmentsSensivity': investmentsSensitivity.value,
-  //     'discountRate': discountRate.value,
-  //     'year': cbaYear.value,
-  //   },
-  //   indicators
-  // }
-  
-  // const results: CbaData = DataStructures.prepareResultDataStructure();
-  // const indicatorData = convert(session.results);
-  // results.supportingYears = session.years;
-  // results.years = interpolatedYears.value;
+    // DR
+    const dr = discountRate.value ? discountRate.value / 100 : 0;
+    // ICS
+    const ics = investmentsSensitivity.value / 100;
+    // ECS
+    const ecs = energyPriceSensitivity.value / 100;
 
-  // for (const measure of interpolatedSavingsData.value.measures) {
-  //   const measureSpecificResults = DataStructures.prepareMeasureSpecificResultsDataStructure(measure.id);
-  //   const measureSpecificParameters = Parameters.measureSpecificParameters(
-  //     measure,
-  //     indicatorData,
-  //     userOptions
-  //   );
-  //   measureSpecificParameters.subsidyRate = Interpolation.annualLinearInterpolation(measureSpecificParameters.subsidyRate);
+    for (const program of session.programs) {
+      for (const improvement of program.improvements) {
+        // Get investment costs (inv_(m,y)) and average technology lifetime (LT_m), if not present
+        if (!session.parameters.hasOwnProperty(improvement.internalId!)) {
+          const body = {
+            "id": improvement.internalId,
+            "active": true,
+            "subsector": {
+              "id": program.subsector,
+            },
+            "action_type": {
+            "id": improvement.id,
+            },
+            "details": {},
+            "unit": {
+              // "name": "kilotonne of oil equivalent",
+              "symbol": units[session.unit].symbol,
+              "factor": units[session.unit].factor
+            }
+          };
+          
+          const responseParameters: Response = await fetch(
+            `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 2 : 4}&id_region=${session.region}&id_subsector=${program.subsector}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({...improvement.values, ...body})
+            },
+          );
+          session.parameters[improvement.internalId!] = restructureParameters(program.subsector, improvement.name!, await responseParameters.json())
+          session.updateParameters(session.parameters);
+        }
+        // Calculate AMI_(m,y) and AEC_(m,y)
+        const parameters = session.parameters[improvement.internalId!];
+        let averageTechnologyLifetime: string | number = 0;
+        investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
+        averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants || 0;
+        for (const t of [...Array(averageTechnologyLifetime).keys()]) {
+          const divider =  ((1 + dr) ** (1 / t));
+          if (!isNaN(divider)) {
+            annualMultipleImpacts += totalIndicators / divider;
+            annualEnergyCosts += reductionOfEnergyCost / divider;
+          }
+        }
+      }
+    }
+    return {
+      "annualMultipleImpacts": annualMultipleImpacts,
+      "annualEnergyCosts": annualEnergyCosts,
+      // NPV_m
+      // Investments are in million €
+      "netPresentValue":  -investments * 1000000 * ics + annualEnergyCosts * ecs + annualMultipleImpacts + reductionOfAdditionalCapacities,
+    };
+    // const indicators: {[key: string]: boolean} = {};
+    // for (const measurement of categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === "reductionOfAirPollution")).filter(measurement => measurement.identifier !== "addedAssetValueOfBuildings" && measurement.identifier !== "impactOnGrossDomesticProduct")) {
+    //   if (activeIndicators.value.indexOf(measurement.identifier) > -1) indicators[measurement.identifier] = true;
+    // }
+    // const userOptions = {
+    //   'parameters': {
+    //     'energyPriceSensivity': energyPriceSensitivity.value,
+    //     'investmentsSensivity': investmentsSensitivity.value,
+    //     'discountRate': discountRate.value,
+    //     'year': cbaYear.value,
+    //   },
+    //   indicators
+    // }
+    
+    // const results: CbaData = DataStructures.prepareResultDataStructure();
+    // const indicatorData = convert(session.results);
+    // results.supportingYears = session.years;
+    // results.years = interpolatedYears.value;
 
-  //   for (const year of results.years) {
-  //     const annualMeasureSpecificParameters =
-  //       Parameters.annualMeasureSpecificParameters(year, measure);
-  //     // Do not change the calculation order, because a calculation depends on the results of the previous one(s)!
-  //     CostBenefitAnalysisFacility.calculateCostBenefitAnalysisFacility(
-  //       measureSpecificParameters,
-  //       annualMeasureSpecificParameters,
-  //       measureSpecificResults,
-  //       userOptions
-  //     );
-  //     NetPresentValue.calculateNetPresentValue(
-  //       measureSpecificParameters,
-  //       annualMeasureSpecificParameters,
-  //       measureSpecificResults,
-  //       userOptions
-  //     );
-  //     CostBenefitRatio.calculateCostBenefitRatio(
-  //       measureSpecificParameters,
-  //       annualMeasureSpecificParameters,
-  //       measureSpecificResults,
-  //       userOptions
-  //     );
-  //     LevelisedCosts.calculateLevelisedCosts(
-  //       measureSpecificParameters,
-  //       annualMeasureSpecificParameters,
-  //       measureSpecificResults,
-  //       userOptions
-  //     );
-  //     FundingEfficiency.calculateFundingEfficiency(
-  //       measureSpecificParameters,
-  //       annualMeasureSpecificParameters,
-  //       measureSpecificResults,
-  //       userOptions
-  //     );
-  //     MarginalCostCurves.calculateMarginalCostCurves(
-  //       measureSpecificParameters,
-  //       annualMeasureSpecificParameters,
-  //       measureSpecificResults,
-  //       userOptions
-  //     );
-  //   }
+    // for (const measure of interpolatedSavingsData.value.measures) {
+    //   const measureSpecificResults = DataStructures.prepareMeasureSpecificResultsDataStructure(measure.id);
+    //   const measureSpecificParameters = Parameters.measureSpecificParameters(
+    //     measure,
+    //     indicatorData,
+    //     userOptions
+    //   );
+    //   measureSpecificParameters.subsidyRate = Interpolation.annualLinearInterpolation(measureSpecificParameters.subsidyRate);
 
-  //   DataStructures.appendMeasureSpecificResults(
-  //     measureSpecificResults,
-  //     results
-  //   );
-  // }
-});
+    //   for (const year of results.years) {
+    //     const annualMeasureSpecificParameters =
+    //       Parameters.annualMeasureSpecificParameters(year, measure);
+    //     // Do not change the calculation order, because a calculation depends on the results of the previous one(s)!
+    //     CostBenefitAnalysisFacility.calculateCostBenefitAnalysisFacility(
+    //       measureSpecificParameters,
+    //       annualMeasureSpecificParameters,
+    //       measureSpecificResults,
+    //       userOptions
+    //     );
+    //     NetPresentValue.calculateNetPresentValue(
+    //       measureSpecificParameters,
+    //       annualMeasureSpecificParameters,
+    //       measureSpecificResults,
+    //       userOptions
+    //     );
+    //     CostBenefitRatio.calculateCostBenefitRatio(
+    //       measureSpecificParameters,
+    //       annualMeasureSpecificParameters,
+    //       measureSpecificResults,
+    //       userOptions
+    //     );
+    //     LevelisedCosts.calculateLevelisedCosts(
+    //       measureSpecificParameters,
+    //       annualMeasureSpecificParameters,
+    //       measureSpecificResults,
+    //       userOptions
+    //     );
+    //     FundingEfficiency.calculateFundingEfficiency(
+    //       measureSpecificParameters,
+    //       annualMeasureSpecificParameters,
+    //       measureSpecificResults,
+    //       userOptions
+    //     );
+    //     MarginalCostCurves.calculateMarginalCostCurves(
+    //       measureSpecificParameters,
+    //       annualMeasureSpecificParameters,
+    //       measureSpecificResults,
+    //       userOptions
+    //     );
+    //   }
+
+    //   DataStructures.appendMeasureSpecificResults(
+    //     measureSpecificResults,
+    //     results
+    //   );
+    // }
+  },
+  { annualMultipleImpacts: 0, annualEnergyCosts: 0, netPresentValue: 0 }, // initial state
+)
 
 // Functions
 const selectCategory = (category: string) => {
@@ -758,7 +765,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   'hover:bg-sky-700': activeIndicators.indexOf(measurement.identifier) === -1,
                   'rounded-br-3xl': i === categories['monetization'].measurements.length || activeIndicators.indexOf(measurement.identifier) === -1
                 }"
-                v-for="(measurement, i) in categories['monetization'].measurements.filter(measurement => measurement.identifier !== 'addedAssetValueOfBuildings' && measurement.identifier !== 'impactOnGrossDomesticProduct')"
+                v-for="(measurement, i) in categories['monetization'].measurements"
                 v-bind:key="`measurement-cba-${measurement.identifier}`"
               >
                 <span class="mr-8 font-bold grow whitespace-nowrap">{{ measurement.title }}</span>
@@ -847,7 +854,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                 </div>
               </div>
             
-              <div class="flex flex-wrap">
+              <div class="flex flex-wrap" v-if="cbaData">
                 <div
                   v-for="result in cbaResults"
                   v-bind:key="`cba-${result.slug}`"
