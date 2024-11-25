@@ -500,7 +500,7 @@ const cbaData: Ref<{ [key: string]: number }> = computedAsync(
         investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
         averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants || 0;
         for (const t of [...Array(averageTechnologyLifetime).keys()]) {
-          const divider =  t === 0 ? 1 : ((1 + dr) ** (1 / t));
+          const divider =  (1 + dr) ** t;
           annualMultipleImpacts += totalIndicators / divider;
           annualEnergyCosts += reductionOfEnergyCost / divider;
         }
