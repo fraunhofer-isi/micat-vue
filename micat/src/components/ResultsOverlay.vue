@@ -311,7 +311,7 @@ const cbaResults: Array<CbaResultInterface> = [
 const activeCategory = ref<string>(Object.keys(categories)[0]);
 const activeSubcategory = ref<string>(Object.values(categories)[0].subcategories[0]);
 const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0].measurements[0]);
-const activeIndicators = ref<Array<string>>(categories.monetization.measurements.concat(categories.quantification.measurements.filter(m => m.identifier === 'reductionOfAirPollution')).map(measurement => measurement.identifier));
+const activeIndicators = ref<Array<string>>(categories.monetization.measurements.filter(m => ['addedAssetValueOfBuildings', 'impactOnGrossDomesticProduct'].indexOf(m.identifier) === -1).map(measurement => measurement.identifier));
 const indicatorInfo = ref<string>('');
 const energyPriceSensitivity = ref<number>(100);
 const investmentsSensitivity = ref<number>(100);
@@ -500,11 +500,9 @@ const cbaData: Ref<{ [key: string]: number }> = computedAsync(
         investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
         averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants || 0;
         for (const t of [...Array(averageTechnologyLifetime).keys()]) {
-          const divider =  ((1 + dr) ** (1 / t));
-          if (!isNaN(divider)) {
-            annualMultipleImpacts += totalIndicators / divider;
-            annualEnergyCosts += reductionOfEnergyCost / divider;
-          }
+          const divider =  t === 0 ? 1 : ((1 + dr) ** (1 / t));
+          annualMultipleImpacts += totalIndicators / divider;
+          annualEnergyCosts += reductionOfEnergyCost / divider;
         }
       }
     }
