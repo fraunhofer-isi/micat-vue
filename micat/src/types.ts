@@ -176,7 +176,6 @@ export interface ISessionState {
   parameters: Parameters;
   useRenovationRate: boolean;
   seedInfo: boolean;
-  showCBA: boolean;
 }
 export interface ISessionStateFunctions {
     updateStage: (stage: number) => void;

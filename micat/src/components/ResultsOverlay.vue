@@ -674,7 +674,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               'rounded-bl-3xl': activeCategory === key && i === Object.keys(categories).length - 1,
               'pr-16': !category.subcategories,
             }"
-            v-for="([key, category], i) in Object.entries(categories).filter(([key, value])=> session.showCBA ? true : key !== 'cba')"
+            v-for="([key, category], i) in Object.entries(categories)"
             v-bind:key="`category-${key}`"
           >
             <div>
@@ -746,7 +746,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
         <div v-else-if="activeCategory === 'aggregation'" class="w-full max-w-full p-7">
           <AggregationChart :categories="categories"></AggregationChart>
         </div>
-        <div v-if="activeCategory === 'cba' && session.showCBA">
+        <div v-if="activeCategory === 'cba'">
           <div class="flex">
             <div class="self-start pl-2 border-l border-white bg-sky-600 rounded-br-3xl">
               <h3 class="p-2 font-bold bg-white text-sky-600">Indicators</h3>
