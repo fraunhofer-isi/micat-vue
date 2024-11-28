@@ -253,7 +253,7 @@ const categories: CategoriesInterface = {
         title: "Added asset value of buildings",
         description: '<p class="mb-2">A variety of studies has found a positive impact of energy efficiency on the real estate value of buildings. This indicator shows the additional value of commercial, office, and residential buildings. The calculation is based on the capitalisation rates for real estate investments in residential and tertiary buildings, which stem from surveys among actors in the property market.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/asset_value.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-the-asset-value-of-commercial-buildings.pdf">PDF</a>.</p>',
         identifier: "addedAssetValueOfBuildings",
-        yAxis: "Value in M€"
+        yAxis: "Value in €"
       }
     ]
   },

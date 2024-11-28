@@ -37,7 +37,7 @@ const helpTexts: HelpTextInterface = {
   },
   'programs': {
     'title': 'Programmes',
-    'text': 'A programme represents a policy or a group of measures, which you can name here. It can encompass several improvement actions across different sectors, it might also merely relate to a single improvement action within one sector.',
+    'text': 'A programme represents a policy or a group of measures, which you can name here. It can encompass several improvement actions within one (sub-)sector.',
     'type': 'help'
   },
   'subsector': {
