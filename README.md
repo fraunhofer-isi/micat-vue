@@ -91,6 +91,6 @@ for example at: http://micatool-dev.eu/
 
 <p><a href="https://www.isi.fraunhofer.de/en/publishing-notes.html">PUBLISHING NOTES</a></p>
 
-![eu-flag](https://micatool.eu/micat-project-wAssets/img/weblication/wThumbnails/eu-flag-2c3b0581-543393bb@97ll.png)
-
 This project has received funding from the European Union’s Horizon 2020  research and innovation programme under grant agreement No. 101000132.
+
+<img src="https://raw.githubusercontent.com/fraunhofer-isi/.github/refs/heads/main/eu_flag.jpg" alt="eu_flag" width="100px"/>
