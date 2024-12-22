@@ -83,7 +83,7 @@ const getParameters = async () => {
       "factor": units[session.unit].factor
     }
   };
-  
+
   const responseParameters: Response = await fetch(
     `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 2 : 4}&id_region=${session.region}&id_subsector=${props.improvement.subsectorId}`,
     {
@@ -95,6 +95,10 @@ const getParameters = async () => {
     },
   );
   const results = await responseParameters.json();
+  // Remove affected fuel parameters for fuel switch improvements
+  if (props.improvement.name!.toLowerCase().includes('fuel switch')) {
+    delete results["affectedFuels"];
+  }
   parameters[props.improvement.internalId] = restructureParameters(props.improvement.subsectorId!, props.improvement.name!, results);
 }
 const selectCategory = (category: string) => {

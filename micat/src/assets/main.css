@@ -9,9 +9,19 @@
 @tailwind utilities;
 
 html {
-  @apply text-gray-700
+  @apply text-gray-700;
 }
 
-html, body, #app {
+html,
+body,
+#app {
   height: 100%;
+}
+
+.tooltip {
+  @apply absolute invisible;
+}
+
+.has-tooltip:hover .tooltip {
+  @apply z-50 visible;
 }

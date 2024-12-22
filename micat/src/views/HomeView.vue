@@ -419,7 +419,7 @@ const analyze = async () => {
         const improvementParameters = session.parameters[improvement.internalId];
         if (improvementParameters) {
           // parameters are only present if they have been edited
-          const keys: Array<string> = ["main", "fuelSwitch", "residential"];
+          const keys: Array<string> = ["main", "affectedFuels", "fuelSwitch", "residential"];
           keys.forEach(key => {
             if (!improvementParameters[key]) return;
             improvementParameters[key].forEach(parameter => {
@@ -500,6 +500,7 @@ const analyze = async () => {
 const programChanged = (program: ProgramInterface, i: number, subsectorId: number) => {
   program.improvements.forEach(improvement => {
     improvement.id = 0;
+    improvement.showParameterWarning = false;
   });
   const name = subsectors.value.filter(subsector => subsector.id === subsectorId)[0].name;
   program.subsectorName = name;
@@ -513,6 +514,7 @@ const improvementChanged = (program: ProgramInterface, i: number, improvementId:
   const name = getSubsectorImprovements(program.subsector).filter(improvement => improvement.id === improvementId)[0].name;
   program.improvements.filter(improvement => improvement.id === improvementId).forEach(improvement => {
     improvement.name = name;
+    improvement.showParameterWarning = false;
   });
   programs[i] = program;
   session.updatePrograms(programs);
@@ -532,6 +534,10 @@ const percentageDistributionChanged = (percentage: number, program: ProgramInter
     program.improvements[i].values[year] = amount;
   });
   program.improvements[i].percentage = percentage; 
+}
+
+const improvementValueChanged = (improvement: ImprovementInterface) => {
+  if (improvement.internalId && session.parameters[improvement.internalId]) improvement.showParameterWarning = true;
 }
 
 const exportInput = () => {
@@ -1090,7 +1096,7 @@ const start = () => {
                           class="bg-white border-0 text-gray-500 rounded-lg focus:ring-0 focus:border-0 px-1.5 py-0.5 inline max-w-[120px]"
                           placeholder="0"
                           :id="`improvement-value-${improvement.id}-${year}`"
-                          @change="(e: Event) => improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace(',', ''))"
+                          @change="(e: Event) => {improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace(',', '')); improvementValueChanged(improvement)}"
                           :options="{precision: session.unit === 5 ? 6 : 0}"
                         />
                       </span>
@@ -1130,10 +1136,14 @@ const start = () => {
                   <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
                   Advanced
                 </button>
-                 <InformationCircleIcon
+                <InformationCircleIcon
                     @click="openModal('parameters')"
                     class="inline w-6 h-6 ml-2 text-orange-400 cursor-pointer dark:text-sky-400"
-                 ></InformationCircleIcon>
+                ></InformationCircleIcon>
+                <div class="relative inline has-tooltip" v-if="improvement.showParameterWarning">
+                  <span class='p-2 top-full mt-1 left-[-75px] text-red-700 w-[200px] text-xs bg-gray-100 rounded shadow-lg tooltip'>The advanced parameters are based on your entries. The entries have changed. The parameters must be reset or checked accordingly.</span>
+                  <ExclamationTriangleIcon class="inline w-6 h-6 ml-2 text-red-400"></ExclamationTriangleIcon>
+                </div>
               </div>
               <div
                 class="px-6 py-3 text-center border-t border-gray-200 bg-blue-50 dark:bg-blue-900 rounded-b-3xl"

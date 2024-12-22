@@ -25,6 +25,7 @@ export interface SelectedImprovementInterface {
     subsector?: string;
     subsectorId?: number;
     data?: ImprovementInterface;
+    showParameterWarning?: boolean;
 }
 
 export interface ImprovementValueInterface {
@@ -37,6 +38,7 @@ export interface ImprovementInterface {
     label?: string;
     values: ImprovementValueInterface;
     percentage?: number;
+    showParameterWarning?: boolean;
 }
 
 export interface UnitInterface {
