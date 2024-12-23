@@ -27,6 +27,7 @@ import type {
   ResultInterface,
   ModalInjectInterface,
   CbaResultInterface,
+  ParameterCategory,
 } from "@/types";
 import { defaultModalInject, chartColours, units } from "@/defaults";
 import AggregationChart from "@/components/AggregationChart.vue";
@@ -463,6 +464,7 @@ const cbaData: Ref<{ [key: string]: number }> = computedAsync(
     for (const program of session.programs) {
       for (const improvement of program.improvements) {
         // Get investment costs (inv_(m,y)) and average technology lifetime (LT_m), if not present
+        let parameters: ParameterCategory = {};
         if (!session.parameters.hasOwnProperty(improvement.internalId!)) {
           const body = {
             "id": improvement.internalId,
@@ -491,11 +493,11 @@ const cbaData: Ref<{ [key: string]: number }> = computedAsync(
               body: JSON.stringify({...improvement.values, ...body})
             },
           );
-          session.parameters[improvement.internalId!] = restructureParameters(program.subsector, improvement.name!, await responseParameters.json())
-          session.updateParameters(session.parameters);
+          parameters = restructureParameters(program.subsector, improvement.name!, await responseParameters.json())
+        } else {
+          parameters = session.parameters[improvement.internalId!];
         }
         // Calculate AMI_(m,y) and AEC_(m,y)
-        const parameters = session.parameters[improvement.internalId!];
         let averageTechnologyLifetime: string | number = 0;
         investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
         averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants || 0;
