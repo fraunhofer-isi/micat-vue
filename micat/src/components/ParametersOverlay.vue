@@ -14,7 +14,7 @@ import type {
   ModalInjectInterface,
 } from "@/types";
 import {units, defaultModalInject} from "@/defaults";
-import {restructureParameters} from "@/helpers";
+import {getGlobalParametersPayload, restructureParameters} from "@/helpers";
 
 
 const props = defineProps<{
@@ -81,7 +81,8 @@ const getParameters = async () => {
       // "name": "kilotonne of oil equivalent",
       "symbol": units[session.unit].symbol,
       "factor": units[session.unit].factor
-    }
+    },
+    "global_parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping),
   };
 
   const responseParameters: Response = await fetch(

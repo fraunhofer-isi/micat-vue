@@ -5,17 +5,18 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 # MICAT
+
 [**MICAT**](https://micatool.eu) – **M**ultiple **I**mpacts **C**alculation **T**ool – is a project that develops a comprehensive approach to estimate Multiple Impacts of Energy Efficiency (MI-EE) by co-creating a free, easy-to-use, scientifically sound online tool.
 
 For more **open source** software provided by [**Fraunhofer ISI**](https://www.isi.fraunhofer.de/) see https://github.com/fraunhofer-isi.
 
 ## Documentation
 
-* Online: https://fraunhofer-isi.github.io/micat
+- Online: https://fraunhofer-isi.github.io/micat
 
-* As *.pdf: https://fraunhofer-isi.github.io/micat/latex/micat.pdf
+- As \*.pdf: https://fraunhofer-isi.github.io/micat/latex/micat.pdf
 
-* Project: https://micatool.eu
+- Project: https://micatool.eu
 
 ## micat-vue
 
@@ -29,8 +30,8 @@ For the back-end see [micat](https://github.com/fraunhofer-isi/micat).
 
 This project is free and open source software:
 
-* It is licensed under the GNU Affero General Public License v3 or later (AGPLv3+) - see [LICENSE.md](./LICENSE.md).
-* It uses third-party open source modules, see [package.json](./micat/package.json) and [THIRDPARTY.md](./THIRDPARTY.md).
+- It is licensed under the GNU Affero General Public License v3 or later (AGPLv3+) - see [LICENSE.md](./LICENSE.md).
+- It uses third-party open source modules, see [package.json](./micat/package.json) and [THIRDPARTY.md](./THIRDPARTY.md).
 
 ## Badges
 
@@ -60,37 +61,95 @@ Click on some badge to navigate to the corresponding **quality assurance** workf
 
 ## Usage
 
+### Development information
+
+#### Recommended IDE Setup
+
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+
+#### Type Support for `.vue` Imports in TS
+
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+
+If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+
+1. Disable the built-in TypeScript Extension
+   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
+   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
+2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+
 ### Ensure that an instance of the back_end is running
 
-micat-vue requires the back_end API to be up and running, 
+micat-vue requires the back_end API to be up and running,
 for example at: http://micatool-dev.eu/
 
-### Install dependencies
+### Project Setup
 
-* Install dependencies with node package manager:
+Install dependencies with node package manager:
 
-`cd micat`
+```sh
+cd micat
+npm install
+```
 
-`npm install`
+Add enviroment variables:
 
+```sh
+cp .env.sample .env.local
+```
 
-### Start 
+### Compile and Hot-Reload for Development
 
-* Build and start vue.js application in development mode from within `micat` folder:
+```sh
+npm run dev
+```
 
-`npm run build`   
+- Ctrl click on the link that is shown in the console or open Google Chrome and paste the url, for example:
 
-`npm run preview`
+`http://localhost:5173/`
 
-* Ctrl click on the link that is shown in the console or open Google Chrome and paste the url, for example:
+### Type-Check, Compile and Minify for Production
 
-`http://localhost:3000/`
+```sh
+npm run build
+```
 
+### Run Unit Tests with [Vitest](https://vitest.dev/)
+
+NOTE: Currently, tests are not available.
+
+```sh
+npm run test:unit
+```
+
+### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
+
+NOTE: Currently, tests are not available.
+
+```sh
+npm run test:e2e:dev
+```
+
+This runs the end-to-end tests against the Vite development server.
+It is much faster than the production build.
+
+But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
+
+```sh
+npm run build
+npm run test:e2e
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
+```
 
 ## Notes
 
 <p><a href="https://www.isi.fraunhofer.de/en/publishing-notes.html">PUBLISHING NOTES</a></p>
 
-This project has received funding from the European Union’s Horizon 2020  research and innovation programme under grant agreement No. 101000132.
+This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No. 101000132.
 
 <img src="https://raw.githubusercontent.com/fraunhofer-isi/.github/refs/heads/main/eu_flag.jpg" alt="eu_flag" width="100px"/>

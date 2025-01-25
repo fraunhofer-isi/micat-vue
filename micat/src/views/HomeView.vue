@@ -30,12 +30,11 @@ import type {
   ImprovementValueInterface,
   PayloadInterface,
   PayloadMeasureInterface,
-  PayloadParameterInterface,
-  PayloadParameterEntryInterface,
   SelectedImprovementInterface,
   ImprovementInterface,
 } from "@/types";
 import { defaultImprovement, defaultModalInject, defaultProgram, stages, units } from "@/defaults";
+import { getGlobalParametersPayload } from "@/helpers";
 import { useSessionStore } from "@/stores/session";
 import GlobalParametersOverlay from "@/components/GlobalParametersOverlay.vue";
 import ParametersOverlay from "@/components/ParametersOverlay.vue";
@@ -76,7 +75,7 @@ let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
 const getNewYears = () => {
   let newYears = [];
   if (session.future) {
-    newYears = [...Array(51).keys()].map(delta => 2000 + delta);
+    newYears = [...Array(36).keys()].map(delta => 2015 + delta);
   } else {
     // const currentYear = new Date().getFullYear();
     const currentYear = 2024;
@@ -257,8 +256,8 @@ const resetYears = () => {
   let currentYear = 2024;
   if (session.future) {
     // We allow to let users test with already running actions
-    // Filter out years before 2000
-    years.value = years.value.filter(year => year >= 2000);
+    // Filter out years before 2015
+    years.value = years.value.filter(year => year >= 2015);
     if (years.value.length == 0) {
       // Round up to nearest 5
       const nextValidYear = Math.ceil(currentYear / 5) * 5;
@@ -331,54 +330,6 @@ const setSeedInfo = (value: boolean) => {
   seedInfo.value = value;
   session.updateSeedInfo(value);
 };
-const getGlobalParametersPayload = () => {
-  const results: PayloadParameterInterface = {};
-  for (const [category, subsectors] of Object.entries(session.globalParameters)) {
-    results[category] = [];
-    for (const [subsector, factors] of Object.entries(subsectors)) {
-      for (const [factor, values] of Object.entries(factors)) {
-        for (const value of values) {
-          if (value.value === null) continue;
-          if (category === 'MonetisationFactors') {
-            const existingResult: PayloadParameterEntryInterface | undefined = results[category].find(result => {
-              return result['index'] === parseInt(factor);
-            });
-            if (existingResult) {
-              existingResult[value.key] = value.value;
-            } else {
-              const data = {
-                'index': parseInt(factor),
-                [value.key === 0 ? 'Value' : value.key]: value.value,
-                'identifier': session.monetisationFactorMapping[parseInt(factor)],
-              }
-              results[category].push(data);
-            }
-          } else {
-            const carrierKey = ['ElectricityGeneration', 'HeatGeneration'].indexOf(category) > -1 ? 'id_primary_energy_carrier' : 'id_final_energy_carrier';
-            const existingResult: PayloadParameterEntryInterface | undefined = results[category].find(result => {
-              if (['ElectricityGeneration', 'HeatGeneration'].indexOf(category) === -1) {
-                return result['id_subsector'] === parseInt(subsector) && result[carrierKey] === value.key;
-              } else {
-                return result[carrierKey] === value.key;
-              }
-            });
-            if (existingResult && value.value !== null) {
-              existingResult[factor] = category === 'FuelSplitCoefficient' ? value.value / 100 : value.value;
-            } else if (value.value !== null) {
-              const data = {
-                [carrierKey]: value.key,
-                [factor]: category === 'FuelSplitCoefficient' ? value.value / 100 : value.value,
-              }
-              if (['ElectricityGeneration', 'HeatGeneration'].indexOf(category) === -1) data['id_subsector'] = parseInt(subsector);
-              results[category].push(data);
-            }
-          }
-        }
-      }
-    }
-  }
-  return results;
-}
 const showParameters = (data: ImprovementInterface, programIndex: number) => {
   const selectedProgram = session.programs[programIndex];
   selectedImprovement.value = {
@@ -397,7 +348,7 @@ const analyze = async () => {
   const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${session.future ? 2 : 4}&id_region=${session.region}`
   const payload: PayloadInterface = {
     "measures": [],
-    "parameters": getGlobalParametersPayload(),
+    "parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping),
   }
   if (session.municipality) payload["population"] = session.inhabitants;
   let i = 1;
