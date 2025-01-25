@@ -92,11 +92,20 @@ cd micat
 npm install
 ```
 
-Add enviroment variables:
+#### Enviroment variables
+
+For local development make sure to use the .env.local file. Currently it has to contain the following variables:
+
+- VITE_API_URL: The URL of the backend.
+- VITE_MURE_API_URL: The URL of the ODYSSEE-MURE API. ODYSSEE provides statistical data of past energy savings. MURE provides predefined policies and measures with provided energy savings. Users can build their own suitable use case or scenario with their own values and receive a comprehensive multiple impact analysis.
+- VITE_MURE_PASSWORD: Password to access the ODYSSEE-MURE API.
+- VITE_MURE_USERNAME: Username to access the ODYSSEE-MURE API.
 
 ```sh
 cp .env.sample .env.local
 ```
+
+.env.production is only used in production builds (see below).
 
 ### Compile and Hot-Reload for Development
 
