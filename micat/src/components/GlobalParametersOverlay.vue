@@ -212,6 +212,16 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
         Reset to defaults
       </button>
     </div>
+    <div
+      v-if="Object.keys(session.globalParameters).length > 0 && Object.keys(session.parameters).length > 0"
+      class="flex p-4 mt-5 text-sm text-yellow-800 border-t-4 border-yellow-300 bg-yellow-50 rounded-2xl"
+      role="alert"
+    >
+      <ExclamationCircleIcon class="h-7 w-7"></ExclamationCircleIcon>
+      <div class="ml-3 font-medium">
+        You have made changes to the advanced parameters in one or more programmes. Changes to the global parameters are only taken into account if the advanced parameters of the corresponding programmes are reset.
+      </div>
+    </div>
     <div class="relative my-3 bg-white border border-gray-300 rounded-3xl">
       <div @click="$emit('close')"
            class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-10px] cursor-pointer">
