@@ -71,7 +71,7 @@ export const restructureParameters = (subsectorId: number, name: string, paramet
   }
   return restructuredResults;
 }
-export const getGlobalParametersPayload = (globalParameters: GlobalParameters, monetisationFactorMapping: {[key: number]: string}) => {
+export const getGlobalParametersPayload = (globalParameters: GlobalParameters, monetisationFactorMapping: {[key: number]: string}, region: number) => {
   const results: PayloadParameterInterface = {};
   for (const [category, subsectors] of Object.entries(globalParameters)) {
     results[category] = [];
@@ -110,6 +110,7 @@ export const getGlobalParametersPayload = (globalParameters: GlobalParameters, m
                 [factor]: category === 'FuelSplitCoefficient' ? value.value / 100 : value.value,
               }
               if (['ElectricityGeneration', 'HeatGeneration'].indexOf(category) === -1) data['id_subsector'] = parseInt(subsector);
+              if (category === 'EnergyPrice') data['id_region'] = region;
               results[category].push(data);
             }
           }

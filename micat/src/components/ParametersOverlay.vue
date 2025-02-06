@@ -82,7 +82,7 @@ const getParameters = async () => {
       "symbol": units[session.unit].symbol,
       "factor": units[session.unit].factor
     },
-    "global_parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping),
+    "global_parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping, session.region),
   };
 
   const responseParameters: Response = await fetch(

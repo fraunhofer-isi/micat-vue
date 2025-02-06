@@ -348,7 +348,7 @@ const analyze = async () => {
   const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${session.future ? 2 : 4}&id_region=${session.region}`
   const payload: PayloadInterface = {
     "measures": [],
-    "parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping),
+    "parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping, session.region),
   }
   if (session.municipality) payload["population"] = session.inhabitants;
   let i = 1;
