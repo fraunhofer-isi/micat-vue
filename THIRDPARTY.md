@@ -1,9 +1,3 @@
-<!--
-© 2025 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -438,8 +432,8 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @tanstack/virtual-core@3.11.3
- - @tanstack/vue-virtual@3.11.3
+ - @tanstack/virtual-core@3.12.0
+ - @tanstack/vue-virtual@3.12.0
 
 These packages each contain the following license:
 
