@@ -1,9 +1,3 @@
-<!--
-© 2025 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -139,7 +133,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.26.7
+ - @babel/parser@7.26.9
 
 This package contains the following license:
 
@@ -285,7 +279,7 @@ The following npm packages may be included in this product:
 
  - @babel/helper-string-parser@7.25.9
  - @babel/helper-validator-identifier@7.25.9
- - @babel/types@7.26.7
+ - @babel/types@7.26.9
 
 These packages each contain the following license:
 
@@ -438,8 +432,8 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @tanstack/virtual-core@3.12.0
- - @tanstack/vue-virtual@3.12.0
+ - @tanstack/virtual-core@3.13.0
+ - @tanstack/vue-virtual@3.13.0
 
 These packages each contain the following license:
 
@@ -529,7 +523,7 @@ THE SOFTWARE.
 
 The following npm package may be included in this product:
 
- - chart.js@4.4.7
+ - chart.js@4.4.8
 
 This package contains the following license:
 
@@ -671,7 +665,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - postcss@8.5.1
+ - postcss@8.5.3
 
 This package contains the following license:
 
