@@ -99,6 +99,7 @@ export interface PayloadInterface {
     measures: Array<PayloadMeasureInterface>;
     parameters: PayloadParameterInterface;
     population?: number;
+    name: string;
 }
 export interface ResultInterface {
     title?: string;
@@ -108,7 +109,10 @@ export interface ResultInterface {
     yearColumnNames: Array<string>;
 }
 export interface ResultsInterface {
-    [key: string]: ResultInterface
+    name: string;
+    data: {
+        [key: string]: ResultInterface
+    }
 }
 export interface MeasurementInterface {
     [key: string]: string;
@@ -170,7 +174,7 @@ export interface ISessionState {
   programs: Array<ProgramInterface>;
   payload: PayloadInterface;
   resetted: boolean;
-  results: ResultsInterface;
+  results: ResultsInterface[];
   globalParameters: GlobalParameters;
   subsectorMapping: {[key: number]: string};
   carrierMapping: CarrierMapping;

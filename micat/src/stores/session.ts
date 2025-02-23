@@ -40,16 +40,16 @@ export const useSessionStore = defineStore({
       inhabitants: parseInt(localStorage.getItem("inhabitants") || "100000"),
       years: JSON.parse(localStorage.getItem("years") || JSON.stringify(getYears(String(localStorage.getItem("future") || "false").toLowerCase() === "true"))),
       programs: JSON.parse(localStorage.getItem("programs") || JSON.stringify([structuredClone(defaultProgram)])),
-      payload: {"measures": [], "parameters": {}},
+      payload: {"measures": [], "parameters": {}, "name": ""},
       resetted: false,
-      results: {},
+      results: [],
       globalParameters: JSON.parse(localStorage.getItem("globalParameters") || JSON.stringify({})),
       subsectorMapping: JSON.parse(localStorage.getItem("subsectorMapping") || JSON.stringify({})),
       carrierMapping: JSON.parse(localStorage.getItem("carrierMapping") || JSON.stringify({})),
       monetisationFactorMapping: JSON.parse(localStorage.getItem("monetisationFactorMapping") || JSON.stringify({})),
       parameters: JSON.parse(localStorage.getItem("parameters") || JSON.stringify({})),
       useRenovationRate: String(localStorage.getItem("useRenovationRate") || "false").toLowerCase() === "true",
-      seedInfo: String(localStorage.getItem("seedInfo") || "true").toLowerCase() === "true",
+      seedInfo: String(localStorage.getItem("seedInfo") || "false").toLowerCase() === "true",
     }
   },
   actions: {
@@ -173,7 +173,7 @@ export const useSessionStore = defineStore({
       this.updateCarrierMapping({}, false);
       this.updateMonetisationFactorMapping({}, false);
       this.updateUseRenovationRate(false, false);
-      this.updateSeedInfo(true, false);
+      // this.updateSeedInfo(true, false);
     },
   },
 });

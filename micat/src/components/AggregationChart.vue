@@ -110,14 +110,14 @@ const htmlLegendPlugin = {
 };
 
 // Variables
-const chartColoursAggregation: Array<string> = [
-  "rgb(68,178,47)",
-  "rgb(162,243,149)",
-  "rgb(16,94,0)",
-  "rgb(150,178,47)",
-  "rgb(200,217,136)",
-  "rgb(110,138,8)",
-  "rgb(72,89,9)",
+const chartColoursAggregation: Array<Array<number>> = [
+  [68,178,47],
+  [162,243,149],
+  [16,94,0],
+  [150,178,47],
+  [200,217,136],
+  [110,138,8],
+  [72,89,9],
 ];
 const aggregationChartOptions: any = {
   plugins: {
@@ -168,43 +168,47 @@ const aggregationChartOptions: any = {
 const aggregationChartData: any = computed(() => {
   const datasets: Array<DatasetInterface> = [];
   const measurements = props.categories.monetization.measurements.filter(measurement => measurement.identifier !== "addedAssetValueOfBuildings");
+  const factor = 70 / session.programs.length;
   measurements.forEach((measurement, i) => {
-    const aggregationData: ResultInterface = JSON.parse(JSON.stringify(session.results[measurement.identifier]));
-    if (measurement.identifier === 'reductionOfEnergyCost') {
-      aggregationData.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
+    const color = chartColours[i];
+    session.results.forEach((result, iP) => {
+      const aggregationData: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
+      if (measurement.identifier === 'reductionOfEnergyCost') {
+        aggregationData.rows.map(row => row[1]).forEach((label, iL) => {
+          const values = new Array(session.years.length).fill(0);
+          aggregationData.rows.filter(row => row[1] === label).forEach(row => {
+            row.splice(0, 2);
+            row.forEach((measure, iM) => {
+              // Sum up measurements
+              values[iM] += measure;
+            });
+          });
+          datasets.push({
+            label: session.results.length > 1 ? `${label} (${session.programs[iP].name})` : label,
+            data: values,
+            borderColor: `rgb(${chartColoursAggregation[iL][0] + iP * factor}, ${chartColoursAggregation[iL][1] + iP * factor}, ${chartColoursAggregation[iL][2] + iP * factor})`,
+            backgroundColor: `rgb(${chartColoursAggregation[iL][0] + iP * factor}, ${chartColoursAggregation[iL][1] + iP * factor}, ${chartColoursAggregation[iL][2] + iP * factor})`,
+            stack: `stack-reductionOfEnergyCost`,
+          });
+        });
+      } else {
         const values = new Array(session.years.length).fill(0);
-        aggregationData.rows.filter(row => row[1] === label).forEach(row => {
-          row.splice(0, 2);
+        aggregationData.rows.forEach(row => {
+          row.splice(0, 1);
           row.forEach((measure, iM) => {
-            // Sum up measurements
+            // Sum up measurements; impacts on gross domestic product are in million €
             values[iM] += measure;
           });
         });
         datasets.push({
-          label: label,
+          label: session.results.length > 1 ? `${measurement.title} (${session.programs[iP].name})` : measurement.title,
           data: values,
-          borderColor: chartColoursAggregation[iL],
-          backgroundColor: chartColoursAggregation[iL],
-          stack: `stack-reductionOfEnergyCost`,
+          borderColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
+          backgroundColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
+          stack: `stack-${i}`,
         });
-      });
-    } else {
-      const values = new Array(session.years.length).fill(0);
-      aggregationData.rows.forEach(row => {
-        row.splice(0, 1);
-        row.forEach((measure, iM) => {
-          // Sum up measurements; impacts on gross domestic product are in million €
-          values[iM] += measure;
-        });
-      });
-      datasets.push({
-        label: measurement.title,
-        data: values,
-        borderColor: chartColours[i],
-        backgroundColor: chartColours[i],
-        stack: `stack-${i}`,
-      });
-    }
+      }
+    });
   });
   return {
     labels: session.years,

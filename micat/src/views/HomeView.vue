@@ -284,6 +284,7 @@ const addProgram = () => {
   const clone = JSON.parse(JSON.stringify(defaultProgram));
   clone.name = `Program ${programs.length + 1}`
   programs.push(clone);
+  session.programs = programs;
   session.updatePrograms(programs);
 }
 const reset = () => {
@@ -344,20 +345,24 @@ const showParameters = (data: ImprovementInterface, programIndex: number) => {
   showParametersOverlay.value = true;
 };
 const analyze = async () => {
+  session.results = [];
   loading.value = true;
   const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${session.future ? 2 : 4}&id_region=${session.region}`
-  const payload: PayloadInterface = {
-    "measures": [],
-    "parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping, session.region),
-  }
-  if (session.municipality) payload["population"] = session.inhabitants;
+  const payloadList: Array<PayloadInterface> = [];
   let i = 1;
   let errors = '';
+  error.value = '';
   programs.forEach(program => {
     if (!program.subsector) {
       errors += `Please select a subsector for <em>${program.name}</em>.<br />`;
       return;
     }
+    const payload: PayloadInterface = {
+      "measures": [],
+      "parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping, session.region),
+      "name": program.name,
+    }
+    if (session.municipality) payload["population"] = session.inhabitants;
     program.improvements.forEach(improvement => {
       if (!improvement.id) {
         errors += `<em>${program.name}</em> has invalid improvements.<br />`;
@@ -414,41 +419,45 @@ const analyze = async () => {
       payload.measures.push(improvementData);
       i++;
     });
+    payloadList.push(payload);
   });
 
   if (errors.length > 0) {
-    session.results = {};
+    session.results = [];
     error.value = `<h2 class="mt-1 font-bold">We are sorry. Your inputs are invalid.</h2><p class="text-sm">${errors}</p>`;
     loading.value = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
     return;
   }
 
-  const response = await fetch(url, {
-    method: "POST", // *GET, POST, PUT, DELETE, etc.
-    mode: "cors", // no-cors, *cors, same-origin
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: "same-origin", // include, *same-origin, omit
-    headers: {
-      "Content-Type": "application/json",
-    },
-    redirect: "follow", // manual, *follow, error
-    referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    body: JSON.stringify(payload),
-  });
-  session.updatePayload(payload);
-  const data = await response.json();
-  if (Object.prototype.hasOwnProperty.call(data, 'error')) {
-    session.results = {};
-    error.value = `<h2 class="mt-1 font-bold">We are sorry. Your request could not be processed.</h2><p class="text-sm"><em>Details:</em> ${data.error.arg0}<br />Please get in touch.</p>`;
-    loading.value = false;
+  for (const payload of payloadList) {
+    const response = await fetch(url, {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      mode: "cors", // no-cors, *cors, same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "same-origin", // include, *same-origin, omit
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow", // manual, *follow, error
+      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      body: JSON.stringify(payload),
+    });
+    session.updatePayload(payload);
+    const data = await response.json();
+    if (Object.prototype.hasOwnProperty.call(data, 'error')) {
+      error.value = `<h2 class="mt-1 font-bold">We are sorry. Your request could not be processed.</h2><p class="text-sm"><em>Details:</em> ${data.error.arg0}<br />Please get in touch.</p>`;
+    } else {
+      session.results.push({name: payload.name, data});
+    }
+  }
+  if (error.value) {
+    session.results = [];
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
-    error.value = '';
-    session.results = data;
-    loading.value = false;
     router.push({ name: 'results' });
   }
+  loading.value = false;
 }
 const programChanged = (program: ProgramInterface, i: number, subsectorId: number) => {
   program.improvements.forEach(improvement => {
@@ -890,7 +899,7 @@ const start = () => {
           </button>
         </div>
         <div
-          v-if="Object.keys(session.results).length > 0"
+          v-if="session.results.length > 0"
           class="flex p-4 text-green-800 border-t-4 border-green-300 cursor-pointer mb-7 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800 rounded-2xl"
           role="alert"
           @click="router.push({ name: 'results' });"

@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 <script setup lang="ts">
-import { ref, computed, inject, type Ref } from 'vue';
+import { ref, computed, inject, type Ref, reactive } from 'vue';
 import { computedAsync } from '@vueuse/core'
 import {
   UserGroupIcon,
@@ -28,6 +28,7 @@ import type {
   ModalInjectInterface,
   CbaResultInterface,
   ParameterCategory,
+  ProgramInterface,
 } from "@/types";
 import { defaultModalInject, chartColours, units } from "@/defaults";
 import AggregationChart from "@/components/AggregationChart.vue";
@@ -321,21 +322,22 @@ const cbaYear = ref<string>(session.years[0].toString());
 const activeCbaResult = ref<string>(cbaResults[0].slug);
 
 // Computed
-const data = computed<ResultInterface>(() => {
-  return activeMeasurement.value ? JSON.parse(JSON.stringify(session.results[activeMeasurement.value.identifier])) : {};
+const data = computed<ResultInterface[]>(() => {
+  return activeMeasurement.value ? JSON.parse(JSON.stringify(session.results.map(result => result.data[activeMeasurement.value.identifier]))) : [];
 });
-const hasMultipleMeasures = computed(() => data.value.idColumnNames.indexOf('id_measure') > -1);
+const hasMultipleMeasures = computed(() => data.value.length > 1 || data.value[0].idColumnNames.indexOf('id_measure') > -1);
 const chartLabels = computed(() => {
   // Get labels
   const labels: Array<string> = [];
   if (activeMeasurement.value) {
-    const identifiers = data.value.idColumnNames.filter(identifier => identifier !== 'id_measure');
+    const identifiers = data.value[0].idColumnNames.filter(identifier => identifier !== 'id_measure');
     if (identifiers.length > 0) {
-      data.value.rows.forEach(row => {
-        if (!hasMultipleMeasures.value || row[0] === 1) labels.push(row[hasMultipleMeasures.value ? 1: 0]);
+      data.value[0].rows.forEach(row => {
+        if (identifiers.length === 1 && identifiers[0] === 'label') labels.push(row[0]);
+        else if (!hasMultipleMeasures.value || row[0] === 1) labels.push(row[hasMultipleMeasures.value ? 1: 0]);
       });
     }
-    if (hasMultipleMeasures.value && labels.length === 0) labels.push('id_measure');
+    if (hasMultipleMeasures.value && labels.length === 0) data.value[0].rows.forEach(row => labels.push('id_measure'));
   }
   return labels;
 });
@@ -348,7 +350,7 @@ const chartOptions = computed(() => {
         display: false
       },
       legend: {
-        display: chartLabels.value.filter(label => label !== 'id_measure').length > 0
+        display: data.value.length > 1 || chartLabels.value.filter(label => label !== 'id_measure').length > 0
       },
       tooltip: {
         callbacks: {
@@ -368,12 +370,14 @@ const chartOptions = computed(() => {
     },
     scales: {
       x: {
+        stacked: true,
         title: {
           display: false,
           text: 'Years'
         },
       },
       y: {
+        stacked: true,
         ticks: {
           callback: (label: number | string) => typeof label === "number" ? formatter.format(label) : label,
         },
@@ -388,25 +392,30 @@ const chartOptions = computed(() => {
 const chartData = computed(() => {
   const datasets: ChartDataset[] = [];
   chartLabels.value.forEach((label, i) => {
-    const dataset = {
-      label: label === 'id_measure' ? '' : label,
-      data: new Array(data.value.yearColumnNames.length).fill(0),
-      borderColor: chartColours[i],
-      backgroundColor: chartColours[i],
-    };
-    data.value.rows.forEach(row => {
-      if (row[hasMultipleMeasures.value ? 1 : 0] === label || label === 'id_measure') {
-        row.splice(0, hasMultipleMeasures.value && label !== 'id_measure' ? 2 : 1);
-        row.forEach((measure, iM) => {
-          // Sum up measurements and check if it's a percentage value
-          dataset.data[iM] += activeMeasurement.value.yAxis.indexOf('%') > -1 ? measure * 100 : measure;
-        });
-      }
-    });
-    datasets.push(dataset);
+    const factor = 70 / session.programs.length;
+    const color = chartColours[i];
+    data.value.forEach((program, iP) => {
+      const dataset = {
+        label: label === 'id_measure' ? session.programs[iP].name : data.value.length > 1 ? `${label} (${session.programs[iP].name})` : label,
+        data: new Array(data.value[0].yearColumnNames.length).fill(0),
+        borderColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
+        backgroundColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
+        stack: `stack-${i}`,
+      };
+      program.rows.forEach(row => {
+        if (row[hasMultipleMeasures.value ? 1 : 0] === label || label === 'id_measure') {
+          row.splice(0, hasMultipleMeasures.value && label !== 'id_measure' ? 2 : 1);
+          row.forEach((measure, iM) => {
+            // Sum up measurements and check if it's a percentage value
+            dataset.data[iM] += activeMeasurement.value.yAxis.indexOf('%') > -1 ? measure * 100 : measure;
+          });
+        }
+      });
+      datasets.push(dataset);
+    }); 
   });
   return {
-    labels: data.value.yearColumnNames,
+    labels: data.value[0].yearColumnNames,
     datasets: datasets
   };
 });
@@ -435,23 +444,25 @@ const cbaData: Ref<{ [key: string]: number }> = computedAsync(
     // Sum up MI_(m,y) and EC_(m,y)
     const measurements = categories.monetization.measurements.filter(measurement => activeIndicators.value.indexOf(measurement.identifier) > -1);
     measurements.forEach((measurement, i) => {
-      const data: ResultInterface = JSON.parse(JSON.stringify(session.results[measurement.identifier]));
-      if (measurement.identifier === 'reductionOfEnergyCost') {
-        data.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
-          data.rows.filter(row => row[1] === label).forEach(row => {
-            // Sum up values from last year only
-            reductionOfEnergyCost += row[row.length - 1];
+      session.results.forEach(result => {
+        const data: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
+        if (measurement.identifier === 'reductionOfEnergyCost') {
+          data.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
+            data.rows.filter(row => row[1] === label).forEach(row => {
+              // Sum up values from last year only
+              reductionOfEnergyCost += row[row.length - 1];
+            });
           });
-        });
-      } else if (measurement.identifier === 'reductionOfAdditionalCapacitiesInGridMonetization') {
-        data.rows.forEach(row => {
-          reductionOfAdditionalCapacities += row[row.length - 1];
-        });
-      } else {
-        data.rows.forEach(row => {
-          totalIndicators += row[row.length - 1];
-        });
-      }
+        } else if (measurement.identifier === 'reductionOfAdditionalCapacitiesInGridMonetization') {
+          data.rows.forEach(row => {
+            reductionOfAdditionalCapacities += row[row.length - 1];
+          });
+        } else {
+          data.rows.forEach(row => {
+            totalIndicators += row[row.length - 1];
+          });
+        }
+      });  
     });
 
     // DR

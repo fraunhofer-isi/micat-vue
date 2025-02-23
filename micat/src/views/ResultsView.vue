@@ -14,12 +14,12 @@ const session = useSessionStore();
 
 // Lifecycle
 onBeforeMount(async () => {
-  if (Object.keys(session.results).length == 0) router.push({name: 'home'});
+  if (session.results.length == 0) router.push({name: 'home'});
 });
 </script>
 
 <template>
   <main>
-    <ResultsOverlay v-if="Object.keys(session.results).length > 0"></ResultsOverlay>
+    <ResultsOverlay v-if="session.results.length > 0"></ResultsOverlay>
   </main>
 </template>
