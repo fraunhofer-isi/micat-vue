@@ -166,7 +166,7 @@ export const useSessionStore = defineStore({
       this.updateInhabitants(100000, false);
       this.updateYears(getYears(false), false);
       this.updatePrograms([structuredClone(defaultProgram)], false);
-      this.updatePayload({"measures": [], "parameters": {}}, false);
+      this.updatePayload({"measures": [], "parameters": {}, "name": ""}, false);
       this.updateParameters({}, false);
       this.updateGlobalParameters({}, false);
       this.updateSubsectorMapping({}, false);
