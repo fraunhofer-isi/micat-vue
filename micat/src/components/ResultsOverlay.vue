@@ -400,7 +400,7 @@ const chartData = computed(() => {
         data: new Array(data.value[0].yearColumnNames.length).fill(0),
         borderColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
         backgroundColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
-        stack: `stack-${i}`,
+        stack: `stack-${iP}`,
       };
       program.rows.forEach(row => {
         if (row[hasMultipleMeasures.value ? 1 : 0] === label || label === 'id_measure') {

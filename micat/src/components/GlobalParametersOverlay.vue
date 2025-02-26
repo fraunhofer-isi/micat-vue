@@ -318,7 +318,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                       placeholder="0"
                       :id="`global-parameters-years-${yearOrFactor}-${i}-input`"
                       :options="{precision: activeCategory === 'MonetisationFactors' ? 0 : ['ElectricityGeneration', 'HeatGeneration'].indexOf(activeCategory) > -1 ? 3 : 2}"
-                      @change="(e: Event) => entry.value = parseFloat((e.target as HTMLInputElement).value.replace(',', ''))"
+                      @change="(e: Event) => entry.value = parseFloat((e.target as HTMLInputElement).value.replace(/,/g, ''))"
                     />
                   </div>
                 </div>

@@ -230,7 +230,7 @@ const reset = () => {
                       :value="parameter.parameters.constants"
                       class="bg-sky-50 border border-sky-300 text-sky-600 mx-2 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline"
                       :id="`parameter-${parameter.identifier}-constant-input`"
-                      @change="(e: Event) => parameter.parameters.constants = parseFloat((e.target as HTMLInputElement).value.replace(',', ''))"
+                      @change="(e: Event) => parameter.parameters.constants = parseFloat((e.target as HTMLInputElement).value.replace(/,/g, ''))"
                     />
                   </div>
                 </div>
@@ -261,7 +261,7 @@ const reset = () => {
                       :id="`parameter-${parameter.identifier}-${year.key}-input`"
                       :options="{precision: 2}"
                       @change="(e: Event) => {
-                        year.value = parseFloat((e.target as HTMLInputElement).value.replace(',', ''));
+                        year.value = parseFloat((e.target as HTMLInputElement).value.replace(/,/g, ''));
                         if (parameter.parameters.id_parameter === 16) checkEnergyCarrierValues();
                       }"
                     />

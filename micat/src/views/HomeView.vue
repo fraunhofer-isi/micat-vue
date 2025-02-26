@@ -707,7 +707,7 @@ const start = () => {
                       :value="session.inhabitants"
                       class="bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[80px]"
                       id="inhabitants"
-                      @change="(e: Event) => session.updateInhabitants(parseInt((e.target as HTMLInputElement).value.replace(',', '')))"
+                      @change="(e: Event) => session.updateInhabitants(parseInt((e.target as HTMLInputElement).value.replace(/,/g, '')))"
                     ></VueNumberFormat> <span v-if="stage === stages.home">inhabitants</span><span
                       v-else>inhab.</span></label>
                 </div>
@@ -1058,7 +1058,7 @@ const start = () => {
                           class="bg-white border-0 text-gray-500 rounded-lg focus:ring-0 focus:border-0 px-1.5 py-0.5 inline max-w-[120px]"
                           placeholder="0"
                           :id="`improvement-value-${improvement.id}-${year}`"
-                          @change="(e: Event) => {improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace(',', '')); improvementValueChanged(improvement)}"
+                          @change="(e: Event) => {improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace(/,/g, '')); improvementValueChanged(improvement)}"
                           :options="{precision: session.unit === 5 ? 6 : 0}"
                         />
                       </span>
