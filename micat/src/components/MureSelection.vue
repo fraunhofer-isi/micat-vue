@@ -151,8 +151,10 @@ const getMeasurementDetails = async () => {
   }
   session.updateYears(years.value);
   // Set subsector for programs and values
+  const measureObj = measurements.value.find(m => m.id === mureMeasurement.value);
   const programs = session.programs;
   programs.forEach(program => {
+    if (measureObj) program.name = measureObj.title;
     program.mureTotal = {};
     program.improvements.forEach(improvement => {
       improvement.percentage = 100;
