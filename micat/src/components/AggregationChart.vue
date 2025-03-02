@@ -119,7 +119,7 @@ const chartColoursAggregation: Array<Array<number>> = [
   [110,138,8],
   [72,89,9],
 ];
-const aggregationChartOptions: any = {
+const getAggregationChartOptions: any = (programIdx: number) => ({
   plugins: {
     title: {
       display: false,
@@ -141,7 +141,7 @@ const aggregationChartOptions: any = {
       },
     },
     htmlLegend: {
-      containerID: 'aggregation-legend',
+      containerID: `aggregation-legend-${programIdx}`,
     },
       legend: {
       display: false,
@@ -162,16 +162,17 @@ const aggregationChartOptions: any = {
       },
     }
   }
-};
+});
 
 // Computed
 const aggregationChartData: any = computed(() => {
-  const datasets: Array<DatasetInterface> = [];
-  const measurements = props.categories.monetization.measurements.filter(measurement => measurement.identifier !== "addedAssetValueOfBuildings");
-  const factor = 70 / session.programs.length;
-  measurements.forEach((measurement, i) => {
-    const color = chartColours[i];
-    session.results.forEach((result, iP) => {
+  const results: Array<{labels: Array<number>, datasets: Array<DatasetInterface>}> = [];
+  session.results.forEach((result, iP) => {
+    const datasets: Array<DatasetInterface> = [];
+    const measurements = props.categories.monetization.measurements.filter(measurement => measurement.identifier !== "addedAssetValueOfBuildings");
+    const factor = 70 / session.programs.length;
+    measurements.forEach((measurement, i) => {
+      const color = chartColours[i];
       const aggregationData: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
       if (measurement.identifier === 'reductionOfEnergyCost') {
         aggregationData.rows.map(row => row[1]).forEach((label, iL) => {
@@ -186,8 +187,8 @@ const aggregationChartData: any = computed(() => {
           datasets.push({
             label: session.results.length > 1 ? `${label} (${session.programs[iP].name})` : label,
             data: values,
-            borderColor: `rgb(${chartColoursAggregation[iL][0] + iP * factor}, ${chartColoursAggregation[iL][1] + iP * factor}, ${chartColoursAggregation[iL][2] + iP * factor})`,
-            backgroundColor: `rgb(${chartColoursAggregation[iL][0] + iP * factor}, ${chartColoursAggregation[iL][1] + iP * factor}, ${chartColoursAggregation[iL][2] + iP * factor})`,
+            borderColor: `rgb(${chartColoursAggregation[iL][0]}, ${chartColoursAggregation[iL][1]}, ${chartColoursAggregation[iL][2]})`,
+            backgroundColor: `rgb(${chartColoursAggregation[iL][0]}, ${chartColoursAggregation[iL][1]}, ${chartColoursAggregation[iL][2]})`,
             stack: `stack-reductionOfEnergyCost`,
           });
         });
@@ -203,17 +204,18 @@ const aggregationChartData: any = computed(() => {
         datasets.push({
           label: session.results.length > 1 ? `${measurement.title} (${session.programs[iP].name})` : measurement.title,
           data: values,
-          borderColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
-          backgroundColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
+          borderColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+          backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
           stack: `stack-${i}`,
         });
       }
     });
+    results.push({
+      labels: session.years,
+      datasets,
+    });
   });
-  return {
-    labels: session.years,
-    datasets,
-  }
+  return results;
 });
 </script>
 
@@ -222,11 +224,14 @@ const aggregationChartData: any = computed(() => {
     <h3 class="mb-2 font-bold text-md">Overview</h3>
     <div class="text-sm text-sky-200">This tab shows an overview of the monetised indicators for the selected years. All values are in €.</div>
   </div>
-  <div id="aggregation-legend"></div>
-  <Bar
-    id="chart-aggregation"
-    :options="aggregationChartOptions"
-    :data="aggregationChartData"
-    :plugins="[htmlLegendPlugin]"
-  /> 
+  <div v-for="(program, i) in session.programs" :key="`program-${i}`" class="p-4 my-5 rounded-lg bg-gray-50 mx-7">
+    <h3 class="mb-2 font-bold text-md">{{ program.name }}</h3>
+    <div :id="`aggregation-legend-${i}`"></div>
+    <Bar
+      :id="`chart-aggregation-${i}`"
+      :options="getAggregationChartOptions(i)"
+      :data="aggregationChartData[i]"
+      :plugins="[htmlLegendPlugin]"
+    />
+  </div>  
 </template>
