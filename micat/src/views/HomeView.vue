@@ -899,7 +899,7 @@ const start = () => {
           </button>
         </div>
         <div
-          v-if="session.results.length > 0"
+          v-if="session.results.length >= session.programs.length"
           class="flex p-4 text-green-800 border-t-4 border-green-300 cursor-pointer mb-7 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800 rounded-2xl"
           role="alert"
           @click="router.push({ name: 'results' });"
