@@ -110,15 +110,16 @@ const htmlLegendPlugin = {
 };
 
 // Variables
-const chartColoursAggregation: Array<Array<number>> = [
-  [68,178,47],
-  [162,243,149],
-  [16,94,0],
-  [150,178,47],
-  [200,217,136],
-  [110,138,8],
-  [72,89,9],
-];
+const chartColoursAggregation: {[key: string]: number[]} = {
+  'Electricity': [68,178,47],
+  'Oil': [162,243,149],
+  'Coal': [16,94,0],
+  'Gas': [150,178,47],
+  'Biomass and Waste': [200,217,136],
+  'Heat': [110,138,8],
+  'H2 and e-fuels': [72,89,9],
+};
+
 const getAggregationChartOptions: any = (programIdx: number) => ({
   plugins: {
     title: {
@@ -175,7 +176,8 @@ const aggregationChartData: any = computed(() => {
       const color = chartColours[i];
       const aggregationData: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
       if (measurement.identifier === 'reductionOfEnergyCost') {
-        aggregationData.rows.map(row => row[1]).forEach((label, iL) => {
+        const labels = [...new Set(aggregationData.rows.map(row => row[1]))];
+        labels.forEach((label, iL) => {
           const values = new Array(session.years.length).fill(0);
           aggregationData.rows.filter(row => row[1] === label).forEach(row => {
             row.splice(0, 2);
@@ -185,10 +187,10 @@ const aggregationChartData: any = computed(() => {
             });
           });
           datasets.push({
-            label: session.results.length > 1 ? `${label} (${session.programs[iP].name})` : label,
+            label: label,
             data: values,
-            borderColor: `rgb(${chartColoursAggregation[iL][0]}, ${chartColoursAggregation[iL][1]}, ${chartColoursAggregation[iL][2]})`,
-            backgroundColor: `rgb(${chartColoursAggregation[iL][0]}, ${chartColoursAggregation[iL][1]}, ${chartColoursAggregation[iL][2]})`,
+            borderColor: `rgb(${chartColoursAggregation[label][0]}, ${chartColoursAggregation[label][1]}, ${chartColoursAggregation[label][2]})`,
+            backgroundColor: `rgb(${chartColoursAggregation[label][0]}, ${chartColoursAggregation[label][1]}, ${chartColoursAggregation[label][2]})`,
             stack: `stack-reductionOfEnergyCost`,
           });
         });
@@ -202,7 +204,7 @@ const aggregationChartData: any = computed(() => {
           });
         });
         datasets.push({
-          label: session.results.length > 1 ? `${measurement.title} (${session.programs[iP].name})` : measurement.title,
+          label: measurement.title,
           data: values,
           borderColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
           backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
