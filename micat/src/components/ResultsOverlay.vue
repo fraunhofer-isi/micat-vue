@@ -204,33 +204,15 @@ const categories: CategoriesInterface = {
         yAxis: "Savings in €"
       },
       {
-        title: "Premature deaths due to air pollution",
-        description: '<p class="mb-2">This graph shows the monetary impacts of air pollution by attributing cases of premature deaths with statistical costs. As basis for the monetisation, the World Health Organisation\'s figures for country-specific Value of Statistical Life (VSL) are used.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_AP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
-        identifier: "reductionOfMortalityMorbidityMonetization",
-        yAxis: "Value in €"
-      },
-      {
-        title: "Avoided lost working days due to air pollution",
-        description: '<p class="mb-2">This graph shows the avoided costs linked to lost working days. They can be monetised using the WHO coefficients for the national value of lost working days.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/lost_work_days.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
-        identifier: "reductionOfLostWorkDaysMonetization",
-        yAxis: "Value in €"
-      },
-      {
         title: "Reduction of greenhouse gas emissions",
         description: '<p class="mb-2">This graph displays the monetary benefits associated with reduced greenhouse gas emissions. The costs of greenhouse gas emissions can be monetised in several ways, inter alia with the costs of carbon in carbon certificate schemes such as the EU Emission Trading System (ETS), the cost of removal or the cost of avoidance for future generations. The MICATool uses societal costs of carbon as a calculation basis, which are calculated in line with common evaluation methodologies by the German Federal Environmental Agency.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/reduction_GHG.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-GHG-savings-savings-of-direct-carbon-emissions.pdf">PDF</a>.</p>',
         identifier: "reductionOfGreenHouseGasEmissionMonetization",
         yAxis: "Value in €"
       },
       {
-        title: "Impact on RES targets",
-        description: '<p class="mb-2">The impact of energy efficiency on renewable energy source (RES) targets (specified in the EU Renewable Energy Directive (RED)) is assessed by calculating the costs of achieving the same objective through the acquisition of statistical transfers of RES. Thereby, underachieving Member States can statistically buy other Member States\' statistical overachievement towards their target. A monetisation factor has been calculated from past public statistical transfers of RES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/Impact_RES_targets.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
-        identifier: "impactOnResTargetsMonetization",
-        yAxis: "Value in €"
-      },
-      {
-        title: "Reduction of additional capacities",
-        description: '<p class="mb-2">The reduction of necessary investments in additional capacities is monetised by looking at the specific investment costs of the main renewable energy sources, solar, onshore wind, and offshore wind. Their costs are weighted using their national prevalence, with data being an average of values from a 2016 IRENA study and a study commissioned by the European Commission (Tsiropoulos I, Tarvydas, D, Zucker 2017).</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/avoided_additional_capacity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
-        identifier: "reductionOfAdditionalCapacitiesInGridMonetization",
+        title: "Health effects linked to reduced air pollution",
+        description: '<p class="mb-2">This graph shows the monetary impacts of air pollution by attributing cases of premature deaths with statistical costs. As basis for the monetisation, the World Health Organisation\'s figures for country-specific Value of Statistical Life (VSL) are used.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_AP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
+        identifier: "reductionOfMortalityMorbidityMonetization",
         yAxis: "Value in €"
       },
       {
@@ -246,6 +228,24 @@ const categories: CategoriesInterface = {
         yAxis: "Value in €"
       },
       {
+        title: "Avoided lost working days due to air pollution",
+        description: '<p class="mb-2">This graph shows the avoided costs linked to lost working days. They can be monetised using the WHO coefficients for the national value of lost working days.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/lost_work_days.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
+        identifier: "reductionOfLostWorkDaysMonetization",
+        yAxis: "Value in €"
+      },
+      {
+        title: "Impact on RES targets",
+        description: '<p class="mb-2">The impact of energy efficiency on renewable energy source (RES) targets (specified in the EU Renewable Energy Directive (RED)) is assessed by calculating the costs of achieving the same objective through the acquisition of statistical transfers of RES. Thereby, underachieving Member States can statistically buy other Member States\' statistical overachievement towards their target. A monetisation factor has been calculated from past public statistical transfers of RES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/Impact_RES_targets.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
+        identifier: "impactOnResTargetsMonetization",
+        yAxis: "Value in €"
+      },
+      {
+        title: "Reduction of additional capacities",
+        description: '<p class="mb-2">The reduction of necessary investments in additional capacities is monetised by looking at the specific investment costs of the main renewable energy sources, solar, onshore wind, and offshore wind. Their costs are weighted using their national prevalence, with data being an average of values from a 2016 IRENA study and a study commissioned by the European Commission (Tsiropoulos I, Tarvydas, D, Zucker 2017).</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/avoided_additional_capacity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
+        identifier: "reductionOfAdditionalCapacitiesInGridMonetization",
+        yAxis: "Value in €"
+      },
+      {
         title: "Impact on gross domestic product",
         description: '<p class="mb-2">Energy efficiency measures stimulate added value and increase the gross domestic product (GDP) in economies, which is shown in this indicator. The calculation uses assumptions from the PRIMES model to adjust coefficients stemming from Eurostat\'s FIGARO input-output tables, which are then multiplied with investment costs. The result represents the added value generated by the assessed measures in a given year.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/GDP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-GDP.pdf">PDF</a>.</p>',
         identifier: "impactOnGrossDomesticProduct",
@@ -253,7 +253,7 @@ const categories: CategoriesInterface = {
       },
       {
         title: "Added asset value of buildings",
-        description: '<p class="mb-2">A variety of studies has found a positive impact of energy efficiency on the real estate value of buildings. This indicator shows the additional value of commercial, office, and residential buildings. The calculation is based on the capitalisation rates for real estate investments in residential and tertiary buildings, which stem from surveys among actors in the property market.</p><p><em>Risk of double counting: Selecting this indicator and "Reduction in energy costs" constitutes double counting, as the increase in asset value captures buyers future energy cost savings.</em></p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/asset_value.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-the-asset-value-of-commercial-buildings.pdf">PDF</a>.</p>',
+        description: '<p class="mb-2">A variety of studies has found a positive impact of energy efficiency on the real estate value of buildings. This indicator shows the additional value of commercial, office, and residential buildings. The calculation is based on the capitalisation rates for real estate investments in residential and tertiary buildings, which stem from surveys among actors in the property market.</p><p><em><strong>Risk of double counting:</strong> Selecting this indicator and "Reduction in energy costs" constitutes double counting, as the increase in asset value captures buyers\' future energy cost savings.</em></p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/asset_value.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-the-asset-value-of-commercial-buildings.pdf">PDF</a>.</p>',
         identifier: "addedAssetValueOfBuildings",
         yAxis: "Value in €"
       }

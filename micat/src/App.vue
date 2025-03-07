@@ -27,7 +27,7 @@ const helpTexts: HelpTextInterface = {
   },
   'unit': {
     'title': 'Unit',
-    'text': 'This allows to input the energy savings in different units. This does not have an effect on the result\'s units. Moreover, changing this setting after entering values does not convert them.',
+    'text': 'This allows to input the energy savings in different units. This does not have an effect on the results\' units. Moreover, changing this setting after entering values does not convert them.',
     'type': 'help'
   },
   'years': {
@@ -47,12 +47,12 @@ const helpTexts: HelpTextInterface = {
   },
   'improvement': {
     'title': 'Improvement action selection',
-    'text': 'This specifies which improvement actions are part of the program. Each improvement action type bundles measures that similarly affect multiple impacts (i.e. building envelope encompasses window replacements as well as wall or roof insulations). More details about the available improvement actions are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-action-type" target="_blank">here</a>. Furthermore, help on how to decompose a measure into different sectors and improvement actions can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/specifying_subsector_action.html" target="_blank">here</a>.',
+    'text': 'This specifies which improvement actions are part of the program. Each improvement action type bundles measures that similarly affect multiple impacts (i.e. building envelope encompasses window replacements as well as wall or wall and roof insulation). More details about the available improvement actions are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-action-type" target="_blank">here</a>. Furthermore, help on how to decompose a measure into different sectors and improvement actions can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/specifying_subsector_action.html" target="_blank">here</a>.',
     'type': 'help'
   },
   'savings': {
     'title': 'How to specify energy savings',
-    'text': 'Please enter the energy savings associated with the selected improvement action as <a class="font-bold" href="https://doc.micatool.eu/user_interface/energy_savings_input.html#total-annual-savings" target="_blank">total annual savings</a> in the unit selected in the "Options" section.',
+    'text': 'Please enter the energy savings associated with the selected improvement action as <strong>total annual savings</strong> in the selected unit. More details about the exact meaning of the term total annual savings can be found in the <a class="font-bold" href="https://doc.micatool.eu/user_interface/energy_savings_input.html#total-annual-savings" target="_blank">documentation</a>',
     'type': 'help'
   },
   'energy-price-sensitivity': {
