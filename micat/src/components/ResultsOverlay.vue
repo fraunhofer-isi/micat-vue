@@ -58,15 +58,15 @@ const categories: CategoriesInterface = {
     measurements: [
       {
         subcategory: "Social",
-        title: "Avoided premature mortality due to air pollution",
-        description: '<p class="mb-2"> This indicator assesses the number of avoided premature death cases thanks to energy efficiency measures and the resulting decline in air pollution levels. It is based on IIASA\'s GAINS model, taking air pollution reductions, national health data, and other factors into account. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_AP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
+        title: "Health effects linked to reduced air pollution",
+        description: '<p class="mb-2"> This indicator assesses the number of avoided premature death cases and hospitalisations thanks to energy efficiency measures and the resulting decline in air pollution levels. It is based on IIASA\'s GAINS model, taking air pollution reductions, national health data, and other factors into account. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_AP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
         identifier: "reductionOfMortalityMorbidity",
         yAxis: "Reduction in casualties"
       },
       {
         subcategory: "Social",
         title: "Avoided lost working days due to air pollution",
-        description: '<p class="mb-2"> This indicator assesses the number of prevented lost working days due to energy efficiency measures and the resulting decline in air pollution levels. It is based on IIASA\'s GAINS model, taking air pollution reductions, national health data, and other factors into account. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/lost_work_days.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
+        description: '<p class="mb-2"> This indicator assesses the number of prevented lost working days due to health benefits of energy efficiency measures and a resulting decline in air pollution levels. It is based on IIASA\'s GAINS model, taking air pollution reductions, national health data, and other factors into account. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/lost_work_days.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
         identifier: "reductionOfLostWorkDays",
         yAxis: "Avoided absences in days"
       },
@@ -163,7 +163,7 @@ const categories: CategoriesInterface = {
       },
       {
         subcategory: "Environmental",
-        title: "Primary savings by fuel",
+        title: "Primary savings by energy carrier",
         description: '<p class="mb-2">This indicator describes the energy saved in terms of primary energy carriers with the proposed measures. The conversion processes necessary for the generation of electricity, heat, and hydrogen and synthetic fuels (assumed to be hydrogen generated from electricity) are taken into account. The energy mix of these conversion processes comes from past data from Eurostat and projections from PRIMES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/PEC_FEC_savings.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-Energy-cost-savings.pdf">PDF</a>.</p>',
         identifier: "energySaving",
         yAxis: "Value in ktoe"
@@ -223,7 +223,7 @@ const categories: CategoriesInterface = {
       },
       {
         title: "Impact on RES targets",
-        description: '<p class="mb-2">The impact of energy efficiency on RES targets is assessed by calculating the costs of achieving the same objective through the acquisition of statistical transfers of RES. Thereby, underachieving Member States can statistically buy other Member States\' statistical overachievement towards their target. A monetisation factor has been calculated from past public statistical transfers of RES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/Impact_RES_targets.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
+        description: '<p class="mb-2">The impact of energy efficiency on renewable energy source (RES) targets (specified in the EU Renewable Energy Directive (RED)) is assessed by calculating the costs of achieving the same objective through the acquisition of statistical transfers of RES. Thereby, underachieving Member States can statistically buy other Member States\' statistical overachievement towards their target. A monetisation factor has been calculated from past public statistical transfers of RES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/Impact_RES_targets.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
         identifier: "impactOnResTargetsMonetization",
         yAxis: "Value in €"
       },
@@ -253,7 +253,7 @@ const categories: CategoriesInterface = {
       },
       {
         title: "Added asset value of buildings",
-        description: '<p class="mb-2">A variety of studies has found a positive impact of energy efficiency on the real estate value of buildings. This indicator shows the additional value of commercial, office, and residential buildings. The calculation is based on the capitalisation rates for real estate investments in residential and tertiary buildings, which stem from surveys among actors in the property market.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/asset_value.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-the-asset-value-of-commercial-buildings.pdf">PDF</a>.</p>',
+        description: '<p class="mb-2">A variety of studies has found a positive impact of energy efficiency on the real estate value of buildings. This indicator shows the additional value of commercial, office, and residential buildings. The calculation is based on the capitalisation rates for real estate investments in residential and tertiary buildings, which stem from surveys among actors in the property market.</p><p><em>Risk of double counting: Selecting this indicator and "Reduction in energy costs" constitutes double counting, as the increase in asset value captures buyers future energy cost savings.</em></p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/asset_value.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-the-asset-value-of-commercial-buildings.pdf">PDF</a>.</p>',
         identifier: "addedAssetValueOfBuildings",
         yAxis: "Value in €"
       }
