@@ -120,8 +120,14 @@ watch(() => session.municipality, (municipality) => {
   session.updateMunicipality(municipality);
 });
 const unitWatcher = watchPausable(() => session.unit, (unit, oldUnit) => {
- session.updateUnit(unit);
- convertValues(unit, oldUnit);
+  session.updateUnit(unit);
+  convertValues(unit, oldUnit);
+  // Show parameter warning if unit changes
+  programs.forEach(program => {
+    program.improvements.forEach(improvement => {
+      if (improvement.internalId && session.parameters[improvement.internalId]) improvement.showParameterWarning = true;
+    });
+  });
 });
 watch(() => session.inhabitants, (inhabitants) => {
   session.updateInhabitants(inhabitants);
