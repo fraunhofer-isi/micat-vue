@@ -85,6 +85,13 @@ const getParameters = async () => {
     "global_parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping, session.region),
   };
 
+  // Convert to ktoe
+  const factor = units[session.unit].factor;
+  const inputs = JSON.parse(JSON.stringify(props.improvement.data!.values));
+  session.years.forEach(year => {
+    const value = inputs[year.toString()];
+    inputs[year.toString()] = value ? value * 1 / factor : 0;
+  });
   const responseParameters: Response = await fetch(
     `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 2 : 4}&id_region=${session.region}&id_subsector=${props.improvement.subsectorId}`,
     {
@@ -92,7 +99,7 @@ const getParameters = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({...props.improvement.data?.values, ...body})
+      body: JSON.stringify({...inputs, ...body})
     },
   );
   const results = await responseParameters.json();
