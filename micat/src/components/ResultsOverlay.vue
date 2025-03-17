@@ -337,7 +337,7 @@ const chartLabels = computed(() => {
         else if (!hasMultipleMeasures.value || row[0] === 1) labels.push(row[hasMultipleMeasures.value ? 1: 0]);
       });
     }
-    if (hasMultipleMeasures.value && labels.length === 0) data.value[0].rows.forEach(row => labels.push('id_measure'));
+    if (hasMultipleMeasures.value && labels.length === 0) labels.push('id_measure');
   }
   return labels;
 });
@@ -403,9 +403,11 @@ const chartData = computed(() => {
         stack: `stack-${iP}`,
       };
       program.rows.forEach(row => {
+        if (isNaN(row[0]) && session.programs.length > 1) row.unshift(0); // Somehow the index is missing
         if (row[hasMultipleMeasures.value ? 1 : 0] === label || label === 'id_measure') {
-          row.splice(0, hasMultipleMeasures.value && label !== 'id_measure' ? 2 : 1);
-          row.forEach((measure, iM) => {
+          const values = structuredClone(row);
+          values.splice(0, hasMultipleMeasures.value && label !== 'id_measure' ? 2 : 1);
+          values.forEach((measure, iM) => {
             // Sum up measurements and check if it's a percentage value
             dataset.data[iM] += activeMeasurement.value.yAxis.indexOf('%') > -1 ? measure * 100 : measure;
           });
