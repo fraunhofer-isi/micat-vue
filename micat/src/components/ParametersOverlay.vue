@@ -50,7 +50,10 @@ const rangeIndex: {[key: string]: number} = {};
 onMounted(async () => {
   const storedParams = JSON.parse(localStorage.getItem("parameters") || JSON.stringify({}));
   if (typeof storedParams[props.improvement.internalId] !== 'undefined') {
-    parameters[props.improvement.internalId] = storedParams[props.improvement.internalId];
+    // Copy all stored parameters to the session
+    for (const key in storedParams) {
+      parameters[parseInt(key)] = storedParams[key];
+    }
   } else {
     if (typeof parameters[props.improvement.internalId] === 'undefined') parameters[props.improvement.internalId] = {};
     await getParameters();
