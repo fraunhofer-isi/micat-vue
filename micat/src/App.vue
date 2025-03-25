@@ -389,7 +389,7 @@ const helpTexts: HelpTextInterface = {
   },
   'advanced-parameters-34': {
     'title': 'Average renovation rent premium',
-    'text': 'This value determines the average rent increase (in percent of the investment sum) for tenants following a major renovation.<br /><br /><i>The default value stems from a Wuppertal Institute analysis of past data, although data availability is quite scarce.</i>',
+    'text': 'This value determines the average rent increase (in percentage points of the current rent) for tenants following a major renovation.<br /><br /><i>The default value stems from a Wuppertal Institute analysis of past data, although data availability is quite scarce.</i>',
     'type': 'help'
   },
   // MURE
