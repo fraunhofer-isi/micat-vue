@@ -77,8 +77,7 @@ const getNewYears = () => {
   if (session.future) {
     newYears = [...Array(36).keys()].map(delta => 2015 + delta);
   } else {
-    // const currentYear = new Date().getFullYear();
-    const currentYear = 2024;
+    const currentYear = new Date().getFullYear();
     const range = currentYear - 2000 - 2;
     newYears = [...Array(range).keys()].map(delta => currentYear - 3 - delta);
   }
@@ -258,8 +257,7 @@ const removeYear = (year: number) => {
 };
 const resetYears = () => {
   // Check if there are valid years defined. If not add default ones.
-  // let currentYear = new Date().getFullYear();
-  let currentYear = 2024;
+  let currentYear = new Date().getFullYear();
   if (session.future) {
     // We allow to let users test with already running actions
     // Filter out years before 2015
@@ -272,7 +270,8 @@ const resetYears = () => {
   } else {
     // We allow to let users test with already running actions
     // Filter out years before 2000
-    years.value = years.value.filter(year => year <= currentYear - 2 && year >= 2000);
+    currentYear -= 3;
+    years.value = years.value.filter(year => year <= currentYear - 3 && year >= 2000);
     if (years.value.length == 0) {
       // Round down to nearest 5
       const nextValidYear = Math.floor(currentYear / 5) * 5;

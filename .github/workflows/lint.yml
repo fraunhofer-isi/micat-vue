@@ -1,4 +1,4 @@
-# © 2024 Fraunhofer-Gesellschaft e.V., München
+# © 2025 Fraunhofer-Gesellschaft e.V., München
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -6,27 +6,27 @@ name: lint
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: extract node version
-      uses: ./.github/actions/extract-node-version
-    - uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-    - name: install dependencies
-      run: |  
-        npx next telemetry disable
-        cd micat
-        npm install       
-    - name: lint
-      run: | 
-        cd micat
-        mkdir eslint
-        npm run lint
+      - uses: actions/checkout@v4
+      - name: extract node version
+        uses: ./.github/actions/extract-node-version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: install dependencies
+        run: |
+          npx next telemetry disable
+          cd micat
+          npm install
+      - name: lint
+        run: |
+          cd micat
+          mkdir eslint
+          npm run lint

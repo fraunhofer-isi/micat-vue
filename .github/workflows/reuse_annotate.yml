@@ -1,4 +1,4 @@
-# © 2024 Fraunhofer-Gesellschaft e.V., München
+# © 2025 Fraunhofer-Gesellschaft e.V., München
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -9,8 +9,8 @@ on:
   # other workflow actions.
   # Otherwise, new files might miss the annotation.
   workflow_run:
-    workflows: [ "third_party_license_file_generation" ]
-    types: [ completed ]
+    workflows: ["third_party_license_file_generation"]
+    types: [completed]
 
 jobs:
   annotate:
@@ -29,7 +29,7 @@ jobs:
           # Currently only src and test folders and THIRDPARTY.md are considered for
           # automated annotations. Otherwise unwanted license files for *.json files would be created.
           # Also see https://stackoverflow.com/questions/77806897/how-to-skip-json-files-with-dep5-when-creating-reuse-annotations
-          # => You might need to manually trigger the creation of annotations for extra files.           
+          # => You might need to manually trigger the creation of annotations for extra files.
           args: annotate --copyright="Fraunhofer-Gesellschaft e.V., München" --copyright-style=symbol --merge-copyrights --license=AGPL-3.0-or-later --skip-unrecognised --recursive micat/src micat/test THIRDPARTY.md
       - name: push changes made by reuse annotate
         # also see https://github.com/stefanzweifel/git-auto-commit-action

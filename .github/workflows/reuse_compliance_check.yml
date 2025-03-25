@@ -1,4 +1,4 @@
-# © 2024 Fraunhofer-Gesellschaft e.V., München
+# © 2025 Fraunhofer-Gesellschaft e.V., München
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -6,8 +6,8 @@ name: reuse_compliance
 
 on:
   workflow_run:
-    workflows: [ "reuse_annotate" ]
-    types: [ completed ]
+    workflows: ["reuse_annotate"]
+    types: [completed]
 
 jobs:
   check:
