@@ -195,10 +195,13 @@ export interface ISessionStateFunctions {
 }
 export interface CbaResultInterface {
     title: string;
-    slug: string;
+    slug: "netPresentValue";
 }
 export interface CbaData {
-    [key: string]: number;
+    name: string;
+    annualMultipleImpacts: number;
+    annualEnergyCosts: number;
+    netPresentValue: number;
 }
 export interface CbaDataOld {
     years:                       string[];

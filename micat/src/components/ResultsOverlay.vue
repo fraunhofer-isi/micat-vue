@@ -29,6 +29,7 @@ import type {
   CbaResultInterface,
   ParameterCategory,
   ProgramInterface,
+  CbaData,
 } from "@/types";
 import { defaultModalInject, chartColours, units } from "@/defaults";
 import AggregationChart from "@/components/AggregationChart.vue";
@@ -427,15 +428,10 @@ const interpolatedSavingsData = computed(() => {
 const interpolatedYears = computed(() => {
   return Parameters.yearsFromSavingsData(interpolatedSavingsData.value);
 });
-const cbaData: Ref<{ [key: string]: number }> = computedAsync(
+const cbaData: Ref<Array<CbaData>> = computedAsync(
   async () => {
-    // AMI_(m,y)
-    let annualMultipleImpacts = 0
-    // AEC_(m,y)
-    let annualEnergyCosts = 0;
+    const data = [];
 
-    // inv_(m,y)
-    let investments = 0;
     // EC_(m,y)
     let reductionOfEnergyCost = 0;
     // MI_(m,y)
@@ -475,6 +471,14 @@ const cbaData: Ref<{ [key: string]: number }> = computedAsync(
     const ecs = energyPriceSensitivity.value / 100;
 
     for (const program of session.programs) {
+      // AMI_(m,y)
+      let annualMultipleImpacts = 0
+      // AEC_(m,y)
+      let annualEnergyCosts = 0;
+
+      // inv_(m,y)
+      let investments = 0;
+      
       for (const improvement of program.improvements) {
         // Get investment costs (inv_(m,y)) and average technology lifetime (LT_m), if not present
         let parameters: ParameterCategory = {};
@@ -520,91 +524,18 @@ const cbaData: Ref<{ [key: string]: number }> = computedAsync(
           annualEnergyCosts += reductionOfEnergyCost / divider;
         }
       }
+      data.push({
+        name: program.name,
+        annualMultipleImpacts: annualMultipleImpacts,
+        annualEnergyCosts: annualEnergyCosts,
+        // NPV_m
+        // Investments are in million €
+        netPresentValue:  -investments * 1000000 * ics + annualEnergyCosts * ecs + annualMultipleImpacts + reductionOfAdditionalCapacities,
+      });
     }
-    return {
-      "annualMultipleImpacts": annualMultipleImpacts,
-      "annualEnergyCosts": annualEnergyCosts,
-      // NPV_m
-      // Investments are in million €
-      "netPresentValue":  -investments * 1000000 * ics + annualEnergyCosts * ecs + annualMultipleImpacts + reductionOfAdditionalCapacities,
-    };
-    // const indicators: {[key: string]: boolean} = {};
-    // for (const measurement of categories['monetization'].measurements.concat(categories['quantification'].measurements.filter(m => m.identifier === "reductionOfAirPollution")).filter(measurement => measurement.identifier !== "addedAssetValueOfBuildings" && measurement.identifier !== "impactOnGrossDomesticProduct")) {
-    //   if (activeIndicators.value.indexOf(measurement.identifier) > -1) indicators[measurement.identifier] = true;
-    // }
-    // const userOptions = {
-    //   'parameters': {
-    //     'energyPriceSensivity': energyPriceSensitivity.value,
-    //     'investmentsSensivity': investmentsSensitivity.value,
-    //     'discountRate': discountRate.value,
-    //     'year': cbaYear.value,
-    //   },
-    //   indicators
-    // }
-    
-    // const results: CbaData = DataStructures.prepareResultDataStructure();
-    // const indicatorData = convert(session.results);
-    // results.supportingYears = session.years;
-    // results.years = interpolatedYears.value;
-
-    // for (const measure of interpolatedSavingsData.value.measures) {
-    //   const measureSpecificResults = DataStructures.prepareMeasureSpecificResultsDataStructure(measure.id);
-    //   const measureSpecificParameters = Parameters.measureSpecificParameters(
-    //     measure,
-    //     indicatorData,
-    //     userOptions
-    //   );
-    //   measureSpecificParameters.subsidyRate = Interpolation.annualLinearInterpolation(measureSpecificParameters.subsidyRate);
-
-    //   for (const year of results.years) {
-    //     const annualMeasureSpecificParameters =
-    //       Parameters.annualMeasureSpecificParameters(year, measure);
-    //     // Do not change the calculation order, because a calculation depends on the results of the previous one(s)!
-    //     CostBenefitAnalysisFacility.calculateCostBenefitAnalysisFacility(
-    //       measureSpecificParameters,
-    //       annualMeasureSpecificParameters,
-    //       measureSpecificResults,
-    //       userOptions
-    //     );
-    //     NetPresentValue.calculateNetPresentValue(
-    //       measureSpecificParameters,
-    //       annualMeasureSpecificParameters,
-    //       measureSpecificResults,
-    //       userOptions
-    //     );
-    //     CostBenefitRatio.calculateCostBenefitRatio(
-    //       measureSpecificParameters,
-    //       annualMeasureSpecificParameters,
-    //       measureSpecificResults,
-    //       userOptions
-    //     );
-    //     LevelisedCosts.calculateLevelisedCosts(
-    //       measureSpecificParameters,
-    //       annualMeasureSpecificParameters,
-    //       measureSpecificResults,
-    //       userOptions
-    //     );
-    //     FundingEfficiency.calculateFundingEfficiency(
-    //       measureSpecificParameters,
-    //       annualMeasureSpecificParameters,
-    //       measureSpecificResults,
-    //       userOptions
-    //     );
-    //     MarginalCostCurves.calculateMarginalCostCurves(
-    //       measureSpecificParameters,
-    //       annualMeasureSpecificParameters,
-    //       measureSpecificResults,
-    //       userOptions
-    //     );
-    //   }
-
-    //   DataStructures.appendMeasureSpecificResults(
-    //     measureSpecificResults,
-    //     results
-    //   );
-    // }
+    return data;
   },
-  { annualMultipleImpacts: 0, annualEnergyCosts: 0, netPresentValue: 0 }, // initial state
+  [], // initial state
 )
 
 // Functions
@@ -868,22 +799,25 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               </div>
             
               <div class="flex flex-wrap" v-if="cbaData">
-                <div
-                  v-for="result in cbaResults"
-                  v-bind:key="`cba-${result.slug}`"
-                  class="rounded-xl bg-white border border-sky-600 mt-2 mb-5 mx-5 max-w-[450px] self-start"
-                >
-                  <div class="flex items-center px-4 py-2 text-sm text-white justify-items-start bg-sky-600 rounded-t-xl">
-                    <span class="grow">{{ result.title }}</span>
-                    <InformationCircleIcon
-                      @click="openModal(`cba-${result.slug}`)"
-                      class="inline w-6 h-6 ml-2 cursor-pointer"
-                    ></InformationCircleIcon>
-                    <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">absolute</span>
-                  </div>
-                  <div class="p-4">
-                    <div class="text-gray-300">{{ formatter.format(cbaData[result.slug]) }}</div>
-                    <span class="font-bold">{{ labelFormatter.format(cbaData[result.slug]) }}</span>
+                <div v-for="(programResults, i) in cbaData" :key="`program-${i}`" class="p-3 mx-5 mt-3 mb-2 rounded-lg bg-gray-50">
+                  <h3 class="mb-2 font-bold text-md max-w-[450px]">{{ programResults.name }}</h3>
+                  <div
+                    v-for="result in cbaResults"
+                    v-bind:key="`cba-${result.slug}`"
+                    class="rounded-xl bg-white border border-sky-600 max-w-[450px] self-start"
+                  >
+                    <div class="flex items-center px-4 py-2 text-sm text-white justify-items-start bg-sky-600 rounded-t-xl">
+                      <span class="grow">{{ result.title }}</span>
+                      <InformationCircleIcon
+                        @click="openModal(`cba-${result.slug}`)"
+                        class="inline w-6 h-6 ml-2 cursor-pointer"
+                      ></InformationCircleIcon>
+                      <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">absolute</span>
+                    </div>
+                    <div class="p-4">
+                      <div class="text-gray-300">{{ formatter.format(programResults[result.slug]) }}</div>
+                      <span class="font-bold">{{ labelFormatter.format(programResults[result.slug]) }}</span>
+                    </div>
                   </div>
                 </div>  
                 <!-- <div class="relative my-3 bg-white border border-gray-300 rounded-3xl">
