@@ -442,6 +442,9 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
     // Sum up MI_(m,y) and EC_(m,y)
     const measurements = categories.monetization.measurements.filter(measurement => activeIndicators.value.indexOf(measurement.identifier) > -1);
     measurements.forEach((measurement, i) => {
+      if (["impactOnGrossDomesticProduct", "addedAssetValueOfBuildings"].indexOf(measurement.identifier) > -1) {
+        return;
+      }
       session.results.forEach(result => {
         const data: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
         if (measurement.identifier === 'reductionOfEnergyCost') {
@@ -524,6 +527,14 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
           annualEnergyCosts += reductionOfEnergyCost / divider;
         }
       }
+      measurements.filter(measurement => ["impactOnGrossDomesticProduct", "addedAssetValueOfBuildings"].indexOf(measurement.identifier) > -1).forEach((measurement, i) => {
+        session.results.forEach(result => {
+          const data: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
+          data.rows.forEach(row => {
+            annualMultipleImpacts += row[row.length - 1] / dr;
+          });
+        });  
+      });  
       data.push({
         name: program.name,
         annualMultipleImpacts: annualMultipleImpacts,
