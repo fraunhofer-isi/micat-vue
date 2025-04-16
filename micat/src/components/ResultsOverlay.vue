@@ -102,9 +102,9 @@ const categories: CategoriesInterface = {
       {
         subcategory: "Economic",
         title: "Impact on energy intensity",
-        description: '<p class="mb-2">Energy intensity describes the amount of energy necessary to generate a unit of gross domestic product (GDP) in an economy. This graph shows the effect energy efficiency has in reducing it. It is calculated by dividing gross available energy by GDP. The scenario with measures is compared to a scenario populated with past data from Eurostat (ex-post) and projections from PRIMES (ex-ante).</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/energy_intensity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Energy-Intensity.pdf">PDF</a>.</p>',
+        description: '<p class="mb-2">Energy intensity describes the amount of energy necessary to generate a unit of gross domestic product (GDP) in an economy. This graph shows the effect energy efficiency has in reducing it. It is calculated by dividing gross available energy by GDP. The scenario with measures is compared to a scenario without measures populated with past data from Eurostat (ex-post) and projections from PRIMES (ex-ante).</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/energy_intensity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Energy-Intensity.pdf">PDF</a>.</p>',
         identifier: "energyIntensity",
-        yAxis: "Energy intensity in toe / M€"
+        yAxis: "Change in ktoe / M€"
       },
       {
         subcategory: "Economic",
@@ -136,24 +136,10 @@ const categories: CategoriesInterface = {
       },
       {
         subcategory: "Economic",
-        title: "This indicator is obsolete",
-        description: '<p class="mb-2">This indicator is obsolete.</p>',
-        identifier: "changeInUnitCostsOfProduction",
-        yAxis: "Value in € / €"
-      },
-      {
-        subcategory: "Economic",
         title: "Turnover of energy efficiency goods",
         description: '<p class="mb-2">Typically, materials essential for energy efficiency in buildings are produced locally. As such, the turnover of energy efficiency goods is an indicator describing the benefit to this specific industry sector. The calculation is based on data from two national case studies.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/turnover_of_EE_goods.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Turnover-of-energy-efficiency-goods.pdf">PDF</a>.</p>',
         identifier: "turnoverOfEnergyEfficiencyGoods",
         yAxis: "Value in €"
-      },
-      {
-        subcategory: "Economic",
-        title: "Change in supplier diversity by energy efficiency impact",
-        description: '<p class="mb-2">This indicator relies on the <a class="font-bold" target="_blank" href="https://en.wikipedia.org/wiki/Herfindahl%E2%80%93Hirschman_index">Herfindahl-Hirschman Index</a>, a measure of market concentration. Since PRIMES does not provide any projections for the future supplier landscape of fossil fuels, this indicator is not in use for ex-ante calculations, whereas past Eurostat figures are used for ex-post examination. Furthermore, the assumption is that energy savings result in reduced imports from the largest supplier.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/supplier_diversity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impacts-Aggregated-energy-security-supply-diversity.pdf">PDF</a>.</p>',
-        identifier: "changeInSupplierDiversityByEnergyEfficiencyImpact",
-        yAxis: "Change in supplier diversity in %"
       },
       {
         subcategory: "Economic",
