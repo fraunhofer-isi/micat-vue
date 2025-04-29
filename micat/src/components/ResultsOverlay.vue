@@ -517,7 +517,7 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         session.results.forEach(result => {
           const data: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
           data.rows.forEach(row => {
-            annualMultipleImpacts += row[row.length - 1] / dr;
+            annualMultipleImpacts += row[row.length - 1];
           });
         });  
       });  
