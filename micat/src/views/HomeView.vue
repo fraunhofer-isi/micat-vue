@@ -148,10 +148,10 @@ onMounted(async () => {
   // id_subsector
   // Get all database tables related to subsectors and descendants
   const responseSubsector: Response = await fetch(`${import.meta.env.VITE_API_URL}id_subsector`);
-  const dataSubsector: { rows: Array<[id: number, name: string]> } = await responseSubsector.json();
+  const dataSubsector: { rows: Array<[id: number, name: string, description: string, renewable: number]> } = await responseSubsector.json();
   const responseImprovements: Response = await fetch(`${import.meta.env.VITE_API_URL}id_action_type`);
   const dataImprovements: {
-    rows: Array<[id: number, name: string, name2: string, renewable: number]>
+    rows: Array<[id: number, name: string, name2: string]>
   } = await responseImprovements.json();
   const responseMapping: Response = await fetch(`${import.meta.env.VITE_API_URL}mapping__subsector__action_type`);
   const dataMapping: {
@@ -159,14 +159,13 @@ onMounted(async () => {
   } = await responseMapping.json();
 
   const improvements: {
-    [key: number]: { id: number, subsectors: Array<number>, name: string, label: string, renewable: boolean, values: ImprovementValueInterface }
+    [key: number]: { id: number, subsectors: Array<number>, name: string, label: string, values: ImprovementValueInterface }
   } = {};
   dataImprovements.rows.forEach(improvement => {
     improvements[improvement[0]] = {
       id: improvement[0],
       label: improvement[1],
       name: improvement[2],
-      renewable: !!improvement[3],
       values: {},
       subsectors: []
     };
@@ -178,6 +177,7 @@ onMounted(async () => {
     subsectors.value.push({
       id: subsector[0],
       name: subsector[1],
+      renewable: !!subsector[3],
       improvements: Object.values(improvements).filter(improvement => improvement.subsectors.indexOf(subsector[0]) > -1)
     });
   });
@@ -331,7 +331,7 @@ const removeImprovement = (program: ProgramInterface, i: number) => {
 }
 const getSubsectorImprovements = (subsectorId: number) => {
   if (!subsectorId || subsectors.value.length === 0) return [];
-  return subsectors.value.filter(subsector => subsector.id === subsectorId)[0].improvements.filter(improvement => !improvement.renewable);
+  return subsectors.value.filter(subsector => subsector.id === subsectorId)[0].improvements;
 }
 const setSeedInfo = (value: boolean) => {
   seedInfo.value = value;
@@ -983,7 +983,7 @@ const start = () => {
                       role="menuitem" 
                       tabindex="-1"
                       :id="`subsector-${i}-${subsector.id}`" 
-                      v-for="subsector in subsectors.filter(s => s.name.toLowerCase().includes('average'))" 
+                      v-for="subsector in subsectors.filter(s => s.name.toLowerCase().includes('average') && !s.renewable)" 
                       v-bind:key="`subsector-${i}-${subsector.id}`"
                       @click="program.subsector = (subsector.id as number); program.showSubsectorMenu = false; programChanged(program, i, program.subsector!)"
                     >
@@ -997,7 +997,7 @@ const start = () => {
                       role="menuitem" 
                       tabindex="-1"
                       :id="`subsector-${i}-${subsector.id}`" 
-                      v-for="subsector in subsectors.filter(s => !s.name.toLowerCase().includes('average'))" 
+                      v-for="subsector in subsectors.filter(s => !s.name.toLowerCase().includes('average') && !s.renewable)" 
                       v-bind:key="`subsector-${i}-${subsector.id}`"
                       @click="program.subsector = (subsector.id as number); program.showSubsectorMenu = false; programChanged(program, i, program.subsector!)"
                     >

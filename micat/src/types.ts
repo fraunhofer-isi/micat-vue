@@ -39,7 +39,6 @@ export interface ImprovementInterface {
     values: ImprovementValueInterface;
     percentage?: number;
     showParameterWarning?: boolean;
-    renewable?: boolean;
 }
 
 export interface UnitInterface {
@@ -65,6 +64,7 @@ export interface ProgramInterface {
 export interface SubsectorInterface {
     name: string;
     id: number | string;
+    renewable: boolean;
     improvements: Array<ImprovementInterface>;
 }
 
