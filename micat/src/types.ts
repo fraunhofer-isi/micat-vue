@@ -39,6 +39,7 @@ export interface ImprovementInterface {
     values: ImprovementValueInterface;
     percentage?: number;
     showParameterWarning?: boolean;
+    renewable?: boolean;
 }
 
 export interface UnitInterface {

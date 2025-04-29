@@ -151,7 +151,7 @@ onMounted(async () => {
   const dataSubsector: { rows: Array<[id: number, name: string]> } = await responseSubsector.json();
   const responseImprovements: Response = await fetch(`${import.meta.env.VITE_API_URL}id_action_type`);
   const dataImprovements: {
-    rows: Array<[id: number, name: string, name2: string]>
+    rows: Array<[id: number, name: string, name2: string, renewable: number]>
   } = await responseImprovements.json();
   const responseMapping: Response = await fetch(`${import.meta.env.VITE_API_URL}mapping__subsector__action_type`);
   const dataMapping: {
@@ -159,13 +159,14 @@ onMounted(async () => {
   } = await responseMapping.json();
 
   const improvements: {
-    [key: number]: { id: number, subsectors: Array<number>, name: string, label: string, values: ImprovementValueInterface }
+    [key: number]: { id: number, subsectors: Array<number>, name: string, label: string, renewable: boolean, values: ImprovementValueInterface }
   } = {};
   dataImprovements.rows.forEach(improvement => {
     improvements[improvement[0]] = {
       id: improvement[0],
       label: improvement[1],
       name: improvement[2],
+      renewable: !!improvement[3],
       values: {},
       subsectors: []
     };
@@ -330,7 +331,7 @@ const removeImprovement = (program: ProgramInterface, i: number) => {
 }
 const getSubsectorImprovements = (subsectorId: number) => {
   if (!subsectorId || subsectors.value.length === 0) return [];
-  return subsectors.value.filter(subsector => subsector.id === subsectorId)[0].improvements;
+  return subsectors.value.filter(subsector => subsector.id === subsectorId)[0].improvements.filter(improvement => !improvement.renewable);
 }
 const setSeedInfo = (value: boolean) => {
   seedInfo.value = value;
