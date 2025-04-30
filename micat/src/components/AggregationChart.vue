@@ -8,7 +8,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 import { Bar } from "vue-chartjs";
 import { computed } from "vue";
 import { chartColours } from "@/defaults";
-import { formatter, labelFormatter, scientificFormatter } from "@/helpers";
+import { formatter, labelFormatter, labelFormatterSmall } from "@/helpers";
 import type {
   CategoriesInterface,
   DatasetInterface,
@@ -135,7 +135,7 @@ const getAggregationChartOptions: any = (programIdx: number) => ({
               label += ': ';
           }
           if (context.parsed.y !== null) {
-            label += context.parsed.y < 1 && context.parsed.y >= 0 ? scientificFormatter.format(context.parsed.y) : labelFormatter.format(context.parsed.y);
+            label += context.parsed.y < 1 && context.parsed.y >= 0 ? labelFormatterSmall.format(context.parsed.y) : labelFormatter.format(context.parsed.y);
           }
           return label;
         },

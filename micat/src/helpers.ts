@@ -16,6 +16,10 @@ export const formatter = Intl.NumberFormat('en', {
 export const scientificFormatter = Intl.NumberFormat('en', {
     notation: 'scientific',
 })
+export const labelFormatterSmall = Intl.NumberFormat('en', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 10,
+})
 export const labelFormatter = Intl.NumberFormat('en', {
     notation: 'standard',
     minimumFractionDigits: 0,

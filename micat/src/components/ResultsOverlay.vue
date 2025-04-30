@@ -33,7 +33,7 @@ import type {
 } from "@/types";
 import { defaultModalInject, chartColours, units } from "@/defaults";
 import AggregationChart from "@/components/AggregationChart.vue";
-import { formatter, labelFormatter, scientificFormatter, restructureParameters } from "@/helpers";
+import { formatter, labelFormatter, labelFormatterSmall, restructureParameters } from "@/helpers";
 import {
   Parameters,
   SavingsInterpolation,
@@ -348,7 +348,7 @@ const chartOptions = computed(() => {
                 label += ': ';
             }
             if (context.parsed.y !== null) {
-              label += context.parsed.y < 1 && context.parsed.y >= 0 ? scientificFormatter.format(context.parsed.y) : labelFormatter.format(context.parsed.y);
+              label += context.parsed.y < 1 && context.parsed.y >= 0 ? labelFormatterSmall.format(context.parsed.y) : labelFormatter.format(context.parsed.y);
             }
             return label;
           },
