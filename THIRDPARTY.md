@@ -1,9 +1,3 @@
-<!--
-© 2025 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -139,7 +133,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.27.0
+ - @babel/parser@7.27.1
 
 This package contains the following license:
 
@@ -283,9 +277,9 @@ MIT
 
 The following npm packages may be included in this product:
 
- - @babel/helper-string-parser@7.25.9
- - @babel/helper-validator-identifier@7.25.9
- - @babel/types@7.27.0
+ - @babel/helper-string-parser@7.27.1
+ - @babel/helper-validator-identifier@7.27.1
+ - @babel/types@7.27.1
 
 These packages each contain the following license:
 
@@ -438,8 +432,8 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @tanstack/virtual-core@3.13.6
- - @tanstack/vue-virtual@3.13.6
+ - @tanstack/virtual-core@3.13.8
+ - @tanstack/vue-virtual@3.13.8
 
 These packages each contain the following license:
 
