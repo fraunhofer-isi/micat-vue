@@ -52,6 +52,7 @@ export interface UnitsInterface {
 
 export interface ProgramInterface {
     name: string;
+    type: string;
     subsector: number;
     subsectorName: string;
     showSubsectorMenu: boolean;

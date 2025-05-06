@@ -943,9 +943,35 @@ const start = () => {
               </div>
             </span>
           </div>
+          <!-- <div>
+            <div
+              class="inline-flex items-center mb-2 text-sm border cursor-pointer rounded-xl dark:text-gray-800 border-sky-600 dark:border-0"
+            >
+              <span 
+                class="py-2 pl-5 pr-4 text-center rounded-l-xl leading-1"
+                :class="{
+                  'bg-sky-600 text-white': !program.type || program.type === 'energyEfficiency',
+                  'bg-white text-gray-400': program.type && program.type !== 'energyEfficiency',
+                }"
+                @click="program.type = 'energyEfficiency'; program.subsector = 0; program.subsectorName = '';"
+              >
+                Energy Efficiency
+              </span>
+              <span
+                class="py-2 pl-4 pr-5 text-center rounded-r-xl leading-1"
+                :class="{
+                  'dark:bg-white text-gray-400': !program.type || program.type !== 'renewable',
+                  'bg-sky-600 text-white': program.type && program.type === 'renewable',
+                }"
+                @click="program.type = 'renewable'; program.subsector = 0; program.subsectorName = '';"
+              >
+                Renewables
+              </span>
+            </div>
+          </div> -->
           <div class="flex items-center gap-8">
             <div>
-              <label :for="`subsector-${i}`" class="text-sm dark:text-white">Subsector</label>
+              <label :for="`subsector-${i}`" class="text-sm dark:text-white">{{ program.type === 'renewable' ? 'Technology' : 'Subsector' }}</label>
               <InformationCircleIcon
                 @click="openModal('subsector')"
                 class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
@@ -962,7 +988,7 @@ const start = () => {
                     aria-haspopup="true"
                     @click="program.showSubsectorMenu = !program.showSubsectorMenu"
                   >
-                    {{ program.subsectorName || 'Select subsector' }}
+                    {{ program.subsectorName || (program.type === 'renewable' ? 'Select technology' : 'Select subsector') }}
                     <svg class="w-5 h-5 -mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                       <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                     </svg>
@@ -971,7 +997,7 @@ const start = () => {
                 <div 
                   class="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-[40vh] overflow-y-auto"
                   v-show="program.showSubsectorMenu"
-                  role="menu" 
+                  role="menu"
                   aria-orientation="vertical" 
                   :aria-labelledby="`subsector-button-${i}`" 
                   tabindex="-1"
@@ -983,7 +1009,7 @@ const start = () => {
                       role="menuitem" 
                       tabindex="-1"
                       :id="`subsector-${i}-${subsector.id}`" 
-                      v-for="subsector in subsectors.filter(s => s.name.toLowerCase().includes('average') && !s.renewable)" 
+                      v-for="subsector in subsectors.filter(s => s.name.toLowerCase().includes('average') && (program.type === 'renewable' ? s.renewable : !s.renewable))" 
                       v-bind:key="`subsector-${i}-${subsector.id}`"
                       @click="program.subsector = (subsector.id as number); program.showSubsectorMenu = false; programChanged(program, i, program.subsector!)"
                     >
@@ -997,7 +1023,7 @@ const start = () => {
                       role="menuitem" 
                       tabindex="-1"
                       :id="`subsector-${i}-${subsector.id}`" 
-                      v-for="subsector in subsectors.filter(s => !s.name.toLowerCase().includes('average') && !s.renewable)" 
+                      v-for="subsector in subsectors.filter(s => !s.name.toLowerCase().includes('average') && (program.type === 'renewable' ? s.renewable : !s.renewable))" 
                       v-bind:key="`subsector-${i}-${subsector.id}`"
                       @click="program.subsector = (subsector.id as number); program.showSubsectorMenu = false; programChanged(program, i, program.subsector!)"
                     >
@@ -1036,7 +1062,7 @@ const start = () => {
                     v-model="improvement.id"
                     @change="improvementChanged(program, i, improvement.id!)"
                   >
-                    <option value="0" selected disabled>Select improvement</option>
+                    <option value="0" selected disabled>{{ program.type === 'renewable' ? 'Select type' : 'Select improvement' }}</option>
                     <option
                       v-for="improvementSelection in getSubsectorImprovements(program.subsector)"
                       v-bind:key="`improvement-selection-${i}-${improvementSelection.id}`"
