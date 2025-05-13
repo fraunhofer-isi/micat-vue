@@ -73,7 +73,7 @@ export const restructureParameters = (subsectorId: number, name: string, paramet
       return a['parameters']['id_final_energy_carrier'] < b['parameters']['id_final_energy_carrier'] ? -1 : 1;
     });
   }
-  return restructuredResults;
+  return Object.keys(restructuredResults).sort((a, b) => a === "main" ? -1 : 1).reduce((r, k) => (r[k] = restructuredResults[k], r), ({} as ParameterCategory));
 }
 export const getGlobalParametersPayload = (globalParameters: GlobalParameters, monetisationFactorMapping: {[key: number]: string}, region: number) => {
   const results: PayloadParameterInterface = {};
