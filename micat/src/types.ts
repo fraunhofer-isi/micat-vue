@@ -172,7 +172,6 @@ export interface ISessionState {
   odysseeEndYear: number;
   region: number;
   municipality: boolean;
-  unit: number;
   inhabitants: number;
   years: Array<number>;
   programs: Array<ProgramInterface>;

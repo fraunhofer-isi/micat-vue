@@ -87,7 +87,7 @@ const newYears = ref<Array<number>>(getNewYears());
 const newYearSelected = ref<number>(newYears.value[0]);
 const showGlobalParametersOverlay = ref<boolean>(false);
 const showParametersOverlay = ref<boolean>(false);
-const selectedImprovement = ref<SelectedImprovementInterface>({internalId: 0});
+const selectedImprovement = ref<SelectedImprovementInterface>({internalId: 0, unit: 1});
 const error = ref<string>("");
 const fileUpload = ref<HTMLInputElement | null>(null);
 
