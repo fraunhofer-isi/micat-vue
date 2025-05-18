@@ -24,6 +24,7 @@ export const defaultImprovement: ImprovementInterface = {
 export const defaultProgram: ProgramInterface = {
     name: 'Program 1',
     type: 'energyEfficiency',
+    unit: 1,
     subsector: 0,
     subsectorName: '',
     showSubsectorMenu: false,

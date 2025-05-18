@@ -25,6 +25,7 @@ export interface SelectedImprovementInterface {
     subsector?: string;
     subsectorId?: number;
     data?: ImprovementInterface;
+    unit: number;
     showParameterWarning?: boolean;
 }
 
@@ -53,6 +54,7 @@ export interface UnitsInterface {
 export interface ProgramInterface {
     name: string;
     type: string;
+    unit: number;
     subsector: number;
     subsectorName: string;
     showSubsectorMenu: boolean;

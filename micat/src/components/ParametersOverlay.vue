@@ -82,14 +82,14 @@ const getParameters = async () => {
     "details": {},
     "unit": {
       // "name": "kilotonne of oil equivalent",
-      "symbol": units[session.unit].symbol,
-      "factor": units[session.unit].factor
+      "symbol": units[props.improvement.unit].symbol,
+      "factor": units[props.improvement.unit].factor
     },
     "global_parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping, session.region),
   };
 
   // Convert to ktoe
-  const factor = units[session.unit].factor;
+  const factor = units[props.improvement.unit].factor;
   const inputs = JSON.parse(JSON.stringify(props.improvement.data!.values));
   session.years.forEach(year => {
     const value = inputs[year.toString()];

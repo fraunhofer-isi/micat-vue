@@ -484,8 +484,8 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
             "details": {},
             "unit": {
               // "name": "kilotonne of oil equivalent",
-              "symbol": units[session.unit].symbol,
-              "factor": units[session.unit].factor
+              "symbol": units[program.unit].symbol,
+              "factor": units[program.unit].factor
             }
           };
           

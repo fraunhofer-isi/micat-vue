@@ -35,7 +35,6 @@ export const useSessionStore = defineStore({
       odysseeEndYear: parseInt(localStorage.getItem("odysseeEndYear") || "2022"),
       region: parseInt(localStorage.getItem("region") || "0"),
       municipality: String(localStorage.getItem("municipality") || "false").toLowerCase() === "true",
-      unit: parseInt(localStorage.getItem("unit") || "1"),
       inhabitants: parseInt(localStorage.getItem("inhabitants") || "100000"),
       years: JSON.parse(localStorage.getItem("years") || JSON.stringify(getYears(String(localStorage.getItem("future") || "false").toLowerCase() === "true"))),
       programs: JSON.parse(localStorage.getItem("programs") || JSON.stringify([structuredClone(defaultProgram)])),
@@ -100,10 +99,6 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       localStorage.setItem("municipality", municipality.toString());
     },
-    updateUnit(unit: number, manualChange?: boolean) {
-      if (manualChange) this.resetted = false;
-      localStorage.setItem("unit", unit.toString());
-    },
     updateInhabitants(inhabitants: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("inhabitants", inhabitants.toString());
@@ -161,7 +156,6 @@ export const useSessionStore = defineStore({
       this.updateOdysseeEndYear(2022, false);
       this.updateRegion(0, false);
       this.updateMunicipality(false, false);
-      this.updateUnit(1, false);
       this.updateInhabitants(100000, false);
       this.updateYears(getYears(false), false);
       this.updatePrograms([structuredClone(defaultProgram)], false);

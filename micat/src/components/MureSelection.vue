@@ -153,7 +153,10 @@ const getMeasurementDetails = async () => {
   // Set subsector for programs and values
   const measureObj = measurements.value.find(m => m.id === mureMeasurement.value);
   const programs = session.programs;
+
   programs.forEach(program => {
+    // If MURE data is used, set unit to PJ, if ODYSSEE data is used, set unit to ktoe
+    program.unit = session.odyssee ? 1 : 5;
     if (measureObj) program.name = measureObj.title;
     program.mureTotal = {};
     program.improvements.forEach(improvement => {

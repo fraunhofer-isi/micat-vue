@@ -118,16 +118,6 @@ watch(() => session.region, (region) => {
 watch(() => session.municipality, (municipality) => {
   session.updateMunicipality(municipality);
 });
-const unitWatcher = watchPausable(() => session.unit, (unit, oldUnit) => {
-  session.updateUnit(unit);
-  convertValues(unit, oldUnit);
-  // Show parameter warning if unit changes
-  programs.forEach(program => {
-    program.improvements.forEach(improvement => {
-      if (improvement.internalId && session.parameters[improvement.internalId]) improvement.showParameterWarning = true;
-    });
-  });
-});
 watch(() => session.inhabitants, (inhabitants) => {
   session.updateInhabitants(inhabitants);
 });
@@ -194,25 +184,6 @@ onMounted(async () => {
 })
 
 // Functions
-const convertValues = (unitId: number, oldUnitId: number) => {
-  // Functions to convert all given energy savings in case of unit changes
-  const unit = units[unitId];
-  const oldUnit = units[oldUnitId];
-  programs.forEach(program => {
-    program.improvements.forEach(improvement => {
-      Object.keys(improvement.values).forEach(key => {
-        if (oldUnit.symbol === 'ktoe') {
-          improvement.values[key] *= unit.factor;
-        } else {
-          // convert back to ktoe
-          improvement.values[key] /= oldUnit.factor;
-          if (unit.symbol !== 'ktoe') improvement.values[key] *= unit.factor;
-        }
-      });
-    });
-  });
-  session.updatePrograms(programs);
-};
 const updateImprovementValues = () => {
   programs.forEach(program => {
     program.improvements.forEach(improvement => {
@@ -344,7 +315,8 @@ const showParameters = (data: ImprovementInterface, programIndex: number) => {
     name: data.name, 
     subsector: selectedProgram.subsectorName, 
     subsectorId: selectedProgram.subsector, 
-    program: selectedProgram.name, 
+    program: selectedProgram.name,
+    unit: selectedProgram.unit,
     data,
   };
   
@@ -419,7 +391,7 @@ const analyze = async () => {
       };
       years.value.forEach(year => {
         const value = improvement.values[year.toString()];
-        const factor = units[session.unit].factor
+        const factor = units[program.unit].factor
         improvementData.savings[year.toString()] = value ? value * 1 / factor : 0;
       });
       payload.measures.push(improvementData);
@@ -478,6 +450,31 @@ const programChanged = (program: ProgramInterface, i: number, subsectorId: numbe
   session.updateParameters({});
   
 }
+const unitChanged = (program: ProgramInterface, i: number, oldUnitId: number, unitId: number) => {
+  program.unit = unitId;
+  // Functions to convert all given energy savings in case of unit changes
+  const unit = units[unitId];
+  const oldUnit = units[oldUnitId];
+  program.improvements.forEach(improvement => {
+    Object.keys(improvement.values).forEach(key => {
+      if (oldUnit.symbol === 'ktoe') {
+        improvement.values[key] *= unit.factor;
+      } else {
+        // convert back to ktoe
+        improvement.values[key] /= oldUnit.factor;
+        if (unit.symbol !== 'ktoe') improvement.values[key] *= unit.factor;
+      }
+    });
+  });
+  programs[i] = program;
+  session.updatePrograms(programs);
+  // If the sub sector changes, we need to reset parameters
+  session.updateParameters({});
+  // Show parameter warning if unit changes
+  program.improvements.forEach(improvement => {
+    if (improvement.internalId && session.parameters[improvement.internalId]) improvement.showParameterWarning = true;
+  });
+}
 const improvementChanged = (program: ProgramInterface, i: number, improvementId: number) => {
   const name = getSubsectorImprovements(program.subsector).filter(improvement => improvement.id === improvementId)[0].name;
   program.improvements.filter(improvement => improvement.id === improvementId).forEach(improvement => {
@@ -514,7 +511,6 @@ const exportInput = () => {
       region: session.region,
       municipality: session.municipality,
       inhabitants: session.inhabitants,
-      unit: session.unit,
       years: years.value,
       programs: programs,
       globalParameters: session.globalParameters,
@@ -559,21 +555,13 @@ const importInput = async (e: Event) => {
   session.updateUseRenovationRate(data.useRenovationRate);
   setSeedInfo(data.seedInfo);
 
-  // Pause watcher to avoid unit conversion
-  // Unfortunatly, the resume function is taking effect immediately, so we need to postpone it.
-  unitWatcher.pause();
-  session.unit = data.unit;
   setTimeout(() => {
-    unitWatcher.resume();
-
-    // Updates on parameters need to be delayed, too, otherwise they will be overwritten by watcher functions
+    // Updates on parameters need to be delayed, otherwise they will be overwritten by watcher functions
     session.updateGlobalParameters(data.globalParameters);
     session.updateParameters(data.parameters);
   }, 500);
 };
 const updateMureData = () => {
-  // If MURE data is used, set unit to PJ, if ODYSSEE data is used, set unit to ktoe
-  session.unit = session.odyssee ? 1 : 5;
   // Use ex-ante for MURE and ex-post for ODYSSEE only
   session.future = !session.odyssee;
 };
@@ -720,27 +708,6 @@ const start = () => {
               </div>
             </div>
             <!-- end region -->
-            <!-- unit -->
-            <div class="col-span-2 mt-8">
-              <label for="unit" class="text-sm dark:text-white">Unit</label>
-              <InformationCircleIcon
-                @click="openModal('unit')"
-                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
-              ></InformationCircleIcon>
-            </div>
-            <div class="col-span-3 mt-8">
-              <select
-                id="unit"
-                class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-                v-model="session.unit"
-              >
-                <option v-for="[key, value] in Object.entries(units)" v-bind:key="`unit-${key}`" :value="key">{{
-                    value.name
-                  }}
-                </option>
-              </select>
-            </div>
-            <!-- end unit -->
           </div>
         </div>
         <button
@@ -969,15 +936,17 @@ const start = () => {
               </span>
             </div>
           </div> -->
-          <div class="flex items-center gap-8">
-            <div>
-              <label :for="`subsector-${i}`" class="text-sm dark:text-white">{{ program.type === 'renewable' ? 'Technology' : 'Subsector' }}</label>
-              <InformationCircleIcon
-                @click="openModal('subsector')"
-                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
-              ></InformationCircleIcon>
-            </div>
-            <div>
+          <div class="grid items-center w-2/3 grid-cols-5">
+            <div class="col-span-2">
+              <div>
+                <label :for="`subsector-${i}`" class="text-sm dark:text-white">{{ program.type === 'renewable' ? 'Technology' : 'Subsector' }}</label>
+                <InformationCircleIcon
+                  @click="openModal('subsector')"
+                  class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+                ></InformationCircleIcon>
+              </div>
+            </div>  
+            <div class="col-span-3">
               <div class="relative inline-block text-left">
                 <div>
                   <button 
@@ -1033,8 +1002,27 @@ const start = () => {
                 </div>
               </div>
             </div>
+            <div class="col-span-2 mt-5">
+              <label :for="`program-${i}-unit`" class="text-sm dark:text-white">Unit</label>
+              <InformationCircleIcon
+                @click="openModal('unit')"
+                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+              ></InformationCircleIcon>
+            </div>
+            <div class="col-span-3">
+              <select
+                :id="`program-${i}-unit`"
+                class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                @change="(e) => unitChanged(program, i, program.unit!, parseInt((e.target as HTMLInputElement).value))"
+              >
+                <option v-for="[key, value] in Object.entries(units)" :selected="program.unit === parseInt(key)" v-bind:key="`unit-${key}`" :value="key">{{
+                    value.name
+                  }}
+                </option>
+              </select>
+            </div>
           </div>
-          <div class="grid items-center grid-cols-2 gap-5 mt-8" v-if="program.subsector">
+          <div class="grid grid-cols-2 gap-4 mt-8" v-if="program.subsector">
             <div
               class="relative mb-2 border rounded-3xl"
               :class="{
@@ -1091,10 +1079,10 @@ const start = () => {
                           placeholder="0"
                           :id="`improvement-value-${improvement.id}-${year}`"
                           @change="(e: Event) => {improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace(/,/g, '')); improvementValueChanged(improvement)}"
-                          :options="{precision: session.unit === 5 ? 6 : 0}"
+                          :options="{precision: program.unit === 5 ? 6 : 0}"
                         />
                       </span>
-                      <span class="p-2 text-xs leading-4 text-gray-400 dark:text-slate-500">{{ units[session.unit].symbol }}</span>
+                      <span class="p-2 text-xs leading-4 text-gray-400 dark:text-slate-500">{{ units[program.unit || 1].symbol }}</span>
                     </div>
                   </div>
                   <div>
