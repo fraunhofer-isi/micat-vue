@@ -73,14 +73,7 @@ const loading = ref<boolean>(false);
 let regions: Ref<Array<Array<number | string>>> = ref([]);
 let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
 const getNewYears = () => {
-  let newYears = [];
-  if (session.future) {
-    newYears = [...Array(36).keys()].map(delta => 2015 + delta);
-  } else {
-    const currentYear = new Date().getFullYear();
-    const range = currentYear - 2000 - 2;
-    newYears = [...Array(range).keys()].map(delta => currentYear - 3 - delta);
-  }
+  const newYears = [...Array(51).keys()].map(delta => 2000 + delta);
   return newYears.filter(newYear => years.value.indexOf(newYear) == -1);
 };
 const newYears = ref<Array<number>>(getNewYears());
@@ -95,16 +88,8 @@ const fileUpload = ref<HTMLInputElement | null>(null);
 watch(programs, (programs) => {  
   session.updatePrograms(programs);
 });
-watch(() => session.future, (future) => {
-  session.updateFuture(future);
-  resetYears();
-  // If the time frame changes, we need to reset parameters
-  session.updateGlobalParameters({});
-  session.updateParameters({});
-});
 watch(() => session.mure, (mure) => {
   session.updateMure(mure);
-  if (session.mure) updateMureData();
 });
 watch(() => session.odyssee, (odyssee) => {
   session.updateOdyssee(odyssee);
@@ -179,8 +164,6 @@ onMounted(async () => {
       if (!improvement.internalId) improvement.internalId = getInternalId();
     });
   });
-
-  if (session.mure) updateMureData();
 })
 
 // Functions
@@ -230,25 +213,12 @@ const removeYear = (year: number) => {
 const resetYears = () => {
   // Check if there are valid years defined. If not add default ones.
   let currentYear = new Date().getFullYear();
-  if (session.future) {
-    // We allow to let users test with already running actions
-    // Filter out years before 2015
-    years.value = years.value.filter(year => year >= 2015);
-    if (years.value.length == 0) {
-      // Round up to nearest 5
-      const nextValidYear = Math.ceil(currentYear / 5) * 5;
-      years.value = [nextValidYear, nextValidYear + 5, nextValidYear + 10];
-    }
-  } else {
-    // We allow to let users test with already running actions
-    // Filter out years before 2000
-    currentYear -= 3;
-    years.value = years.value.filter(year => year <= currentYear - 3 && year >= 2000);
-    if (years.value.length == 0) {
-      // Round down to nearest 5
-      const nextValidYear = Math.floor(currentYear / 5) * 5;
-      years.value = [nextValidYear - 10, nextValidYear - 5, nextValidYear];
-    }
+  currentYear -= 3;
+  years.value = years.value.filter(year => year <= currentYear - 3 && year >= 2000);
+  if (years.value.length == 0) {
+    // Round down to nearest 5
+    const nextValidYear = Math.floor(currentYear / 5) * 5;
+    years.value = [nextValidYear - 10, nextValidYear - 5, nextValidYear];
   }
   newYears.value = getNewYears();
   newYearSelected.value = newYears.value[0];
@@ -325,7 +295,7 @@ const showParameters = (data: ImprovementInterface, programIndex: number) => {
 const analyze = async () => {
   session.results = [];
   loading.value = true;
-  const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${session.future ? 2 : 4}&id_region=${session.region}`
+  const url = `${import.meta.env.VITE_API_URL}indicator_data?id_region=${session.region}`
   const payloadList: Array<PayloadInterface> = [];
   let i = 1;
   let errors = '';
@@ -507,7 +477,6 @@ const improvementValueChanged = (improvement: ImprovementInterface) => {
 
 const exportInput = () => {
   const blob = new Blob([JSON.stringify({
-      future: session.future,
       region: session.region,
       municipality: session.municipality,
       inhabitants: session.inhabitants,
@@ -540,7 +509,6 @@ const importInput = async (e: Event) => {
   target.value = '';
   
   const data = JSON.parse(await file.text());
-  session.future = data.future;
   session.region = data.region;
   session.municipality = data.municipality;
   session.inhabitants = data.inhabitants;
@@ -560,10 +528,6 @@ const importInput = async (e: Event) => {
     session.updateGlobalParameters(data.globalParameters);
     session.updateParameters(data.parameters);
   }, 500);
-};
-const updateMureData = () => {
-  // Use ex-ante for MURE and ex-post for ODYSSEE only
-  session.future = !session.odyssee;
 };
 const start = () => {
   stage.value = stages.full;
@@ -628,54 +592,15 @@ const start = () => {
             </span>
           </div>
           <div class="grid items-center grid-cols-5">
-            <!-- time frame -->
-            <div class="col-span-2">
-              <label for="timeframe" class="text-sm dark:text-white">Time frame</label>
-              <InformationCircleIcon
-                @click="openModal('timeframe')"
-                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
-              ></InformationCircleIcon>
-            </div>
-            <div class="col-span-3">
-              <div
-                class="inline-flex items-center border rounded-full cursor-pointer dark:text-gray-800 border-sky-600 dark:border-0"
-              >
-                <span 
-                  class="pt-4 pb-3 pl-8 leading-3 text-center rounded-l-full pr-7"
-                  :class="{
-                    'bg-sky-600 text-white': !session.future,
-                    'bg-white text-gray-400': session.future,
-                  }"
-                  @click="session.future = false"
-                >
-                  <span class="font-bold uppercase">past</span>
-                  <br>
-                  <span class="text-sm">(ex-post)</span>
-                </span>
-                <span
-                  class="pt-4 pb-3 pr-8 leading-3 text-center rounded-r-full pl-7"
-                  :class="{
-                    'dark:bg-white text-gray-400': !session.future,
-                    'bg-sky-600 text-white': session.future,
-                  }"
-                  @click="session.future = true"
-                >
-                  <span class="font-bold uppercase">future</span>
-                  <br>
-                  <span class="text-sm">(ex-ante)</span>
-                </span>
-              </div>
-            </div>
-            <!-- end time frame -->
             <!-- region -->
-            <div class="col-span-2 mt-8">
+            <div class="col-span-2">
               <label for="region" class="text-sm dark:text-white">Region</label>
               <InformationCircleIcon
                 @click="openModal('region')"
                 class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
               ></InformationCircleIcon>
             </div>
-            <div class="col-span-3 mt-8">
+            <div class="col-span-3">
               <select
                 id="region"
                 class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
