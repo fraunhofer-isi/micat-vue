@@ -809,7 +809,13 @@ const start = () => {
           </div>
         </div>
         <div
-          class="relative px-8 py-8 mb-8 border border-gray-300 rounded-3xl dark:border-gray-400"
+          class="relative px-8 py-8 mb-8 border rounded-3xl"
+          :class="{
+            'border-gray-300': program.subsector,
+            'dark:border-gray-400': program.subsector,
+            'border-red-300': !program.subsector,
+            'dark:border-red-400': !program.subsector,
+          }"
           v-for="(program, i) in programs"
           v-bind:key="`program-${i}`"
         >
@@ -876,7 +882,15 @@ const start = () => {
                 <div>
                   <button 
                     type="button" 
-                    class="inline-flex gap-2 block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 pr-2"
+                    class="inline-flex gap-2 block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2  appearance-none  focus:outline-none focus:ring-0 focus:border-gray-200 pr-2"
+                    :class="{
+                      'border-gray-200': program.subsector,
+                      'dark:text-gray-200': program.subsector,
+                      'dark:border-gray-200': program.subsector,
+                      'border-red-400': !program.subsector,
+                      'dark:text-red-400': !program.subsector,
+                      'dark:border-red-200': !program.subsector,
+                    }"
                     :id="`subsector-button-${i}`" 
                     aria-expanded="false" 
                     aria-haspopup="true"
