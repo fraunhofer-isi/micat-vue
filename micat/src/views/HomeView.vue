@@ -634,6 +634,55 @@ const start = () => {
             </div>
             <!-- end region -->
           </div>
+          <div class="grid items-center grid-cols-5 mt-10">
+            <!-- timeframe -->
+            <div class="col-span-2">
+              <label for="region" class="text-sm dark:text-white">Timeframe</label>
+              <InformationCircleIcon
+                @click="openModal('years')"
+                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+              ></InformationCircleIcon>
+            </div>
+            <div class="col-span-3">
+              <div class="flex flex-wrap">
+                <div v-for="year in years" v-bind:key="year.toString()" class="mb-6 mr-2 rounded-full whitespace-nowrap">
+                  <span class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600">
+                    {{ year }}
+                  </span>
+                  <span class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600">
+                    <TrashIcon
+                      @click="removeYear(year)"
+                      class="mt-[-3px] h-5 w-5 inline"
+                      :class="{
+                          'text-red-200': years.length <= 2,
+                          'text-red-700': years.length > 2,
+                          'cursor-pointer': years.length > 2,
+                        }"
+                    ></TrashIcon>
+                  </span>
+                </div>
+              </div>
+              <div>
+                <select
+                  id="new-year"
+                  class="py-2.5 px-0 w-full text-sm text-gray-500 bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
+                  v-model="newYearSelected"
+                >
+                  <option
+                    v-for="newYear in newYears" v-bind:key="newYear.toString()" :value="newYear"
+                    :selected="newYear === newYearSelected"
+                  >
+                    {{ newYear }}
+                  </option>
+                </select>
+                <PlusCircleIcon
+                  @click="addYear()"
+                  class="inline ml-5 cursor-pointer h-7 w-7 text-sky-700 dark:text-white"
+                ></PlusCircleIcon>
+              </div>
+            </div>
+            <!-- end timeframe -->
+          </div>
         </div>
         <button
           class="px-8 py-2 font-bold text-white uppercase bg-orange-500 rounded-full hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
@@ -684,54 +733,6 @@ const start = () => {
                 {{ session.mure && !session.odyssee ? 'Deselect' : 'Start with a policy' }}<span class="block font-bold text-white">MURE</span>
               </button>
             </div>  
-          </div>
-        </div>
-        <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mt-[3rem]"
-             v-if="stage === stages.full">
-          <div class="absolute top-[-14px] left-0 w-full text-center">
-            <span class="inline-block px-4 italic font-bold bg-white dark:bg-blue-950 dark:text-white">
-              Time frame
-              <InformationCircleIcon
-                @click="openModal('years')"
-                class="inline w-6 h-6 ml-1 cursor-pointer dark:text-white"
-              ></InformationCircleIcon>
-            </span>
-          </div>
-          <div class="flex flex-wrap">
-            <div v-for="year in years" v-bind:key="year.toString()" class="mr-4 rounded-full whitespace-nowrap mb-7">
-              <span class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600">
-                {{ year }}
-              </span>
-              <span class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600">
-                <TrashIcon
-                  @click="removeYear(year)"
-                  class="mt-[-3px] h-5 w-5 inline"
-                  :class="{
-                      'text-red-200': years.length <= 2,
-                      'text-red-700': years.length > 2,
-                      'cursor-pointer': years.length > 2,
-                    }"
-                ></TrashIcon>
-              </span>
-            </div>
-          </div>
-          <div class="mt-2">
-            <select
-              id="new-year"
-              class="py-2.5 px-0 w-full text-sm text-gray-500 bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
-              v-model="newYearSelected"
-            >
-              <option
-                v-for="newYear in newYears" v-bind:key="newYear.toString()" :value="newYear"
-                :selected="newYear === newYearSelected"
-              >
-                {{ newYear }}
-              </option>
-            </select>
-            <PlusCircleIcon
-              @click="addYear()"
-              class="inline ml-5 cursor-pointer h-7 w-7 text-sky-700 dark:text-white"
-            ></PlusCircleIcon>
           </div>
         </div>
         <div class="mt-5" v-if="!session.resetted && stage !== stages.home">
