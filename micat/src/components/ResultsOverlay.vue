@@ -490,7 +490,7 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
           };
           
           const responseParameters: Response = await fetch(
-            `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 2 : 4}&id_region=${session.region}&id_subsector=${program.subsector}`,
+            `${import.meta.env.VITE_API_URL}json_measure?id_region=${session.region}&id_subsector=${program.subsector}`,
             {
               method: "POST",
               headers: {
