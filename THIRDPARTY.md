@@ -1,9 +1,3 @@
-<!--
-© 2025 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -139,7 +133,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.27.5
+ - @babel/parser@7.28.0
 
 This package contains the following license:
 
@@ -247,6 +241,34 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm package may be included in this product:
 
+ - @jridgewell/sourcemap-codec@1.5.4
+
+This package contains the following license:
+
+Copyright 2024 Justin Ridgewell <justin@ridgewell.name>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-----------
+
+The following npm package may be included in this product:
+
  - picocolors@1.1.1
 
 This package contains the following license:
@@ -285,7 +307,7 @@ The following npm packages may be included in this product:
 
  - @babel/helper-string-parser@7.27.1
  - @babel/helper-validator-identifier@7.27.1
- - @babel/types@7.27.3
+ - @babel/types@7.28.1
 
 These packages each contain the following license:
 
@@ -438,8 +460,8 @@ SOFTWARE.
 
 The following npm packages may be included in this product:
 
- - @tanstack/virtual-core@3.13.9
- - @tanstack/vue-virtual@3.13.9
+ - @tanstack/virtual-core@3.13.12
+ - @tanstack/vue-virtual@3.13.12
 
 These packages each contain the following license:
 
@@ -499,37 +521,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - @jridgewell/sourcemap-codec@1.5.0
-
-This package contains the following license:
-
-The MIT License
-
-Copyright (c) 2015 Rich Harris
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
------------
-
-The following npm package may be included in this product:
-
- - chart.js@4.4.9
+ - chart.js@4.5.0
 
 This package contains the following license:
 
@@ -583,16 +575,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.5.16
- - @vue/compiler-dom@3.5.16
- - @vue/compiler-sfc@3.5.16
- - @vue/compiler-ssr@3.5.16
- - @vue/reactivity@3.5.16
- - @vue/runtime-core@3.5.16
- - @vue/runtime-dom@3.5.16
- - @vue/server-renderer@3.5.16
- - @vue/shared@3.5.16
- - vue@3.5.16
+ - @vue/compiler-core@3.5.17
+ - @vue/compiler-dom@3.5.17
+ - @vue/compiler-sfc@3.5.17
+ - @vue/compiler-ssr@3.5.17
+ - @vue/reactivity@3.5.17
+ - @vue/runtime-core@3.5.17
+ - @vue/runtime-dom@3.5.17
+ - @vue/server-renderer@3.5.17
+ - @vue/shared@3.5.17
+ - vue@3.5.17
 
 These packages each contain the following license:
 
@@ -671,7 +663,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - postcss@8.5.4
+ - postcss@8.5.6
 
 This package contains the following license:
 
