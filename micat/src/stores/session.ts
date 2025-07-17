@@ -7,24 +7,18 @@ import {defaultProgram, stages} from '@/defaults';
 import type {CarrierMapping, ProgramInterface, ISessionState, PayloadInterface, Parameters, GlobalParameters, MureTokenInterface} from "@/types";
 
 const currentYear = new Date().getFullYear();
-const nextValidYearPast = Math.floor( currentYear / 5) * 5;
-const nextValidYearFuture = Math.ceil( currentYear / 5) * 5;
+const nextValidYear = Math.floor( currentYear / 5) * 5;
 
-const getCurrentYear = (future: boolean) => {
-  return future ? currentYear : nextValidYearPast;
-};
-const getYears = (future: boolean) => {
-  if (future) return [currentYear, nextValidYearFuture + 5, nextValidYearFuture + 10];
-  return [nextValidYearPast - 10, nextValidYearPast - 5, nextValidYearPast];
+const getYears = () => {
+  return [nextValidYear - 10, nextValidYear - 5, nextValidYear];
 };
 
 export const useSessionStore = defineStore({
   id: "session",
   state: (): ISessionState => {
     return {
-      currentYear: parseInt(localStorage.getItem("currentYear") || getCurrentYear(String(localStorage.getItem("future") || "false").toLowerCase() === "true").toString()),
+      currentYear: parseInt(localStorage.getItem("currentYear") || currentYear.toString()),
       stage: parseInt(localStorage.getItem("stage") || stages.home.toString()),
-      future: String(localStorage.getItem("future") || "false").toLowerCase() === "true",
       mure: String(localStorage.getItem("mure") || "false").toLowerCase() === "true",
       odyssee: String(localStorage.getItem("odyssee") || "false").toLowerCase() === "true",
       mureToken: JSON.parse(localStorage.getItem("mureToken") || JSON.stringify({})),
@@ -36,7 +30,7 @@ export const useSessionStore = defineStore({
       region: parseInt(localStorage.getItem("region") || "0"),
       municipality: String(localStorage.getItem("municipality") || "false").toLowerCase() === "true",
       inhabitants: parseInt(localStorage.getItem("inhabitants") || "100000"),
-      years: JSON.parse(localStorage.getItem("years") || JSON.stringify(getYears(String(localStorage.getItem("future") || "false").toLowerCase() === "true"))),
+      years: JSON.parse(localStorage.getItem("years") || JSON.stringify(getYears())),
       programs: JSON.parse(localStorage.getItem("programs") || JSON.stringify([structuredClone(defaultProgram)])),
       payload: {"measures": [], "parameters": {}, "name": ""},
       resetted: false,
@@ -54,10 +48,6 @@ export const useSessionStore = defineStore({
     updateStage(stage: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("stage", stage.toString());
-    },
-    updateFuture(future: boolean, manualChange?: boolean) {
-      if (manualChange) this.resetted = false;
-      localStorage.setItem("future", future.toString());
     },
     updateMure(mure: boolean, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
@@ -146,7 +136,6 @@ export const useSessionStore = defineStore({
     reset() {
       this.resetted = true;
       this.updateStage(stages.home, false);
-      this.updateFuture(false, false);
       this.updateMure(false, false);
       this.updateOdyssee(false, false);
       this.updateMureCategory(0, false);
@@ -157,7 +146,7 @@ export const useSessionStore = defineStore({
       this.updateRegion(0, false);
       this.updateMunicipality(false, false);
       this.updateInhabitants(100000, false);
-      this.updateYears(getYears(false), false);
+      this.updateYears(getYears(), false);
       this.updatePrograms([structuredClone(defaultProgram)], false);
       this.updatePayload({"measures": [], "parameters": {}, "name": ""}, false);
       this.updateParameters({}, false);
@@ -166,7 +155,6 @@ export const useSessionStore = defineStore({
       this.updateCarrierMapping({}, false);
       this.updateMonetisationFactorMapping({}, false);
       this.updateUseRenovationRate(false, false);
-      // this.updateSeedInfo(true, false);
     },
   },
 });

@@ -96,7 +96,7 @@ const getParameters = async () => {
     inputs[year.toString()] = value ? value * 1 / factor : 0;
   });
   const responseParameters: Response = await fetch(
-    `${import.meta.env.VITE_API_URL}json_measure?id_mode=${session.future ? 2 : 4}&id_region=${session.region}&id_subsector=${props.improvement.subsectorId}`,
+    `${import.meta.env.VITE_API_URL}json_measure?id_region=${session.region}&id_subsector=${props.improvement.subsectorId}`,
     {
       method: "POST",
       headers: {

@@ -161,7 +161,6 @@ export interface MureCategoryInterface {
 export interface ISessionState {
   currentYear: number;
   stage: number;
-  future: boolean;
   mure: boolean;
   odyssee: boolean;
   mureToken: MureTokenInterface;
@@ -188,7 +187,6 @@ export interface ISessionState {
 }
 export interface ISessionStateFunctions {
     updateStage: (stage: number) => void;
-    updateFuture: (future: boolean) => void;
     updateRegion: (region: number) => void;
     updateMunicipality: (municipality: boolean) => void;
     updateInhabitants: (inhabitants: number) => void;

@@ -73,14 +73,7 @@ const loading = ref<boolean>(false);
 let regions: Ref<Array<Array<number | string>>> = ref([]);
 let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
 const getNewYears = () => {
-  let newYears = [];
-  if (session.future) {
-    newYears = [...Array(36).keys()].map(delta => 2015 + delta);
-  } else {
-    const currentYear = new Date().getFullYear();
-    const range = currentYear - 2000 - 2;
-    newYears = [...Array(range).keys()].map(delta => currentYear - 3 - delta);
-  }
+  const newYears = [...Array(51).keys()].map(delta => 2000 + delta);
   return newYears.filter(newYear => years.value.indexOf(newYear) == -1);
 };
 const newYears = ref<Array<number>>(getNewYears());
@@ -95,16 +88,8 @@ const fileUpload = ref<HTMLInputElement | null>(null);
 watch(programs, (programs) => {  
   session.updatePrograms(programs);
 });
-watch(() => session.future, (future) => {
-  session.updateFuture(future);
-  resetYears();
-  // If the time frame changes, we need to reset parameters
-  session.updateGlobalParameters({});
-  session.updateParameters({});
-});
 watch(() => session.mure, (mure) => {
   session.updateMure(mure);
-  if (session.mure) updateMureData();
 });
 watch(() => session.odyssee, (odyssee) => {
   session.updateOdyssee(odyssee);
@@ -179,8 +164,6 @@ onMounted(async () => {
       if (!improvement.internalId) improvement.internalId = getInternalId();
     });
   });
-
-  if (session.mure) updateMureData();
 })
 
 // Functions
@@ -230,25 +213,12 @@ const removeYear = (year: number) => {
 const resetYears = () => {
   // Check if there are valid years defined. If not add default ones.
   let currentYear = new Date().getFullYear();
-  if (session.future) {
-    // We allow to let users test with already running actions
-    // Filter out years before 2015
-    years.value = years.value.filter(year => year >= 2015);
-    if (years.value.length == 0) {
-      // Round up to nearest 5
-      const nextValidYear = Math.ceil(currentYear / 5) * 5;
-      years.value = [nextValidYear, nextValidYear + 5, nextValidYear + 10];
-    }
-  } else {
-    // We allow to let users test with already running actions
-    // Filter out years before 2000
-    currentYear -= 3;
-    years.value = years.value.filter(year => year <= currentYear - 3 && year >= 2000);
-    if (years.value.length == 0) {
-      // Round down to nearest 5
-      const nextValidYear = Math.floor(currentYear / 5) * 5;
-      years.value = [nextValidYear - 10, nextValidYear - 5, nextValidYear];
-    }
+  currentYear -= 3;
+  years.value = years.value.filter(year => year <= currentYear - 3 && year >= 2000);
+  if (years.value.length == 0) {
+    // Round down to nearest 5
+    const nextValidYear = Math.floor(currentYear / 5) * 5;
+    years.value = [nextValidYear - 10, nextValidYear - 5, nextValidYear];
   }
   newYears.value = getNewYears();
   newYearSelected.value = newYears.value[0];
@@ -325,7 +295,7 @@ const showParameters = (data: ImprovementInterface, programIndex: number) => {
 const analyze = async () => {
   session.results = [];
   loading.value = true;
-  const url = `${import.meta.env.VITE_API_URL}indicator_data?id_mode=${session.future ? 2 : 4}&id_region=${session.region}`
+  const url = `${import.meta.env.VITE_API_URL}indicator_data?id_region=${session.region}`
   const payloadList: Array<PayloadInterface> = [];
   let i = 1;
   let errors = '';
@@ -507,7 +477,6 @@ const improvementValueChanged = (improvement: ImprovementInterface) => {
 
 const exportInput = () => {
   const blob = new Blob([JSON.stringify({
-      future: session.future,
       region: session.region,
       municipality: session.municipality,
       inhabitants: session.inhabitants,
@@ -540,7 +509,6 @@ const importInput = async (e: Event) => {
   target.value = '';
   
   const data = JSON.parse(await file.text());
-  session.future = data.future;
   session.region = data.region;
   session.municipality = data.municipality;
   session.inhabitants = data.inhabitants;
@@ -560,10 +528,6 @@ const importInput = async (e: Event) => {
     session.updateGlobalParameters(data.globalParameters);
     session.updateParameters(data.parameters);
   }, 500);
-};
-const updateMureData = () => {
-  // Use ex-ante for MURE and ex-post for ODYSSEE only
-  session.future = !session.odyssee;
 };
 const start = () => {
   stage.value = stages.full;
@@ -628,54 +592,15 @@ const start = () => {
             </span>
           </div>
           <div class="grid items-center grid-cols-5">
-            <!-- time frame -->
-            <div class="col-span-2">
-              <label for="timeframe" class="text-sm dark:text-white">Time frame</label>
-              <InformationCircleIcon
-                @click="openModal('timeframe')"
-                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
-              ></InformationCircleIcon>
-            </div>
-            <div class="col-span-3">
-              <div
-                class="inline-flex items-center border rounded-full cursor-pointer dark:text-gray-800 border-sky-600 dark:border-0"
-              >
-                <span 
-                  class="pt-4 pb-3 pl-8 leading-3 text-center rounded-l-full pr-7"
-                  :class="{
-                    'bg-sky-600 text-white': !session.future,
-                    'bg-white text-gray-400': session.future,
-                  }"
-                  @click="session.future = false"
-                >
-                  <span class="font-bold uppercase">past</span>
-                  <br>
-                  <span class="text-sm">(ex-post)</span>
-                </span>
-                <span
-                  class="pt-4 pb-3 pr-8 leading-3 text-center rounded-r-full pl-7"
-                  :class="{
-                    'dark:bg-white text-gray-400': !session.future,
-                    'bg-sky-600 text-white': session.future,
-                  }"
-                  @click="session.future = true"
-                >
-                  <span class="font-bold uppercase">future</span>
-                  <br>
-                  <span class="text-sm">(ex-ante)</span>
-                </span>
-              </div>
-            </div>
-            <!-- end time frame -->
             <!-- region -->
-            <div class="col-span-2 mt-8">
+            <div class="col-span-2">
               <label for="region" class="text-sm dark:text-white">Region</label>
               <InformationCircleIcon
                 @click="openModal('region')"
                 class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
               ></InformationCircleIcon>
             </div>
-            <div class="col-span-3 mt-8">
+            <div class="col-span-3">
               <select
                 id="region"
                 class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
@@ -708,6 +633,55 @@ const start = () => {
               </div>
             </div>
             <!-- end region -->
+          </div>
+          <div class="grid items-center grid-cols-5 mt-10">
+            <!-- timeframe -->
+            <div class="col-span-2">
+              <label for="region" class="text-sm dark:text-white">Timeframe</label>
+              <InformationCircleIcon
+                @click="openModal('years')"
+                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+              ></InformationCircleIcon>
+            </div>
+            <div class="col-span-3">
+              <div class="flex flex-wrap">
+                <div v-for="year in years" v-bind:key="year.toString()" class="mb-6 mr-2 rounded-full whitespace-nowrap">
+                  <span class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600">
+                    {{ year }}
+                  </span>
+                  <span class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600">
+                    <TrashIcon
+                      @click="removeYear(year)"
+                      class="mt-[-3px] h-5 w-5 inline"
+                      :class="{
+                          'text-red-200': years.length <= 2,
+                          'text-red-700': years.length > 2,
+                          'cursor-pointer': years.length > 2,
+                        }"
+                    ></TrashIcon>
+                  </span>
+                </div>
+              </div>
+              <div>
+                <select
+                  id="new-year"
+                  class="py-2.5 px-0 w-full text-sm text-gray-500 bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
+                  v-model="newYearSelected"
+                >
+                  <option
+                    v-for="newYear in newYears" v-bind:key="newYear.toString()" :value="newYear"
+                    :selected="newYear === newYearSelected"
+                  >
+                    {{ newYear }}
+                  </option>
+                </select>
+                <PlusCircleIcon
+                  @click="addYear()"
+                  class="inline ml-5 cursor-pointer h-7 w-7 text-sky-700 dark:text-white"
+                ></PlusCircleIcon>
+              </div>
+            </div>
+            <!-- end timeframe -->
           </div>
         </div>
         <button
@@ -759,54 +733,6 @@ const start = () => {
                 {{ session.mure && !session.odyssee ? 'Deselect' : 'Start with a policy' }}<span class="block font-bold text-white">MURE</span>
               </button>
             </div>  
-          </div>
-        </div>
-        <div class="rounded-3xl border border-gray-300 dark:border-gray-400 relative px-8 py-8 mt-[3rem]"
-             v-if="stage === stages.full">
-          <div class="absolute top-[-14px] left-0 w-full text-center">
-            <span class="inline-block px-4 italic font-bold bg-white dark:bg-blue-950 dark:text-white">
-              Time frame
-              <InformationCircleIcon
-                @click="openModal('years')"
-                class="inline w-6 h-6 ml-1 cursor-pointer dark:text-white"
-              ></InformationCircleIcon>
-            </span>
-          </div>
-          <div class="flex flex-wrap">
-            <div v-for="year in years" v-bind:key="year.toString()" class="mr-4 rounded-full whitespace-nowrap mb-7">
-              <span class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600">
-                {{ year }}
-              </span>
-              <span class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600">
-                <TrashIcon
-                  @click="removeYear(year)"
-                  class="mt-[-3px] h-5 w-5 inline"
-                  :class="{
-                      'text-red-200': years.length <= 2,
-                      'text-red-700': years.length > 2,
-                      'cursor-pointer': years.length > 2,
-                    }"
-                ></TrashIcon>
-              </span>
-            </div>
-          </div>
-          <div class="mt-2">
-            <select
-              id="new-year"
-              class="py-2.5 px-0 w-full text-sm text-gray-500 bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
-              v-model="newYearSelected"
-            >
-              <option
-                v-for="newYear in newYears" v-bind:key="newYear.toString()" :value="newYear"
-                :selected="newYear === newYearSelected"
-              >
-                {{ newYear }}
-              </option>
-            </select>
-            <PlusCircleIcon
-              @click="addYear()"
-              class="inline ml-5 cursor-pointer h-7 w-7 text-sky-700 dark:text-white"
-            ></PlusCircleIcon>
           </div>
         </div>
         <div class="mt-5" v-if="!session.resetted && stage !== stages.home">
@@ -884,7 +810,13 @@ const start = () => {
           </div>
         </div>
         <div
-          class="relative px-8 py-8 mb-8 border border-gray-300 rounded-3xl dark:border-gray-400"
+          class="relative px-8 py-8 mb-8 border rounded-3xl"
+          :class="{
+            'border-gray-300': program.subsector,
+            'dark:border-gray-400': program.subsector,
+            'border-red-300': !program.subsector,
+            'dark:border-red-400': !program.subsector,
+          }"
           v-for="(program, i) in programs"
           v-bind:key="`program-${i}`"
         >
@@ -951,7 +883,15 @@ const start = () => {
                 <div>
                   <button 
                     type="button" 
-                    class="inline-flex gap-2 block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 pr-2"
+                    class="inline-flex gap-2 block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2  appearance-none  focus:outline-none focus:ring-0 focus:border-gray-200 pr-2"
+                    :class="{
+                      'border-gray-200': program.subsector,
+                      'dark:text-gray-200': program.subsector,
+                      'dark:border-gray-200': program.subsector,
+                      'border-red-400': !program.subsector,
+                      'dark:text-red-400': !program.subsector,
+                      'dark:border-red-200': !program.subsector,
+                    }"
                     :id="`subsector-button-${i}`" 
                     aria-expanded="false" 
                     aria-haspopup="true"
