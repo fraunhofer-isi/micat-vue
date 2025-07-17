@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 <script setup lang="ts">
-import { ref, computed, inject, type Ref, reactive } from 'vue';
+import { ref, computed, inject, type Ref } from 'vue';
 import { computedAsync } from '@vueuse/core'
 import {
   UserGroupIcon,
@@ -21,6 +21,7 @@ import {
 import { Bar } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale, type ChartDataset, type ChartOptions } from 'chart.js';
 import 'chartjs-adapter-date-fns';
+import ChartDataLabels, { type Context } from 'chartjs-plugin-datalabels';
 import type {
   CategoriesInterface,
   MeasurementInterface,
@@ -28,7 +29,6 @@ import type {
   ModalInjectInterface,
   CbaResultInterface,
   ParameterCategory,
-  ProgramInterface,
   CbaData,
 } from "@/types";
 import { defaultModalInject, chartColours, units } from "@/defaults";
@@ -42,7 +42,7 @@ import { useSessionStore } from "@/stores/session";
 import router from "@/router";
 
 const session = useSessionStore();
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale);
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale, ChartDataLabels);
 
 const icons: any = {
   UserGroupIcon,
@@ -338,6 +338,25 @@ const chartOptions = computed(() => {
       },
       legend: {
         display: data.value.length > 1 || chartLabels.value.filter(label => label !== 'id_measure').length > 0
+      },
+      datalabels: {
+        display: (context: Context) => {
+          const datasets = context.chart.data.datasets;
+          return context.datasetIndex === datasets.length - 1;
+        },
+        formatter: (value: number, context: Context) => {
+          const index = context.dataIndex;
+          const total = context.chart.data.datasets.reduce((sum, dataset) => {
+            const dataValue = dataset.data[index] as number;
+            return sum + dataValue;
+          }, 0);
+          return total < 1 && total >= 0 ? labelFormatterSmall.format(total) : labelFormatter.format(total);;
+        },
+        anchor: 'end',
+        align: 'end',
+        font: {
+          weight: 'normal',
+        },
       },
       tooltip: {
         callbacks: {
