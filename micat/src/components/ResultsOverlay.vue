@@ -547,6 +547,11 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         // NPV_m
         // Investments are in million €
         netPresentValue:  -investments * 1000000 * ics + annualEnergyCosts * ecs + annualMultipleImpacts + reductionOfAdditionalCapacities,
+        parameters: {
+          discountRate: dr,
+          energyPriceSensitivity: ecs,
+          investmentsSensitivity: ics,
+        },
       });
     }
     return data;
@@ -582,6 +587,7 @@ const exportResults = () => {
       categories,
       cbaData: cbaData.value,
       years: session.years,
+      region: session.region,
       programs: session.programs,
     }),
     headers: {
@@ -632,7 +638,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               'bg-white': activeCategory === key,
               'hover:text-sky-700': activeCategory === key,
               'hover:bg-sky-900': activeCategory !== key,
-              'rounded-tl-3xl': activeCategory === key && i === 0,
+              'rounded-tl-3xl': i === 0,
               'rounded-bl-3xl': activeCategory === key && i === Object.keys(categories).length - 1,
               'pr-16': !category.subcategories,
             }"

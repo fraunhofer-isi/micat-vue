@@ -55,6 +55,7 @@ export interface ProgramInterface {
     name: string;
     type: string;
     unit: number;
+    unitName?: string;
     subsector: number;
     subsectorName: string;
     showSubsectorMenu: boolean;
@@ -203,6 +204,11 @@ export interface CbaData {
     annualMultipleImpacts: number;
     annualEnergyCosts: number;
     netPresentValue: number;
+    parameters: {
+        discountRate: number;
+        energyPriceSensitivity: number;
+        investmentsSensitivity: number;
+    };
 }
 export interface CbaDataOld {
     years:                       string[];

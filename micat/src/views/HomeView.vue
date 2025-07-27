@@ -422,6 +422,7 @@ const programChanged = (program: ProgramInterface, i: number, subsectorId: numbe
 }
 const unitChanged = (program: ProgramInterface, i: number, oldUnitId: number, unitId: number) => {
   program.unit = unitId;
+  program.unitName = units[unitId].name;
   // Functions to convert all given energy savings in case of unit changes
   const unit = units[unitId];
   const oldUnit = units[oldUnitId];
