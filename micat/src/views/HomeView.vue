@@ -325,13 +325,14 @@ const analyze = async () => {
         const improvementParameters = session.parameters[improvement.internalId];
         if (improvementParameters) {
           // parameters are only present if they have been edited
-          const keys: Array<string> = ["main", "affectedFuels", "fuelSwitch", "residential"];
+          const keys: Array<string> = ["main", "affectedFuels", "fuelSwitch", "efficiency", "residential"];
           keys.forEach(key => {
             if (!improvementParameters[key]) return;
             improvementParameters[key].forEach(parameter => {
               const result: { [key: string]: number } = {"id_parameter": parameter.parameters.id_parameter as number};
               // Filter out residential parameters, depending on the usage of the annual renovation rate
               if (parameter.parameters.id_parameter === 45 && session.useRenovationRate || [32, 43].indexOf(parameter.parameters.id_parameter as number) > -1 && !session.useRenovationRate) return;
+              // Add the parameter value
               parameter.years.forEach(yearData => result[yearData.key] = yearData.value);
               if (improvementParameterMapping[result["id_parameter"]] === 'parameters') {
                 parameters.push(result);

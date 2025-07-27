@@ -38,7 +38,11 @@ export const restructureParameters = (subsectorId: number, name: string, paramet
       category === 'fuelSwitch' && !name.toLowerCase().includes('fuel switch')
     ) { continue; }
     // Add category key, if it doesn't exist yet
-    if (!restructuredResults[category]) restructuredResults[category] = [];
+    if (!restructuredResults[category]) {
+      restructuredResults[category] = [];
+      // Add efficiency category if fuel switch is present
+      if (category === 'fuelSwitch') restructuredResults['efficiency'] = [];
+    }
     for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
       if (data.id_parameter === null) continue;
       const entry: ParameterEntry = {
@@ -67,10 +71,17 @@ export const restructureParameters = (subsectorId: number, name: string, paramet
       }
     }
   }
-  if (restructuredResults['fuelSwitch']) {
+  if (restructuredResults['fuelSwitch'].length > 0) {
     // Re-order fuel switch parameters by final energy carrier
     restructuredResults['fuelSwitch'].sort((a, b) => {
       return a['parameters']['id_final_energy_carrier'] < b['parameters']['id_final_energy_carrier'] ? -1 : 1;
+    });
+    // Move efficiency parameters to own category
+    restructuredResults['efficiency'] = restructuredResults['fuelSwitch'].filter((entry: ParameterEntry) => {
+      return entry.parameters.label.toString().toLowerCase().includes('efficiency');
+    });
+    restructuredResults['fuelSwitch'] = restructuredResults['fuelSwitch'].filter((entry: ParameterEntry) => {
+      return !entry.parameters.label.toString().toLowerCase().includes('efficiency');
     });
   }
   return Object.keys(restructuredResults).sort((a, b) => a === "main" ? -1 : 1).reduce((r, k) => (r[k] = restructuredResults[k], r), ({} as ParameterCategory));
