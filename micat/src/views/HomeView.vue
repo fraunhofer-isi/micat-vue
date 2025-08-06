@@ -521,14 +521,20 @@ const importInput = async (e: Event) => {
   session.updatePrograms(data.programs);
   session.updateSubsectorMapping(data.subsectorMapping);
   session.updateCarrierMapping(data.carrierMapping);
+  session.subsectorMapping = data.subsectorMapping;
+  session.carrierMapping = data.carrierMapping;
   session.updateMonetisationFactorMapping(data.monetisationFactorMapping);
+  session.monetisationFactorMapping = data.monetisationFactorMapping;
   session.updateUseRenovationRate(data.useRenovationRate);
+  session.useRenovationRate = data.useRenovationRate;
   setSeedInfo(data.seedInfo);
 
   setTimeout(() => {
     // Updates on parameters need to be delayed, otherwise they will be overwritten by watcher functions
     session.updateGlobalParameters(data.globalParameters);
+    session.globalParameters = data.globalParameters;
     session.updateParameters(data.parameters);
+    session.parameters = data.parameters;
   }, 500);
 };
 const start = () => {
