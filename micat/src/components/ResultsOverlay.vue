@@ -19,7 +19,7 @@ import {
   ArrowDownTrayIcon,
 } from '@heroicons/vue/24/outline';
 import { Bar } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale, type ChartDataset, type ChartOptions } from 'chart.js';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale, type ChartDataset } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import ChartDataLabels, { type Context } from 'chartjs-plugin-datalabels';
 import type {
