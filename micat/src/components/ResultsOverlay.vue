@@ -615,13 +615,19 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
   <div class="max-w-screen-xl pt-5 pb-10 mx-auto">
     <div class="flex justify-between">
       <a href="#" @click="router.push({ name: 'home' });" class="text-sm text-sky-700 dark:text-sky-300">back to the entries</a>
-      <button
-        class="py-2 pl-3 pr-4 mr-8 text-xs font-bold text-white uppercase bg-orange-400 rounded-full hover:bg-orange-500 dark:bg-sky-600 dark:hover:bg-sky-700"
-        @click="exportResults()"
-      >
-        <ArrowDownTrayIcon class="h-5 w-5 mt-[-3px] inline text-white"></ArrowDownTrayIcon>
-        Export
-      </button>
+      <div>
+        <InformationCircleIcon
+          @click="openModal('export')"
+          class="inline w-6 h-6 ml-2 mr-2 cursor-pointer dark:text-white"
+        ></InformationCircleIcon>
+        <button
+          class="py-2 pl-3 pr-4 mr-8 text-xs font-bold text-white uppercase bg-orange-400 rounded-full hover:bg-orange-500 dark:bg-sky-600 dark:hover:bg-sky-700"
+          @click="exportResults()"
+        >
+          <ArrowDownTrayIcon class="h-5 w-5 mt-[-3px] inline text-white"></ArrowDownTrayIcon>
+          Export
+        </button>
+      </div>
     </div>
     <div class="relative my-3 bg-white border border-gray-300 rounded-3xl">
       <div @click="router.push({ name: 'home' });" class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-10px] cursor-pointer">

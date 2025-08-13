@@ -95,6 +95,11 @@ const helpTexts: HelpTextInterface = {
     'text': 'This switch allows to swap the standard input of number of affected dwellings by the provision of an annual renovation rate (which is then multiplied with the total number of dwellings). Thus, this switch allows you to choose the input that suits your data and needs.',
     'type': 'help'
   },
+  'export': {
+    'title': 'Export',
+    'text': 'Please note that global and advanced parameters are not exported. If you want to download your parameter entries, please use the <i>save</i> function.',
+    'type': 'help'
+  },
   // Global parameters
   'FuelSplitCoefficient': {
     'title': 'Energy mix coefficient',
