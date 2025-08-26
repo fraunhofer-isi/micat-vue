@@ -71,7 +71,7 @@ export const restructureParameters = (subsectorId: number, name: string, paramet
       }
     }
   }
-  if (restructuredResults['fuelSwitch'].length > 0) {
+  if (restructuredResults['fuelSwitch'] && restructuredResults['fuelSwitch'].length > 0) {
     // Re-order fuel switch parameters by final energy carrier
     restructuredResults['fuelSwitch'].sort((a, b) => {
       return a['parameters']['id_final_energy_carrier'] < b['parameters']['id_final_energy_carrier'] ? -1 : 1;
