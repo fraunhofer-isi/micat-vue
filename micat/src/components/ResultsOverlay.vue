@@ -337,7 +337,8 @@ const chartOptions = computed(() => {
         display: false
       },
       legend: {
-        display: data.value.length > 1 || chartLabels.value.filter(label => label !== 'id_measure').length > 0
+        display: data.value.length > 1 || chartLabels.value.filter(label => label !== 'id_measure').length > 0,
+        position: 'bottom',
       },
       datalabels: {
         display: (context: Context) => {
@@ -352,8 +353,14 @@ const chartOptions = computed(() => {
           }, 0);
           return total < 1 && total >= 0 ? labelFormatterSmall.format(total) : labelFormatter.format(total);;
         },
-        anchor: 'end',
-        align: 'end',
+        anchor: function (context: Context) {
+          const value = context.dataset.data[context.dataIndex];
+          return typeof value === 'number' && value >= 0 ? 'end' : 'start';
+        },
+        align: function (context: Context) {
+          const value = context.dataset.data[context.dataIndex];
+          return typeof value === 'number' && value >= 0 ? 'end' : 'start';
+        },
         font: {
           weight: 'normal',
         },
@@ -384,6 +391,7 @@ const chartOptions = computed(() => {
       },
       y: {
         stacked: true,
+        grace: '10%',
         ticks: {
           callback: (label: number | string) => typeof label === "number" ? formatter.format(label) : label,
         },
