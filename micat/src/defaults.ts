@@ -25,6 +25,7 @@ export const defaultProgram: ProgramInterface = {
     name: 'Program 1',
     type: 'energyEfficiency',
     unit: 1,
+    unitName: 'ktoe (kilo tonne of oil equivalent)',
     subsector: 0,
     subsectorName: '',
     showSubsectorMenu: false,
@@ -66,6 +67,13 @@ export const units: UnitsInterface = {
     name: "MWh",
     symbol: "MWh",
     factor: 11630
+  },
+}
+export const unitsRenewables: UnitsInterface = {
+  1: {
+    name: "MW",
+    symbol: "MW",
+    factor: 1
   },
 }
 export const mureSubsectorMapping: { [key: number]: number } = {

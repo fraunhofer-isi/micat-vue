@@ -588,6 +588,12 @@ const selectCbaResult = (slug: string) => {
   activeCbaResult.value = slug;
 }
 const exportResults = () => {
+  // Check if all programs have a unit name; if not, set it
+  session.programs.forEach(program => {
+    if (!program.unitName || !units.hasOwnProperty(program.unitName)) {
+      program.unitName = units[program.unit].name;
+    }
+  });
   fetch(`${import.meta.env.VITE_API_URL}export-results`, {
     method: "POST",
     body: JSON.stringify({

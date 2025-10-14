@@ -27,7 +27,12 @@ const helpTexts: HelpTextInterface = {
   },
   'unit': {
     'title': 'Unit',
-    'text': 'This allows to input the energy savings in different units. This does not have an effect on the results\' units. Moreover, changing this setting after entering values does not convert them.',
+    'text': 'This allows to input the energy savings in different units. This does not have an effect on the results\' units.',
+    'type': 'help'
+  },
+  'unit-renewables': {
+    'title': 'Unit',
+    'text': 'This allows to input the capacities in different units. This does not have an effect on the results\' units.',
     'type': 'help'
   },
   'years': {
@@ -43,6 +48,11 @@ const helpTexts: HelpTextInterface = {
   'subsector': {
     'title': 'Subsector selection',
     'text': 'This determines the sector or subsector, the program is carried out in. More details about the available (sub-)sectors are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-sector-and-id-subsector" target="_blank">here</a>. Furthermore, help on how to decompose a measure into different sectors and improvement actions can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/specifying_subsector_action.html" target="_blank">here</a>.',
+    'type': 'help'
+  },
+  'technology': {
+    'title': 'Technology selection',
+    'text': 'This determines the technology used in the program. More information will be provided soon.',
     'type': 'help'
   },
   'improvement': {

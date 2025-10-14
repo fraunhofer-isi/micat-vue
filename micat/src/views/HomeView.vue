@@ -33,7 +33,7 @@ import type {
   SelectedImprovementInterface,
   ImprovementInterface,
 } from "@/types";
-import { defaultImprovement, defaultModalInject, defaultProgram, stages, units } from "@/defaults";
+import { defaultImprovement, defaultModalInject, defaultProgram, stages, units, unitsRenewables } from "@/defaults";
 import { getGlobalParametersPayload } from "@/helpers";
 import { useSessionStore } from "@/stores/session";
 import GlobalParametersOverlay from "@/components/GlobalParametersOverlay.vue";
@@ -870,7 +870,7 @@ const start = () => {
                   'dark:bg-white text-gray-400': !program.type || program.type !== 'renewable',
                   'bg-sky-600 text-white': program.type && program.type === 'renewable',
                 }"
-                @click="program.type = 'renewable'; program.subsector = 0; program.subsectorName = '';"
+                @click="program.type = 'renewable'; program.subsector = 0; program.subsectorName = ''; program.unit = 1;"
               >
                 Renewables
               </span>
@@ -881,7 +881,7 @@ const start = () => {
               <div>
                 <label :for="`subsector-${i}`" class="text-sm dark:text-white">{{ program.type === 'renewable' ? 'Technology' : 'Subsector' }}</label>
                 <InformationCircleIcon
-                  @click="openModal('subsector')"
+                  @click="openModal(program.type === 'renewable' ? 'technology' : 'subsector')"
                   class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
                 ></InformationCircleIcon>
               </div>
@@ -953,7 +953,7 @@ const start = () => {
             <div class="col-span-2 mt-5">
               <label :for="`program-${i}-unit`" class="text-sm dark:text-white">Unit</label>
               <InformationCircleIcon
-                @click="openModal('unit')"
+                @click="openModal(program.type === 'renewable' ? 'unit-renewables' : 'unit')"
                 class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
               ></InformationCircleIcon>
             </div>
@@ -963,7 +963,7 @@ const start = () => {
                 class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                 @change="(e) => unitChanged(program, i, program.unit!, parseInt((e.target as HTMLInputElement).value))"
               >
-                <option v-for="[key, value] in Object.entries(units)" :selected="program.unit === parseInt(key)" v-bind:key="`unit-${key}`" :value="key">{{
+                <option v-for="[key, value] in Object.entries(program.type === 'renewable' ? unitsRenewables : units)" :selected="program.unit === parseInt(key)" v-bind:key="`unit-${key}`" :value="key">{{
                     value.name
                   }}
                 </option>
@@ -1030,7 +1030,7 @@ const start = () => {
                           :options="{precision: program.unit === 5 ? 6 : 0}"
                         />
                       </span>
-                      <span class="p-2 text-xs leading-4 text-gray-400 dark:text-slate-500">{{ units[program.unit || 1].symbol }}</span>
+                      <span class="p-2 text-xs leading-4 text-gray-400 dark:text-slate-500">{{ program.type === 'renewable' ? unitsRenewables[program.unit || 1].symbol : units[program.unit || 1].symbol }}</span>
                     </div>
                   </div>
                   <div>
