@@ -134,13 +134,13 @@ const categories: CategoriesInterface = {
         identifier: "addedAssetValueOfBuildings",
         yAxis: "Value in €"
       },
-      {
-        subcategory: "Economic",
-        title: "Turnover of energy efficiency goods",
-        description: '<p class="mb-2">Typically, materials essential for energy efficiency in buildings are produced locally. As such, the turnover of energy efficiency goods is an indicator describing the benefit to this specific industry sector. The calculation is based on data from two national case studies.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/turnover_of_EE_goods.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Turnover-of-energy-efficiency-goods.pdf">PDF</a>.</p>',
-        identifier: "turnoverOfEnergyEfficiencyGoods",
-        yAxis: "Value in €"
-      },
+      // {
+      //   subcategory: "Economic",
+      //   title: "Turnover of energy efficiency goods",
+      //   description: '<p class="mb-2">Typically, materials essential for energy efficiency in buildings are produced locally. As such, the turnover of energy efficiency goods is an indicator describing the benefit to this specific industry sector. The calculation is based on data from two national case studies.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/turnover_of_EE_goods.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Turnover-of-energy-efficiency-goods.pdf">PDF</a>.</p>',
+      //   identifier: "turnoverOfEnergyEfficiencyGoods",
+      //   yAxis: "Value in €"
+      // },
       {
         subcategory: "Economic",
         title: "Reduction of additionally needed generation capacity",
