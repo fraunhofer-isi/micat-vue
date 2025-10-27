@@ -41,6 +41,7 @@ export const useSessionStore = defineStore({
       monetisationFactorMapping: JSON.parse(localStorage.getItem("monetisationFactorMapping") || JSON.stringify({})),
       parameters: JSON.parse(localStorage.getItem("parameters") || JSON.stringify({})),
       useRenovationRate: String(localStorage.getItem("useRenovationRate") || "false").toLowerCase() === "true",
+      showRenewables: String(localStorage.getItem("showRenewables") || "false").toLowerCase() === "true",
       seedInfo: String(localStorage.getItem("seedInfo") || "false").toLowerCase() === "true",
     }
   },
@@ -129,6 +130,10 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       localStorage.setItem("useRenovationRate", useRenovationRate.toString());
     },
+    updateShowRenewables(showRenewables: boolean, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("showRenewables", showRenewables.toString());
+    },
     updateSeedInfo(seedInfo: boolean, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("seedInfo", seedInfo.toString());
@@ -155,6 +160,7 @@ export const useSessionStore = defineStore({
       this.updateCarrierMapping({}, false);
       this.updateMonetisationFactorMapping({}, false);
       this.updateUseRenovationRate(false, false);
+      this.updateShowRenewables(false, false);
     },
   },
 });

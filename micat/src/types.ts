@@ -184,6 +184,7 @@ export interface ISessionState {
   monetisationFactorMapping: {[key: number]: string};
   parameters: Parameters;
   useRenovationRate: boolean;
+  showRenewables: boolean;
   seedInfo: boolean;
 }
 export interface ISessionStateFunctions {

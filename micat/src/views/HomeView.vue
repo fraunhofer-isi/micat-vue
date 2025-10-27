@@ -850,7 +850,7 @@ const start = () => {
               </div>
             </span>
           </div>
-          <!-- <div>
+          <div v-if="session.showRenewables">
             <div
               class="inline-flex items-center mb-2 text-sm border cursor-pointer rounded-xl dark:text-gray-800 border-sky-600 dark:border-0"
             >
@@ -875,7 +875,7 @@ const start = () => {
                 Renewables
               </span>
             </div>
-          </div> -->
+          </div>
           <div class="grid items-center w-2/3 grid-cols-5">
             <div class="col-span-2">
               <div>
