@@ -1,9 +1,3 @@
-<!--
-© 2025 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -75,7 +69,7 @@ MIT License
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.28.4
+ - @babel/parser@7.28.5
 
 This package contains the following license:
 
@@ -167,7 +161,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The following npm package may be included in this product:
 
- - magic-string@0.30.19
+ - magic-string@0.30.21
 
 This package contains the following license:
 
@@ -248,8 +242,8 @@ MIT
 The following npm packages may be included in this product:
 
  - @babel/helper-string-parser@7.27.1
- - @babel/helper-validator-identifier@7.27.1
- - @babel/types@7.28.4
+ - @babel/helper-validator-identifier@7.28.5
+ - @babel/types@7.28.5
 
 These packages each contain the following license:
 
@@ -544,7 +538,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 The following npm packages may be included in this product:
 
  - pinia@2.3.1
- - vue-router@4.5.1
+ - vue-router@4.6.3
 
 These packages each contain the following license:
 
