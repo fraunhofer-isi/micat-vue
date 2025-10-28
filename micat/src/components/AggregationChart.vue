@@ -90,7 +90,11 @@ const aggregationChartData: any = computed(() => {
       const aggregationData: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
       const values = new Array(session.years.length).fill(0);
       aggregationData.rows.forEach(row => {
-        row.splice(0, 1);
+        if (measurement.identifier === "reductionOfEnergyCost") {
+          row.splice(0, 2);
+        } else {
+          row.splice(0, 1);
+        }
         row.forEach((measure, iM) => {
           // Sum up measurements; impacts on gross domestic product are in million €
           values[iM] += measure;
