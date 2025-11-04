@@ -302,6 +302,7 @@ const activeSubcategory = ref<string>(Object.values(categories)[0].subcategories
 const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0].measurements[0]);
 const activeIndicators = ref<Array<string>>(categories.monetization.measurements.filter(m => ['addedAssetValueOfBuildings', 'impactOnGrossDomesticProduct'].indexOf(m.identifier) === -1).map(measurement => measurement.identifier));
 const indicatorInfo = ref<string>('');
+const indicatorInfoTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null);
 const energyPriceSensitivity = ref<number>(100);
 const investmentsSensitivity = ref<number>(100);
 const discountRate = ref<number>(3);
@@ -587,6 +588,18 @@ const toggleIndicator = (identifier: string) => {
 const selectCbaResult = (slug: string) => {
   activeCbaResult.value = slug;
 }
+const clearIndicatorInfoTimeout = () => {
+  if (indicatorInfoTimeoutId.value) {
+    clearTimeout(indicatorInfoTimeoutId.value);
+    indicatorInfoTimeoutId.value = null;
+  }
+}
+const removeIndicatorInfo = () => {
+  clearIndicatorInfoTimeout();
+  indicatorInfoTimeoutId.value = setTimeout(() => {
+    indicatorInfo.value = '';
+  }, 2000);
+}
 const exportResults = () => {
   // Check if all programs have a unit name; if not, set it
   session.programs.forEach(program => {
@@ -741,8 +754,8 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               <div
                 class="flex items-center py-3 pl-4 pr-2 text-sm cursor-pointer"
                 @click="toggleIndicator(measurement.identifier)"
-                @mouseover="indicatorInfo = measurement.description;"
-                @mouseleave="indicatorInfo = '';"
+                @mouseover="indicatorInfo = measurement.description; clearIndicatorInfoTimeout();"
+                @mouseleave="removeIndicatorInfo"
                 :class="{
                   'text-white': activeIndicators.indexOf(measurement.identifier) === -1,
                   'text-sky-800': activeIndicators.indexOf(measurement.identifier) > -1,
@@ -762,6 +775,8 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
             <div class="relative flex-wrap">
               <div
                 v-html="indicatorInfo"
+                @mouseenter="clearIndicatorInfoTimeout()"
+                @mouseleave="removeIndicatorInfo()"
                 class="absolute p-4 text-sm text-white rounded-lg bg-sky-600 top-5 left-5"
                 :class="{
                   'hidden': !indicatorInfo,
