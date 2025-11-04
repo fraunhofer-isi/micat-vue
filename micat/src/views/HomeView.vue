@@ -59,6 +59,13 @@ const improvementParameterMapping: { [key: number]: string } = {
   42: "parameters",
   43: "parameters",
   45: "parameters",
+  64: "parameters",
+  65: "parameters",
+  66: "parameters",
+  67: "finalParameters",
+  68: "parameters",
+  69: "parameters",
+  70: "parameters",
 };
 
 // Injections
@@ -337,7 +344,11 @@ const analyze = async () => {
               if (improvementParameterMapping[result["id_parameter"]] === 'parameters') {
                 parameters.push(result);
               } else if (improvementParameterMapping[result["id_parameter"]] === 'finalParameters') {
-                result["id_final_energy_carrier"] = parameter.parameters.id_final_energy_carrier as number;
+                if (result["id_parameter"] === 67) {
+                  result["id_primary_energy_carrier"] = parameter.parameters.id_primary_energy_carrier as number;
+                } else {
+                  result["id_final_energy_carrier"] = parameter.parameters.id_final_energy_carrier as number;
+                }
                 finalParameters.push(result);
               } else if (improvementParameterMapping[result["id_parameter"]] === 'constants') {
                 result["value"] = parameter.parameters.constants as number;

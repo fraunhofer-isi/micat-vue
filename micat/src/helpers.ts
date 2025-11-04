@@ -34,7 +34,7 @@ export const restructureParameters = (subsectorId: number, name: string, paramet
     // Use fuel switch parameters for fuel switch improvements only
     if (
       category === 'context' || 
-      category === 'residential' && [17].indexOf(subsectorId!) == -1 ||
+      category === 'residential' && ([17].indexOf(subsectorId!) == -1 && subsectorId < 30) ||
       category === 'fuelSwitch' && !name.toLowerCase().includes('fuel switch')
     ) { continue; }
     // Add category key, if it doesn't exist yet
