@@ -3,37 +3,37 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import type {
-    GlobalParameters,
-    ParameterCategory,
-    ParameterEntry,
-    PayloadParameterInterface,
-    PayloadParameterEntryInterface,
-  } from "@/types";
+  GlobalParameters,
+  ParameterCategory,
+  ParameterEntry,
+  PayloadParameterInterface,
+  PayloadParameterEntryInterface,
+} from "@/types";
 
 export const formatter = Intl.NumberFormat('en', {
-    notation: 'compact',
+  notation: 'compact',
 })
 export const scientificFormatter = Intl.NumberFormat('en', {
-    notation: 'scientific',
+  notation: 'scientific',
 })
 export const labelFormatterSmall = Intl.NumberFormat('en', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 10,
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 10,
 })
 export const labelFormatter = Intl.NumberFormat('en', {
-    notation: 'standard',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+  notation: 'standard',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
 })
 export const restructureParameters = (subsectorId: number, name: string, parameters: any) => {
   const restructuredResults: ParameterCategory = {};
   const yearRegex = /^[0-9]+$/;
-  
+
   for (const [category, dataSet] of Object.entries(parameters)) {
     // Use residential parameters for residential subsectors only (which is "average residential" (ID: 17) only)
     // Use fuel switch parameters for fuel switch improvements only
     if (
-      category === 'context' || 
+      category === 'context' ||
       category === 'residential' && ([17].indexOf(subsectorId!) == -1 && subsectorId < 30) ||
       category === 'fuelSwitch' && !name.toLowerCase().includes('fuel switch')
     ) { continue; }
@@ -46,18 +46,18 @@ export const restructureParameters = (subsectorId: number, name: string, paramet
     for (const data of (dataSet as Array<PayloadParameterEntryInterface>)) {
       if (data.id_parameter === null) continue;
       const entry: ParameterEntry = {
-        years: [], 
-        parameters: {}, 
+        years: [],
+        parameters: {},
         identifier: `${data.id_parameter}-${data.id_final_energy_carrier ? data.id_final_energy_carrier : 'na'}`,
       };
-      for (const [key, v] of Object.entries((data as {[key: string]: number | string}))) {
+      for (const [key, v] of Object.entries((data as { [key: string]: number | string }))) {
         const value: number = (v as number);
         if (yearRegex.test(key)) {
           // If there's a value for a year, we always take it; alternative values might have null values, but they don't
           // have constants defined, so we also set them
           if (value !== null || typeof data.constants === 'undefined') {
-            entry.years.push({key, value});
-          }  
+            entry.years.push({ key, value });
+          }
         } else {
           entry.parameters[key] = value;
         }
@@ -86,7 +86,7 @@ export const restructureParameters = (subsectorId: number, name: string, paramet
   }
   return Object.keys(restructuredResults).sort((a, b) => a === "main" ? -1 : 1).reduce((r, k) => (r[k] = restructuredResults[k], r), ({} as ParameterCategory));
 }
-export const getGlobalParametersPayload = (globalParameters: GlobalParameters, monetisationFactorMapping: {[key: number]: string}, region: number) => {
+export const getGlobalParametersPayload = (globalParameters: GlobalParameters, monetisationFactorMapping: { [key: number]: string }, region: number) => {
   const results: PayloadParameterInterface = {};
   for (const [category, subsectors] of Object.entries(globalParameters)) {
     results[category] = [];
@@ -118,11 +118,11 @@ export const getGlobalParametersPayload = (globalParameters: GlobalParameters, m
               }
             });
             if (existingResult && value.value !== null) {
-              existingResult[factor] = category === 'FuelSplitCoefficient' ? value.value / 100 : value.value;
+              existingResult[factor] = ['FuelSplitCoefficient', 'HeatGeneration', 'ElectricityGeneration'].indexOf(category) > -1 ? value.value / 100 : value.value;
             } else if (value.value !== null) {
               const data = {
                 [carrierKey]: value.key,
-                [factor]: category === 'FuelSplitCoefficient' ? value.value / 100 : value.value,
+                [factor]: ['FuelSplitCoefficient', 'HeatGeneration', 'ElectricityGeneration'].indexOf(category) > -1 ? value.value / 100 : value.value,
               }
               if (['ElectricityGeneration', 'HeatGeneration'].indexOf(category) === -1) data['id_subsector'] = parseInt(subsector);
               if (category === 'EnergyPrice') data['id_region'] = region;
