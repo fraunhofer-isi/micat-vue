@@ -91,7 +91,8 @@ const getParameters = async () => {
   // Convert to ktoe
   const factor = units[props.improvement.unit].factor;
   const inputs = JSON.parse(JSON.stringify(props.improvement.data!.values));
-  session.years.forEach(year => {
+  const startingYear = props.improvement.startingYear || session.years[0];
+  session.years.filter(year => year >= startingYear).forEach(year => {
     const value = inputs[year.toString()];
     inputs[year.toString()] = value ? value * 1 / factor : 0;
   });

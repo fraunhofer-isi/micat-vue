@@ -79,8 +79,9 @@ const programs = reactive<Array<ProgramInterface>>(session.programs);
 const loading = ref<boolean>(false);
 let regions: Ref<Array<Array<number | string>>> = ref([]);
 let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
-const getNewYears = () => {
+const getNewYears = (filterYears: boolean = true) => {
   const newYears = [...Array(51).keys()].map(delta => 2000 + delta);
+  if (!filterYears) return newYears;
   return newYears.filter(newYear => years.value.indexOf(newYear) == -1);
 };
 const newYears = ref<Array<number>>(getNewYears());
@@ -292,6 +293,7 @@ const showParameters = (data: ImprovementInterface, programIndex: number) => {
     name: data.name, 
     subsector: selectedProgram.subsectorName, 
     subsectorId: selectedProgram.subsector, 
+    startingYear: selectedProgram.startingYear,
     program: selectedProgram.name,
     unit: selectedProgram.unit,
     data,
@@ -371,7 +373,7 @@ const analyze = async () => {
           "id_action_type": improvement.id,
         },
       };
-      years.value.forEach(year => {
+      years.value.filter(year => year >= (program.startingYear || 0)).forEach(year => {
         const value = improvement.values[year.toString()];
         const factor = units[program.unit].factor
         improvementData.savings[year.toString()] = value ? value * 1 / factor : 0;
@@ -454,6 +456,25 @@ const unitChanged = (program: ProgramInterface, i: number, oldUnitId: number, un
   // If the sub sector changes, we need to reset parameters
   session.updateParameters({});
   // Show parameter warning if unit changes
+  program.improvements.forEach(improvement => {
+    if (improvement.internalId && session.parameters[improvement.internalId]) improvement.showParameterWarning = true;
+  });
+}
+const startingYearChanged = (program: ProgramInterface, i: number, newYear: number) => {
+  program.startingYear = newYear;
+  // Remove all values before starting year
+  program.improvements.forEach(improvement => {
+    Object.keys(improvement.values).forEach(key => {
+      if (parseInt(key) < newYear) {
+        delete improvement.values[key];
+      }
+    });
+  });
+  programs[i] = program;
+  session.updatePrograms(programs);
+  // If the starting year changes, we need to reset parameters
+  session.updateParameters({});
+  // Show parameter warning if starting year changes
   program.improvements.forEach(improvement => {
     if (improvement.internalId && session.parameters[improvement.internalId]) improvement.showParameterWarning = true;
   });
@@ -888,7 +909,7 @@ const start = () => {
             </div>
           </div>
           <div class="grid items-center w-2/3 grid-cols-5">
-            <div class="col-span-2">
+            <div class="col-span-2 mt-2">
               <div>
                 <label :for="`subsector-${i}`" class="text-sm dark:text-white">{{ program.type === 'renewable' ? 'Technology' : 'Subsector' }}</label>
                 <InformationCircleIcon
@@ -897,7 +918,7 @@ const start = () => {
                 ></InformationCircleIcon>
               </div>
             </div>  
-            <div class="col-span-3">
+            <div class="col-span-3 mt-2">
               <div class="relative inline-block text-left">
                 <div>
                   <button 
@@ -961,14 +982,14 @@ const start = () => {
                 </div>
               </div>
             </div>
-            <div class="col-span-2 mt-5">
+            <div class="col-span-2 mt-3">
               <label :for="`program-${i}-unit`" class="text-sm dark:text-white">Unit</label>
               <InformationCircleIcon
                 @click="openModal(program.type === 'renewable' ? 'unit-renewables' : 'unit')"
                 class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
               ></InformationCircleIcon>
             </div>
-            <div class="col-span-3">
+            <div class="col-span-3 mt-3">
               <select
                 :id="`program-${i}-unit`"
                 class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
@@ -976,6 +997,25 @@ const start = () => {
               >
                 <option v-for="[key, value] in Object.entries(program.type === 'renewable' ? unitsRenewables : units)" :selected="program.unit === parseInt(key)" v-bind:key="`unit-${key}`" :value="key">{{
                     value.name
+                  }}
+                </option>
+              </select>
+            </div>
+            <div class="col-span-2 mt-3">
+              <label :for="`program-${i}-starting-year`" class="text-sm dark:text-white">Starting Year</label>
+              <InformationCircleIcon
+                @click="openModal('starting-year')"
+                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+              ></InformationCircleIcon>
+            </div>
+            <div class="col-span-3 mt-3">
+              <select
+                :id="`program-${i}-starting-year`"
+                class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                @change="(e) => startingYearChanged(program, i, parseInt((e.target as HTMLInputElement).value))"
+              >
+                <option v-for="year in getNewYears(false)" :selected="program.startingYear === year" v-bind:key="`year-${year}`" :value="year">{{
+                    year
                   }}
                 </option>
               </select>
@@ -1026,7 +1066,7 @@ const start = () => {
                 </div>
                 <div class="flex items-center">
                   <div>
-                    <div v-for="year in years" v-bind:key="year.toString()" class="mt-5 mb-5 rounded-full whitespace-nowrap">
+                    <div v-for="year in years.filter(year => year >= (program.startingYear || 0))" v-bind:key="year.toString()" class="mt-5 mb-5 rounded-full whitespace-nowrap">
                       <span class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600">{{
                           year
                         }}</span>

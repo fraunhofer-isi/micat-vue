@@ -50,6 +50,11 @@ const helpTexts: HelpTextInterface = {
     'text': 'This determines the sector or subsector, the program is carried out in. More details about the available (sub-)sectors are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-sector-and-id-subsector" target="_blank">here</a>. Furthermore, help on how to decompose a measure into different sectors and improvement actions can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/specifying_subsector_action.html" target="_blank">here</a>.',
     'type': 'help'
   },
+  'starting-year': {
+    'title': 'Starting year selection',
+    'text': 'This specifies the year in which the program has started.',
+    'type': 'help'
+  },
   'technology': {
     'title': 'Technology selection',
     'text': 'This determines the technology used in the program. More information will be provided soon.',

@@ -24,6 +24,7 @@ export interface SelectedImprovementInterface {
     program?: string;
     subsector?: string;
     subsectorId?: number;
+    startingYear?: number;
     data?: ImprovementInterface;
     unit: number;
     showParameterWarning?: boolean;
@@ -56,6 +57,7 @@ export interface ProgramInterface {
     type: string;
     unit: number;
     unitName?: string;
+    startingYear?: number;
     subsector: number;
     subsectorName: string;
     showSubsectorMenu: boolean;
@@ -150,8 +152,8 @@ export interface CarrierMapping {
 }
 
 export interface MureTokenInterface {
-  token: string;
-  expires: number;
+    token: string;
+    expires: number;
 }
 
 export interface MureCategoryInterface {
@@ -160,32 +162,32 @@ export interface MureCategoryInterface {
 }
 
 export interface ISessionState {
-  currentYear: number;
-  stage: number;
-  mure: boolean;
-  odyssee: boolean;
-  mureToken: MureTokenInterface;
-  mureCategory: number;
-  mureCountry: number;
-  mureMeasurement: number;
-  odysseeStartYear: number;
-  odysseeEndYear: number;
-  region: number;
-  municipality: boolean;
-  inhabitants: number;
-  years: Array<number>;
-  programs: Array<ProgramInterface>;
-  payload: PayloadInterface;
-  resetted: boolean;
-  results: ResultsInterface[];
-  globalParameters: GlobalParameters;
-  subsectorMapping: {[key: number]: string};
-  carrierMapping: CarrierMapping;
-  monetisationFactorMapping: {[key: number]: string};
-  parameters: Parameters;
-  useRenovationRate: boolean;
-  showRenewables: boolean;
-  seedInfo: boolean;
+    currentYear: number;
+    stage: number;
+    mure: boolean;
+    odyssee: boolean;
+    mureToken: MureTokenInterface;
+    mureCategory: number;
+    mureCountry: number;
+    mureMeasurement: number;
+    odysseeStartYear: number;
+    odysseeEndYear: number;
+    region: number;
+    municipality: boolean;
+    inhabitants: number;
+    years: Array<number>;
+    programs: Array<ProgramInterface>;
+    payload: PayloadInterface;
+    resetted: boolean;
+    results: ResultsInterface[];
+    globalParameters: GlobalParameters;
+    subsectorMapping: { [key: number]: string };
+    carrierMapping: CarrierMapping;
+    monetisationFactorMapping: { [key: number]: string };
+    parameters: Parameters;
+    useRenovationRate: boolean;
+    showRenewables: boolean;
+    seedInfo: boolean;
 }
 export interface ISessionStateFunctions {
     updateStage: (stage: number) => void;
@@ -212,24 +214,24 @@ export interface CbaData {
     };
 }
 export interface CbaDataOld {
-    years:                       string[];
-    supportingYears:             number[];
+    years: string[];
+    supportingYears: number[];
     costBenefitAnalysisFacility: CostBenefitAnalysisFacility;
-    netPresentValue:             NetPresentValue;
-    costBenefitRatio:            CostBenefitRatio;
-    levelisedCosts:              LevelisedCosts;
-    marginalCostCurves:          MarginalCostCurves;
-    fundingEfficiency:           FundingEfficiency;
+    netPresentValue: NetPresentValue;
+    costBenefitRatio: CostBenefitRatio;
+    levelisedCosts: LevelisedCosts;
+    marginalCostCurves: MarginalCostCurves;
+    fundingEfficiency: FundingEfficiency;
 }
 
 export interface CostBenefitAnalysisFacility {
     newEnergySavings: NewEnergySaving[];
-    newInvestments:   NewEnergySaving[];
+    newInvestments: NewEnergySaving[];
 }
 
 export interface NewEnergySaving {
     id_measure: number;
-    data: {[key: string]: number};
+    data: { [key: string]: number };
 }
 
 export interface CostBenefitRatio {
@@ -244,29 +246,29 @@ export interface FundingEfficiency {
 
 export interface LevelisedCosts {
     levelisedCostsOfSavedEnergies: NewEnergySaving[];
-    levelisedCostsOfSavedCo2:      NewEnergySaving[];
-    annuatisedCo2Emissions:        NewEnergySaving[];
+    levelisedCostsOfSavedCo2: NewEnergySaving[];
+    annuatisedCo2Emissions: NewEnergySaving[];
 }
 
 export interface MarginalCostCurves {
     marginalEnergySavingsCostCurves: MarginalSavingsCostCurve[];
-    marginalCo2SavingsCostCurves:    MarginalSavingsCostCurve[];
+    marginalCo2SavingsCostCurves: MarginalSavingsCostCurve[];
 }
 
 export interface MarginalSavingsCostCurve {
     id_measure: number;
-    data: {[key: string]: {[key: string]: number}};
+    data: { [key: string]: { [key: string]: number } };
 }
 
 export interface Datum {
-    x:  number;
+    x: number;
     y: number;
 }
 
 export interface NetPresentValue {
-    annuatisedEnergyCosts:     NewEnergySaving[];
+    annuatisedEnergyCosts: NewEnergySaving[];
     annuatisedMultipleImpacts: NewEnergySaving[];
-    netPresentValues:          NewEnergySaving[];
+    netPresentValues: NewEnergySaving[];
 }
 export interface CbaDataInterface {
     labels: Array<string>;
