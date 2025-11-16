@@ -315,6 +315,7 @@ const analyze = async () => {
       return;
     }
     const payload: PayloadInterface = {
+      "starting_year": program.startingYear,
       "measures": [],
       "parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping, session.region),
       "name": program.name,
@@ -323,6 +324,10 @@ const analyze = async () => {
     program.improvements.forEach(improvement => {
       if (!improvement.id) {
         errors += `<em>${program.name}</em> has invalid improvements.<br />`;
+        return;
+      }
+      if (Object.keys(improvement.values).length === 0) {
+        errors += `Please provide energy savings for improvement <em>${improvement.name}</em> in <em>${program.name}</em>.<br />`;
         return;
       }
 
@@ -1014,6 +1019,7 @@ const start = () => {
                 class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                 @change="(e) => startingYearChanged(program, i, parseInt((e.target as HTMLInputElement).value))"
               >
+                <option :selected="!program.startingYear" key="year-none" value=""></option>
                 <option v-for="year in getNewYears(false)" :selected="program.startingYear === year" v-bind:key="`year-${year}`" :value="year">{{
                     year
                   }}

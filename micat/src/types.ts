@@ -103,6 +103,7 @@ export interface PayloadMeasureInterface {
     savings: PayloadSavingsInterface;
 }
 export interface PayloadInterface {
+    starting_year?: number;
     measures: Array<PayloadMeasureInterface>;
     parameters: PayloadParameterInterface;
     population?: number;

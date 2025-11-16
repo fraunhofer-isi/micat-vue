@@ -343,15 +343,22 @@ const chartOptions = computed(() => {
       },
       datalabels: {
         display: (context: Context) => {
-          const datasets = context.chart.data.datasets;
-          return context.datasetIndex === datasets.length - 1;
+          return context.datasetIndex >= context.chart.data.datasets.length - data.value.length;
         },
         formatter: (value: number, context: Context) => {
           const index = context.dataIndex;
-          const total = context.chart.data.datasets.reduce((sum, dataset) => {
-            const dataValue = dataset.data[index] as number;
-            return sum + dataValue;
-          }, 0);
+          const datasetsPerProgram = context.chart.data.datasets.length / data.value.length;
+          let total = value || 0;
+          if (datasetsPerProgram > 1) {
+            const datasetIndex = context.datasetIndex;
+            const programIndex = datasetIndex % data.value.length;
+            console.log({datasetIndex, datasetsPerProgram, programIndex, datasets: context.chart.data.datasets.filter((_, index) => index % data.value.length === programIndex)});
+            total = context.chart.data.datasets.filter((_, index) => index % data.value.length === programIndex).reduce((sum, dataset) => {
+              const dataValue = dataset.data[index] as number;
+              return sum + dataValue;
+            }, 0);
+          }
+          if (total === 0) return '';
           return total < 1 && total >= 0 ? labelFormatterSmall.format(total) : labelFormatter.format(total);;
         },
         anchor: function (context: Context) {
@@ -412,7 +419,7 @@ const chartData = computed(() => {
     data.value.forEach((program, iP) => {
       const dataset = {
         label: label === 'id_measure' ? session.programs[iP].name : data.value.length > 1 ? `${label} (${session.programs[iP].name})` : label,
-        data: new Array(data.value[0].yearColumnNames.length).fill(0),
+        data: new Array(program.yearColumnNames.length).fill(0),
         borderColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
         backgroundColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
         stack: `stack-${iP}`,
@@ -428,11 +435,28 @@ const chartData = computed(() => {
           });
         }
       });
+      // Check if program has less years than the session and fill up with null values
+      // Find out which years are missing in program.yearColumnNames
+      session.years.forEach((year, iY) => {
+        if (program.yearColumnNames.indexOf(year.toString()) === -1) {
+          // Find the index where to insert the null value
+          program.yearColumnNames.find((dataYear, iDY) => {
+            if (parseInt(dataYear) > year) {
+              dataset.data.splice(iY, 0, null);
+              return true;
+            }
+            // If it's the last year, push the null value at the end
+            if (iDY === program.yearColumnNames.length - 1) {
+              dataset.data.push(null);
+            }
+          });
+        }
+      });
       datasets.push(dataset);
     }); 
   });
   return {
-    labels: data.value[0].yearColumnNames,
+    labels: session.years.map(year => year.toString()),
     datasets: datasets
   };
 });
