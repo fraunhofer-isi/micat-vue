@@ -487,15 +487,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.5.22
- - @vue/compiler-dom@3.5.22
- - @vue/compiler-sfc@3.5.22
- - @vue/compiler-ssr@3.5.22
- - @vue/reactivity@3.5.22
- - @vue/runtime-core@3.5.22
- - @vue/runtime-dom@3.5.22
- - @vue/server-renderer@3.5.22
- - @vue/shared@3.5.22
+ - @vue/compiler-core@3.5.23
+ - @vue/compiler-dom@3.5.23
+ - @vue/compiler-sfc@3.5.23
+ - @vue/compiler-ssr@3.5.23
+ - @vue/reactivity@3.5.23
+ - @vue/runtime-core@3.5.23
+ - @vue/runtime-dom@3.5.23
+ - @vue/server-renderer@3.5.23
+ - @vue/shared@3.5.23
 
 These packages each contain the following license:
 
