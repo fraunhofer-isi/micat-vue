@@ -887,7 +887,7 @@ const start = () => {
               </div>
             </span>
           </div>
-          <div v-if="session.showRenewables">
+          <div>
             <div
               class="inline-flex items-center mb-2 text-sm border cursor-pointer rounded-xl dark:text-gray-800 border-sky-600 dark:border-0"
             >

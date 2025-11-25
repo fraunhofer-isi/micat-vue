@@ -352,7 +352,6 @@ const chartOptions = computed(() => {
           if (datasetsPerProgram > 1) {
             const datasetIndex = context.datasetIndex;
             const programIndex = datasetIndex % data.value.length;
-            console.log({datasetIndex, datasetsPerProgram, programIndex, datasets: context.chart.data.datasets.filter((_, index) => index % data.value.length === programIndex)});
             total = context.chart.data.datasets.filter((_, index) => index % data.value.length === programIndex).reduce((sum, dataset) => {
               const dataValue = dataset.data[index] as number;
               return sum + dataValue;

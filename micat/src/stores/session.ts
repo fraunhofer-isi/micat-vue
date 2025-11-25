@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import { defineStore } from "pinia";
-import {defaultProgram, stages} from '@/defaults';
-import type {CarrierMapping, ProgramInterface, ISessionState, PayloadInterface, Parameters, GlobalParameters, MureTokenInterface} from "@/types";
+import { defaultProgram, stages } from '@/defaults';
+import type { CarrierMapping, ProgramInterface, ISessionState, PayloadInterface, Parameters, GlobalParameters, MureTokenInterface } from "@/types";
 
 const currentYear = new Date().getFullYear();
-const nextValidYear = Math.floor( currentYear / 5) * 5;
+const nextValidYear = Math.floor(currentYear / 5) * 5;
 
 const getYears = () => {
   return [nextValidYear - 10, nextValidYear - 5, nextValidYear];
@@ -32,7 +32,7 @@ export const useSessionStore = defineStore({
       inhabitants: parseInt(localStorage.getItem("inhabitants") || "100000"),
       years: JSON.parse(localStorage.getItem("years") || JSON.stringify(getYears())),
       programs: JSON.parse(localStorage.getItem("programs") || JSON.stringify([structuredClone(defaultProgram)])),
-      payload: {"measures": [], "parameters": {}, "name": ""},
+      payload: { "measures": [], "parameters": {}, "name": "" },
       resetted: false,
       results: [],
       globalParameters: JSON.parse(localStorage.getItem("globalParameters") || JSON.stringify({})),
@@ -41,7 +41,6 @@ export const useSessionStore = defineStore({
       monetisationFactorMapping: JSON.parse(localStorage.getItem("monetisationFactorMapping") || JSON.stringify({})),
       parameters: JSON.parse(localStorage.getItem("parameters") || JSON.stringify({})),
       useRenovationRate: String(localStorage.getItem("useRenovationRate") || "false").toLowerCase() === "true",
-      showRenewables: String(localStorage.getItem("showRenewables") || "false").toLowerCase() === "true",
       seedInfo: String(localStorage.getItem("seedInfo") || "false").toLowerCase() === "true",
     }
   },
@@ -114,7 +113,7 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       localStorage.setItem("globalParameters", JSON.stringify(globalParameters));
     },
-    updateSubsectorMapping(subsectorMapping: {[key: number]: string}, manualChange?: boolean) {
+    updateSubsectorMapping(subsectorMapping: { [key: number]: string }, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("subsectorMapping", JSON.stringify(subsectorMapping));
     },
@@ -122,17 +121,13 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       localStorage.setItem("carrierMapping", JSON.stringify(carrierMapping));
     },
-    updateMonetisationFactorMapping(monetisationFactorMapping: {[key: number]: string}, manualChange?: boolean) {
+    updateMonetisationFactorMapping(monetisationFactorMapping: { [key: number]: string }, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("monetisationFactorMapping", JSON.stringify(monetisationFactorMapping));
     },
     updateUseRenovationRate(useRenovationRate: boolean, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("useRenovationRate", useRenovationRate.toString());
-    },
-    updateShowRenewables(showRenewables: boolean, manualChange?: boolean) {
-      if (manualChange) this.resetted = false;
-      localStorage.setItem("showRenewables", showRenewables.toString());
     },
     updateSeedInfo(seedInfo: boolean, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
@@ -153,14 +148,13 @@ export const useSessionStore = defineStore({
       this.updateInhabitants(100000, false);
       this.updateYears(getYears(), false);
       this.updatePrograms([structuredClone(defaultProgram)], false);
-      this.updatePayload({"measures": [], "parameters": {}, "name": ""}, false);
+      this.updatePayload({ "measures": [], "parameters": {}, "name": "" }, false);
       this.updateParameters({}, false);
       this.updateGlobalParameters({}, false);
       this.updateSubsectorMapping({}, false);
       this.updateCarrierMapping({}, false);
       this.updateMonetisationFactorMapping({}, false);
       this.updateUseRenovationRate(false, false);
-      this.updateShowRenewables(false, false);
     },
   },
 });
