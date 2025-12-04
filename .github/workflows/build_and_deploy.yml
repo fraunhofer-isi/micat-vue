@@ -30,7 +30,7 @@ jobs:
         uses: ./.github/actions/extract-node-version
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: ${{ env.NODE_VERSION }}
       - name: install node.js dependencies
         run: |
           cd micat
