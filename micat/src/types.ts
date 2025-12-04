@@ -200,13 +200,11 @@ export interface ISessionStateFunctions {
 }
 export interface CbaResultInterface {
     title: string;
-    slug: "netPresentValue";
+    slug: "weightedAnnuity";
 }
 export interface CbaData {
     name: string;
-    annualMultipleImpacts: number;
-    annualEnergyCosts: number;
-    netPresentValue: number;
+    weightedAnnuity: number;
     parameters: {
         discountRate: number;
         energyPriceSensitivity: number;

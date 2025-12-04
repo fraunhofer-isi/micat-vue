@@ -262,38 +262,10 @@ const categories: CategoriesInterface = {
   }
 };
 const cbaResults: Array<CbaResultInterface> = [
-  // {
-  //   title: "Cost benefit analysis facility",
-  //   slug: "costBenefitAnalysisFacility",
-  // },
   {
-    title: "Net present value",
-    slug: "netPresentValue",
+    title: "Weighted annuity",
+    slug: "weightedAnnuity",
   },
-  // {
-  //   title: "Annual energy costs",
-  //   slug: "annualEnergyCosts",
-  // },
-  // {
-  //   title: "Annual multiple impacts",
-  //   slug: "annualMultipleImpacts",
-  // },
-  // {
-  //   title: "Cost benefit ratio",
-  //   slug: "costBenefitRatio",
-  // },
-  // {
-  //   title: "Levelised costs",
-  //   slug: "levelisedCosts",
-  // },
-  // {
-  //   title: "Funding efficiency",
-  //   slug: "fundingEfficiency",
-  // },
-  // {
-  //   title: "Marginal cost curves",
-  //   slug: "marginalCostCurves",
-  // },
 ];
 
 // Refs
@@ -358,7 +330,7 @@ const chartOptions = computed(() => {
             }, 0);
           }
           if (total === 0) return '';
-          return total < 1 && total >= 0 ? labelFormatterSmall.format(total) : labelFormatter.format(total);;
+          return total < 1 ? labelFormatterSmall.format(total) : labelFormatter.format(total);
         },
         anchor: function (context: Context) {
           const value = context.dataset.data[context.dataIndex];
@@ -467,126 +439,371 @@ const interpolatedYears = computed(() => {
 });
 const cbaData: Ref<Array<CbaData>> = computedAsync(
   async () => {
+    /**
+     * Compute NΔE_{m,y} for a series of years.
+     *
+     * @param {number[]} deltaE - array of ΔE_{m,y} (total annual energy savings),
+     *                            ordered by year (index 0 = first year).
+     * @param {number} LTm - average lifetime (positive integer).
+     * @returns {number[]} newSavings - array of NΔE_{m,y} values (same length as deltaE).
+     */
+    function computeNewEnergySavings(deltaE: number[], LTm: number): number[] {
+      const n = deltaE.length;
+      const newSavings = new Array(n).fill(0);  
+
+      for (let y = 0; y < n; y++) {
+        // sum of previous up to LTm newSavings values
+        let sumPrev = 0;
+        for (let i = 1; i <= LTm; i++) {
+          const idx = y - i;
+          if (idx < 0) break; // no earlier year available
+          sumPrev += newSavings[idx];
+        }
+        newSavings[y] = deltaE[y] - sumPrev;
+      }
+
+      return newSavings;
+    }
+
+    /**
+     * Compute NΔinv_{m,y} for a series of years.
+     *
+     * @param {number[]} deltaInv - array of Δinv_{m,y} (total annual investments),
+     *                              ordered by year (index 0 = first year).
+     * @returns {number[]} newInv - array of NΔinv_{m,y} values.
+     */
+    function computeNewInvestments(deltaInv: number[]): number[] {
+      const n = deltaInv.length;
+      const newInv = new Array(n).fill(0);
+
+      for (let y = 0; y < n; y++) {
+        if (y === 0) {
+          // First year has no previous value, so NΔinv = Δinv
+          newInv[y] = deltaInv[y];
+        } else {
+          newInv[y] = deltaInv[y] - deltaInv[y - 1];
+        }
+      }
+
+      return newInv;
+    }
+
+    /**
+     * Compute scaled indicator ΔMI_{m,y} for all years.
+     *
+     * Formula:
+     * ΔMI_{m,y} = (MI_{m,i} / ΔE_{m,i}) * NΔE_{m,y}
+     *
+     * @param {number} MI_base - MI_{m,i}, indicator value in the base (Stützjahr) year.
+     * @param {number} deltaE_base - ΔE_{m,i}, total annual savings in the base year.
+     * @param {number[]} newSavings - array of NΔE_{m,y} values (new annual savings per year).
+     * @returns {number[]} scaledIndicators - ΔMI_{m,y} per year.
+     */
+    function computeScaledIndicators(MI_base: number, deltaE_base: number, newSavings: number): number {
+      if (deltaE_base === 0) {
+        throw new Error("ΔE_{m,i} (base year savings) cannot be zero.");
+      }
+
+      return MI_base / deltaE_base * newSavings;
+    }
+
+    /**
+     * Computes discounted annual one-time impacts.
+     *
+     * For each annual impact I_m,i in the array:
+     *   dI/dGDP = I * CRF
+     *
+     * @param values - Array of annual values
+     * @param DR - Discount rate (e.g., 0.03 for 3%)
+     * @param LT - Measure lifetime in years
+     * @returns Array of discounted annual values
+     */
+    function discountedAnnualValues(
+      values: number[],
+      DR: number,
+      LT: number
+    ): number[] {
+      if (DR <= 0) {
+        // No discounting → linear annualization
+        return values.map(I => I / LT);
+      }
+
+      const factor = Math.pow(1 + DR, LT);
+      const CRF = (DR * factor) / (factor - 1);
+
+      return values.map(I => I * CRF);
+    }
+
+    /**
+     * Calculates the weighted annuity A_m.
+     *
+     * Formula:
+     * A_m = ( Σ_i [ A[i] * Σ_{y = y(i-1)+1 to y(i)} newSavings[y] ] )
+     *       / ( Σ_y newSavings[y] )
+     *
+     * @param A - Annuity values per stated year i
+     * @param years - Actual calendar year of each stated year index (same length as A)
+     * @param newSavings - Map or record of new annual savings per calendar year
+     * @returns Weighted annuity A_m
+     */
+    function calculateWeightedAnnuity(
+      A: number[],
+      years: number[],
+      newSavings: Record<number, number>,
+      startingYear: number
+    ): number {
+      let numerator = 0;
+      let denominator = 0;
+
+      // Precompute denominator: total new savings over all years
+      for (const y in newSavings) {
+        denominator += newSavings[y];
+      }
+
+      // Sum per-annuity weighted contributions
+      for (let i = 0; i < A.length; i++) {
+        const currentYear = years[i];
+        // The first year needs to sum up all values from starting year to current year
+        const prevYear = i === 0 ? startingYear - 1 : years[i - 1];
+
+        // Sum new savings from prevYear+1 through currentYear
+        let savingsSum = 0;
+        for (let y = prevYear + 1; y <= currentYear; y++) {
+          savingsSum += newSavings[y] ?? 0;
+        }
+
+        numerator += A[i] * savingsSum;
+      }
+
+      if (denominator === 0) return 0;
+
+      return numerator / denominator;
+    }
+
     const data = [];
 
-    // EC_(m,y)
-    let reductionOfEnergyCost = 0;
-    // MI_(m,y)
-    let totalIndicators = 0;
-    // RAC_(m,y)
-    let reductionOfAdditionalCapacities = 0;
+    for (const results of session.results) {
+      const deltaE = [...results.data['totalAnnualEnergySavings'].rows[0]]; // ΔE_{m,y} for years 0..4
+      const investmentCosts = [...results.data['investmentCosts'].rows[0]];
+      deltaE.shift(); // remove measure identifier
+      const LTm = results.data['lifetime']?.rows[0][1]; // average lifetime
+      const newEnergySavings = computeNewEnergySavings(deltaE, LTm);
+      const newInvestments = computeNewInvestments(investmentCosts);
+      const GDP = [...results.data['impactOnGrossDomesticProduct'].rows[0]];
+      GDP.shift(); // remove measure identifier
+      const years = results.data['subsidyRate'].yearColumnNames;
+      const fullYears = results.data['totalAnnualEnergySavings'].yearColumnNames;
+      const startingYear = parseInt(fullYears[0]);
 
-    // Sum up MI_(m,y) and EC_(m,y)
-    const measurements = categories.monetization.measurements.filter(measurement => activeIndicators.value.indexOf(measurement.identifier) > -1);
-    measurements.forEach((measurement, i) => {
-      if (["impactOnGrossDomesticProduct", "addedAssetValueOfBuildings"].indexOf(measurement.identifier) > -1) {
-        return;
-      }
-      session.results.forEach(result => {
-        const data: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
-        if (measurement.identifier === 'reductionOfEnergyCost') {
+      // Map newEnergySavings and newInvestments to years
+      const newEnergySavingsByYear: {[year: string]: number} = {};
+      const newInvestmentsByYear: {[year: string]: number} = {};
+      fullYears.forEach((year, i) => {
+        newEnergySavingsByYear[year] = newEnergySavings[i];
+        newInvestmentsByYear[year] = newInvestments[i];
+      });
+
+      // Sum up all indicators ΔMI_{m,y}
+      const totalIndicatorsByYear: {[year: string]: number} = {};
+      const indicators = categories.monetization.measurements.filter(measurement => activeIndicators.value.indexOf(measurement.identifier) > -1);
+      indicators.forEach((indicator, i) => {
+        if (["impactOnGrossDomesticProduct", "addedAssetValueOfBuildings"].indexOf(indicator.identifier) > -1) {
+          return;
+        }
+        const data: ResultInterface = JSON.parse(JSON.stringify(results.data[indicator.identifier]));
+        if (indicator.identifier === 'reductionOfEnergyCost') {
           data.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
             data.rows.filter(row => row[1] === label).forEach(row => {
-              // Sum up values from last year only
-              reductionOfEnergyCost += row[row.length - 1];
+              // Remove first columns to get only year values
+              row.splice(0, 2);
+              row.forEach((value, iY) => {
+                // Scale the original value according to new energy savings
+                const baseYear = years[iY];
+                const deltaE_base = deltaE[0]; // ΔE_{m,i} in base year
+                const MI_base = value; // MI_{m,i} in base year
+                totalIndicatorsByYear[baseYear] = (totalIndicatorsByYear[baseYear] || 0) + computeScaledIndicators(MI_base, deltaE_base, newEnergySavingsByYear[baseYear]);
+              });
             });
           });
-        } else if (measurement.identifier === 'reductionOfAdditionalCapacitiesInGridMonetization') {
-          data.rows.forEach(row => {
-            reductionOfAdditionalCapacities += row[row.length - 1];
-          });
         } else {
           data.rows.forEach(row => {
-            totalIndicators += row[row.length - 1];
+            // Remove first columns to get only year values
+            row.splice(0, 1);
+            row.forEach((value, iY) => {
+              // Scale the original value according to new energy savings
+              const baseYear = years[iY];
+              const deltaE_base = deltaE[0]; // ΔE_{m,i} in base year
+              const MI_base = value; // MI_{m,i} in base year
+              totalIndicatorsByYear[baseYear] = (totalIndicatorsByYear[baseYear] || 0) + computeScaledIndicators(MI_base, deltaE_base, newEnergySavingsByYear[baseYear]);
+            });
           });
         }
-      });  
-    });
+      });
+      const totalIndicators: number[] = years.map(year => totalIndicatorsByYear[year]);
 
-    // DR
-    const dr = discountRate.value ? discountRate.value / 100 : 0;
-    // ICS
-    const ics = investmentsSensitivity.value / 100;
-    // ECS
-    const ecs = energyPriceSensitivity.value / 100;
-
-    for (const program of session.programs) {
-      // AMI_(m,y)
-      let annualMultipleImpacts = 0
-      // AEC_(m,y)
-      let annualEnergyCosts = 0;
-
-      // inv_(m,y)
-      let investments = 0;
-      
-      for (const improvement of program.improvements) {
-        // Get investment costs (inv_(m,y)) and average technology lifetime (LT_m), if not present
-        let parameters: ParameterCategory = {};
-        if (!session.parameters.hasOwnProperty(improvement.internalId!)) {
-          const body = {
-            "id": improvement.internalId,
-            "active": true,
-            "subsector": {
-              "id": program.subsector,
-            },
-            "action_type": {
-            "id": improvement.id,
-            },
-            "details": {},
-            "unit": {
-              // "name": "kilotonne of oil equivalent",
-              "symbol": units[program.unit].symbol,
-              "factor": units[program.unit].factor
-            }
-          };
-          
-          const responseParameters: Response = await fetch(
-            `${import.meta.env.VITE_API_URL}json_measure?id_region=${session.region}&id_subsector=${program.subsector}`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({...improvement.values, ...body})
-            },
-          );
-          parameters = restructureParameters(program.subsector, improvement.name!, await responseParameters.json())
-        } else {
-          parameters = session.parameters[improvement.internalId!];
-        }
-        // Calculate AMI_(m,y) and AEC_(m,y)
-        let averageTechnologyLifetime: string | number = 0;
-        investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
-        averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants || 0;
-        for (const t of [...Array(averageTechnologyLifetime).keys()]) {
-          const divider =  (1 + dr) ** t;
-          annualMultipleImpacts += totalIndicators / divider;
-          annualEnergyCosts += reductionOfEnergyCost / divider;
-        }
+      const discountedNewInvestments = discountedAnnualValues(newInvestments, discountRate.value / 100, LTm);
+      // Consider investment sensitivity
+      for (let i = 0; i < discountedNewInvestments.length; i++) {
+        discountedNewInvestments[i] *= (investmentsSensitivity.value / 100);
       }
-      measurements.filter(measurement => ["impactOnGrossDomesticProduct", "addedAssetValueOfBuildings"].indexOf(measurement.identifier) > -1).forEach((measurement, i) => {
-        session.results.forEach(result => {
-          const data: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
-          data.rows.forEach(row => {
-            annualMultipleImpacts += row[row.length - 1];
-          });
-        });  
-      });  
+      const discountedGDP = discountedAnnualValues(GDP, discountRate.value / 100, LTm);
+
+      const annuity = Array.from({ length: years.length }, (_, i) => discountedNewInvestments[i] - totalIndicators[i]);
+      // Consider energy price sensitivity
+      for (let i = 0; i < annuity.length; i++) {
+        annuity[i] *= (energyPriceSensitivity.value / 100);
+      }
+      const annuityWeighted = calculateWeightedAnnuity(
+        annuity,
+        years.map(y => parseInt(y)),
+        newEnergySavingsByYear,
+        startingYear
+      );
+
+      console.log("LTm", LTm);
+      console.log("years", years);
+      console.log("newEnergySavings", newEnergySavingsByYear);
+      console.log("newInvestments", newInvestmentsByYear);
+      console.log("discountedNewInvestments", discountedNewInvestments);
+      console.log("discountedGDP", discountedGDP);
+      console.log("annuity", annuity);
+      console.log("annuityWeighted", annuityWeighted);
+
       data.push({
-        name: program.name,
-        annualMultipleImpacts: annualMultipleImpacts,
-        annualEnergyCosts: annualEnergyCosts,
-        // NPV_m
-        // Investments are in million €
-        netPresentValue:  -investments * 1000000 * ics + annualEnergyCosts * ecs + annualMultipleImpacts + reductionOfAdditionalCapacities,
+        name: results.name,
+        weightedAnnuity: annuityWeighted,
         parameters: {
-          discountRate: dr,
-          energyPriceSensitivity: ecs,
-          investmentsSensitivity: ics,
+          discountRate: discountRate.value / 100,
+          energyPriceSensitivity: energyPriceSensitivity.value / 100,
+          investmentsSensitivity: investmentsSensitivity.value / 100,
         },
       });
     }
+
     return data;
+
+    // ################## OLD CBA ###################
+
+    // const data = [];
+
+    // // EC_(m,y)
+    // let reductionOfEnergyCost = 0;
+    // // MI_(m,y)
+    // let totalIndicators = 0;
+    // // RAC_(m,y)
+    // let reductionOfAdditionalCapacities = 0;
+
+    // // Sum up MI_(m,y) and EC_(m,y)
+    // const measurements = categories.monetization.measurements.filter(measurement => activeIndicators.value.indexOf(measurement.identifier) > -1);
+    // measurements.forEach((measurement, i) => {
+    //   if (["impactOnGrossDomesticProduct", "addedAssetValueOfBuildings"].indexOf(measurement.identifier) > -1) {
+    //     return;
+    //   }
+    //   session.results.forEach(result => {
+    //     const data: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
+    //     if (measurement.identifier === 'reductionOfEnergyCost') {
+    //       data.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
+    //         data.rows.filter(row => row[1] === label).forEach(row => {
+    //           // Sum up values from last year only
+    //           reductionOfEnergyCost += row[row.length - 1];
+    //         });
+    //       });
+    //     } else if (measurement.identifier === 'reductionOfAdditionalCapacitiesInGridMonetization') {
+    //       data.rows.forEach(row => {
+    //         reductionOfAdditionalCapacities += row[row.length - 1];
+    //       });
+    //     } else {
+    //       data.rows.forEach(row => {
+    //         totalIndicators += row[row.length - 1];
+    //       });
+    //     }
+    //   });  
+    // });
+
+    // // DR
+    // const dr = discountRate.value ? discountRate.value / 100 : 0;
+    // // ICS
+    // const ics = investmentsSensitivity.value / 100;
+    // // ECS
+    // const ecs = energyPriceSensitivity.value / 100;
+
+    // for (const program of session.programs) {
+    //   // AMI_(m,y)
+    //   let annualMultipleImpacts = 0
+    //   // AEC_(m,y)
+    //   let annualEnergyCosts = 0;
+
+    //   // inv_(m,y)
+    //   let investments = 0;
+      
+    //   for (const improvement of program.improvements) {
+    //     // Get investment costs (inv_(m,y)) and average technology lifetime (LT_m), if not present
+    //     let parameters: ParameterCategory = {};
+    //     if (!session.parameters.hasOwnProperty(improvement.internalId!)) {
+    //       const body = {
+    //         "id": improvement.internalId,
+    //         "active": true,
+    //         "subsector": {
+    //           "id": program.subsector,
+    //         },
+    //         "action_type": {
+    //         "id": improvement.id,
+    //         },
+    //         "details": {},
+    //         "unit": {
+    //           // "name": "kilotonne of oil equivalent",
+    //           "symbol": units[program.unit].symbol,
+    //           "factor": units[program.unit].factor
+    //         }
+    //       };
+          
+    //       const responseParameters: Response = await fetch(
+    //         `${import.meta.env.VITE_API_URL}json_measure?id_region=${session.region}&id_subsector=${program.subsector}`,
+    //         {
+    //           method: "POST",
+    //           headers: {
+    //             "Content-Type": "application/json",
+    //           },
+    //           body: JSON.stringify({...improvement.values, ...body})
+    //         },
+    //       );
+    //       parameters = restructureParameters(program.subsector, improvement.name!, await responseParameters.json())
+    //     } else {
+    //       parameters = session.parameters[improvement.internalId!];
+    //     }
+    //     // Calculate AMI_(m,y) and AEC_(m,y)
+    //     let averageTechnologyLifetime: string | number = 0;
+    //     investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
+    //     averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants || 0;
+    //     for (const t of [...Array(averageTechnologyLifetime).keys()]) {
+    //       const divider =  (1 + dr) ** t;
+    //       annualMultipleImpacts += totalIndicators / divider;
+    //       annualEnergyCosts += reductionOfEnergyCost / divider;
+    //     }
+    //   }
+    //   measurements.filter(measurement => ["impactOnGrossDomesticProduct", "addedAssetValueOfBuildings"].indexOf(measurement.identifier) > -1).forEach((measurement, i) => {
+    //     session.results.forEach(result => {
+    //       const data: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
+    //       data.rows.forEach(row => {
+    //         annualMultipleImpacts += row[row.length - 1];
+    //       });
+    //     });  
+    //   });  
+    //   data.push({
+    //     name: program.name,
+    //     annualMultipleImpacts: annualMultipleImpacts,
+    //     annualEnergyCosts: annualEnergyCosts,
+    //     // NPV_m
+    //     // Investments are in million €
+    //     netPresentValue:  -investments * 1000000 * ics + annualEnergyCosts * ecs + annualMultipleImpacts + reductionOfAdditionalCapacities,
+    //     parameters: {
+    //       discountRate: dr,
+    //       energyPriceSensitivity: ecs,
+    //       investmentsSensitivity: ics,
+    //     },
+    //   });
+    // }
+    // return data;
   },
   [], // initial state
 )

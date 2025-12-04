@@ -679,7 +679,7 @@ const start = () => {
             </div>
             <!-- end region -->
           </div>
-          <div class="grid items-center grid-cols-5 mt-10">
+          <div class="grid items-center grid-cols-5 mt-10" v-if="stage !== stages.home">
             <!-- timeframe -->
             <div class="col-span-2">
               <label for="region" class="text-sm dark:text-white">Timeframe</label>

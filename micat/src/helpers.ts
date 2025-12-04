@@ -17,13 +17,13 @@ export const scientificFormatter = Intl.NumberFormat('en', {
   notation: 'scientific',
 })
 export const labelFormatterSmall = Intl.NumberFormat('en', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 10,
+  minimumFractionDigits: 3,
+  maximumFractionDigits: 3,
 })
 export const labelFormatter = Intl.NumberFormat('en', {
   notation: 'standard',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
 })
 export const restructureParameters = (subsectorId: number, name: string, parameters: any) => {
   const restructuredResults: ParameterCategory = {};
