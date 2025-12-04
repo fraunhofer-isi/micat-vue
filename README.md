@@ -89,7 +89,7 @@ Install dependencies with node package manager:
 
 ```sh
 cd micat
-npm install
+npm ci
 ```
 
 #### Enviroment variables

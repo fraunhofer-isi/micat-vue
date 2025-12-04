@@ -24,7 +24,7 @@ jobs:
         run: |
           npx next telemetry disable
           cd micat
-          npm install
+          npm ci
       - name: license check
         run: |
           cd micat
