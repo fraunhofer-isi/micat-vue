@@ -500,10 +500,9 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
      * @returns {number[]} scaledIndicators - ΔMI_{m,y} per year.
      */
     function computeScaledIndicators(MI_base: number, deltaE_base: number, newSavings: number): number {
-      if (deltaE_base === 0) {
-        throw new Error("ΔE_{m,i} (base year savings) cannot be zero.");
+      if (deltaE_base === 0 || MI_base === 0 || newSavings === 0) {
+        return 0;
       }
-
       return MI_base / deltaE_base * newSavings;
     }
 
@@ -681,129 +680,6 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
     }
 
     return data;
-
-    // ################## OLD CBA ###################
-
-    // const data = [];
-
-    // // EC_(m,y)
-    // let reductionOfEnergyCost = 0;
-    // // MI_(m,y)
-    // let totalIndicators = 0;
-    // // RAC_(m,y)
-    // let reductionOfAdditionalCapacities = 0;
-
-    // // Sum up MI_(m,y) and EC_(m,y)
-    // const measurements = categories.monetization.measurements.filter(measurement => activeIndicators.value.indexOf(measurement.identifier) > -1);
-    // measurements.forEach((measurement, i) => {
-    //   if (["impactOnGrossDomesticProduct", "addedAssetValueOfBuildings"].indexOf(measurement.identifier) > -1) {
-    //     return;
-    //   }
-    //   session.results.forEach(result => {
-    //     const data: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
-    //     if (measurement.identifier === 'reductionOfEnergyCost') {
-    //       data.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
-    //         data.rows.filter(row => row[1] === label).forEach(row => {
-    //           // Sum up values from last year only
-    //           reductionOfEnergyCost += row[row.length - 1];
-    //         });
-    //       });
-    //     } else if (measurement.identifier === 'reductionOfAdditionalCapacitiesInGridMonetization') {
-    //       data.rows.forEach(row => {
-    //         reductionOfAdditionalCapacities += row[row.length - 1];
-    //       });
-    //     } else {
-    //       data.rows.forEach(row => {
-    //         totalIndicators += row[row.length - 1];
-    //       });
-    //     }
-    //   });  
-    // });
-
-    // // DR
-    // const dr = discountRate.value ? discountRate.value / 100 : 0;
-    // // ICS
-    // const ics = investmentsSensitivity.value / 100;
-    // // ECS
-    // const ecs = energyPriceSensitivity.value / 100;
-
-    // for (const program of session.programs) {
-    //   // AMI_(m,y)
-    //   let annualMultipleImpacts = 0
-    //   // AEC_(m,y)
-    //   let annualEnergyCosts = 0;
-
-    //   // inv_(m,y)
-    //   let investments = 0;
-      
-    //   for (const improvement of program.improvements) {
-    //     // Get investment costs (inv_(m,y)) and average technology lifetime (LT_m), if not present
-    //     let parameters: ParameterCategory = {};
-    //     if (!session.parameters.hasOwnProperty(improvement.internalId!)) {
-    //       const body = {
-    //         "id": improvement.internalId,
-    //         "active": true,
-    //         "subsector": {
-    //           "id": program.subsector,
-    //         },
-    //         "action_type": {
-    //         "id": improvement.id,
-    //         },
-    //         "details": {},
-    //         "unit": {
-    //           // "name": "kilotonne of oil equivalent",
-    //           "symbol": units[program.unit].symbol,
-    //           "factor": units[program.unit].factor
-    //         }
-    //       };
-          
-    //       const responseParameters: Response = await fetch(
-    //         `${import.meta.env.VITE_API_URL}json_measure?id_region=${session.region}&id_subsector=${program.subsector}`,
-    //         {
-    //           method: "POST",
-    //           headers: {
-    //             "Content-Type": "application/json",
-    //           },
-    //           body: JSON.stringify({...improvement.values, ...body})
-    //         },
-    //       );
-    //       parameters = restructureParameters(program.subsector, improvement.name!, await responseParameters.json())
-    //     } else {
-    //       parameters = session.parameters[improvement.internalId!];
-    //     }
-    //     // Calculate AMI_(m,y) and AEC_(m,y)
-    //     let averageTechnologyLifetime: string | number = 0;
-    //     investments += parameters.main.find(parameter => parameter.parameters.id_parameter === 40)!.years.at(-1)!.value;
-    //     averageTechnologyLifetime = parameters.main.find(parameter => parameter.parameters.id_parameter === 36)?.parameters.constants || 0;
-    //     for (const t of [...Array(averageTechnologyLifetime).keys()]) {
-    //       const divider =  (1 + dr) ** t;
-    //       annualMultipleImpacts += totalIndicators / divider;
-    //       annualEnergyCosts += reductionOfEnergyCost / divider;
-    //     }
-    //   }
-    //   measurements.filter(measurement => ["impactOnGrossDomesticProduct", "addedAssetValueOfBuildings"].indexOf(measurement.identifier) > -1).forEach((measurement, i) => {
-    //     session.results.forEach(result => {
-    //       const data: ResultInterface = JSON.parse(JSON.stringify(result.data[measurement.identifier]));
-    //       data.rows.forEach(row => {
-    //         annualMultipleImpacts += row[row.length - 1];
-    //       });
-    //     });  
-    //   });  
-    //   data.push({
-    //     name: program.name,
-    //     annualMultipleImpacts: annualMultipleImpacts,
-    //     annualEnergyCosts: annualEnergyCosts,
-    //     // NPV_m
-    //     // Investments are in million €
-    //     netPresentValue:  -investments * 1000000 * ics + annualEnergyCosts * ecs + annualMultipleImpacts + reductionOfAdditionalCapacities,
-    //     parameters: {
-    //       discountRate: dr,
-    //       energyPriceSensitivity: ecs,
-    //       investmentsSensitivity: ics,
-    //     },
-    //   });
-    // }
-    // return data;
   },
   [], // initial state
 )
@@ -819,6 +695,10 @@ const selectSubcategory = (subcategory: string) => {
 };
 const toggleIndicator = (identifier: string) => {
   const index = activeIndicators.value.indexOf(identifier);
+  if (activeIndicators.value.length === 1 && index !== -1) {
+    // At least one indicator must be selected
+    return;
+  }
   if (index === -1) {
     activeIndicators.value.push(identifier);
   } else {
