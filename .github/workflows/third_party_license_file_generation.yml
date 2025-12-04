@@ -24,7 +24,7 @@ jobs:
         run: |
           npx next telemetry disable
           cd micat
-          npm ci
+          npm i
       - name: third party license file generation
         run: |
           npx generate-license-file --input micat/package.json --output THIRDPARTY.md --overwrite

@@ -34,7 +34,7 @@ jobs:
       - name: install node.js dependencies
         run: |
           cd micat
-          npm ci
+          npm i
       - name: build
         run: |
           cd micat
