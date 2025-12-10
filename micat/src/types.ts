@@ -205,6 +205,11 @@ export interface CbaResultInterface {
 export interface CbaData {
     name: string;
     weightedAnnuity: number;
+    netPresentValue: number;
+    CBR: Array<number>;
+    LCOE: number;
+    LCOCO2: number;
+    years: Array<string>;
     parameters: {
         discountRate: number;
         energyPriceSensitivity: number;
