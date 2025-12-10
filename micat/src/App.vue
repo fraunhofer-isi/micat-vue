@@ -449,13 +449,23 @@ const helpTexts: HelpTextInterface = {
     'text': 'The net present value (NPV) calculates the difference between the present value of cash inflows and outflows over a project\'s lifetime. It accounts for the time value of money, helping to assess whether a project will generate more value than its cost. A positive NPV indicates that the projected earnings exceed the anticipated costs, while a negative NPV indicates that the costs outweigh the earnings.',
     'type': 'help'
   },
-  'cba-annualEnergyCosts': {
-    'title': 'Annual energy costs',
+  'cba-LCOE': {
+    'title': 'Levelised costs of energy savings',
     'text': 'tba',
     'type': 'help'
   },
-  'cba-annualMultipleImpacts': {
-    'title': 'Annual multiple impacts',
+  'cba-LCOCO2': {
+    'title': 'Levelised costs of carbon dioxide',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'cba-CBR': {
+    'title': 'Cost-benefit ratio',
+    'text': 'tba',
+    'type': 'help'
+  },
+  'cba-weightedAnnuity': {
+    'title': 'Weighted annuity',
     'text': 'tba',
     'type': 'help'
   }

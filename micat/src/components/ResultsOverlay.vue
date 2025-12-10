@@ -266,6 +266,22 @@ const cbaResults: Array<CbaResultInterface> = [
     title: "Weighted annuity",
     slug: "weightedAnnuity",
   },
+  {
+    title: "Net present value",
+    slug: "netPresentValue",
+  },
+  {
+    title: "Levelised costs of energy savings",
+    slug: "LCOE",
+  },
+  {
+    title: "Levelised costs of carbon dioxide",
+    slug: "LCOCO2",
+  },
+  {
+    title: "Cost-benefit ratio",
+    slug: "CBR",
+  },
 ];
 
 // Refs
@@ -439,16 +455,18 @@ const interpolatedYears = computed(() => {
 });
 const cbaData: Ref<Array<CbaData>> = computedAsync(
   async () => {
+    /** FUNCTIONS */
+
     /**
      * Compute NΔE_{m,y} for a series of years.
      *
-     * @param {number[]} deltaE - array of ΔE_{m,y} (total annual energy savings),
+     * @param {number[]} delta - array of ΔE_{m,y} (total annual savings),
      *                            ordered by year (index 0 = first year).
      * @param {number} LTm - average lifetime (positive integer).
      * @returns {number[]} newSavings - array of NΔE_{m,y} values (same length as deltaE).
      */
-    function computeNewEnergySavings(deltaE: number[], LTm: number): number[] {
-      const n = deltaE.length;
+    function computeNewSavings(delta: number[], LTm: number): number[] {
+      const n = delta.length;
       const newSavings = new Array(n).fill(0);  
 
       for (let y = 0; y < n; y++) {
@@ -459,7 +477,7 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
           if (idx < 0) break; // no earlier year available
           sumPrev += newSavings[idx];
         }
-        newSavings[y] = deltaE[y] - sumPrev;
+        newSavings[y] = delta[y] - sumPrev;
       }
 
       return newSavings;
@@ -519,17 +537,8 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
      */
     function discountedAnnualValues(
       values: number[],
-      DR: number,
-      LT: number
+      CRF: number
     ): number[] {
-      if (DR <= 0) {
-        // No discounting → linear annualization
-        return values.map(I => I / LT);
-      }
-
-      const factor = Math.pow(1 + DR, LT);
-      const CRF = (DR * factor) / (factor - 1);
-
       return values.map(I => I * CRF);
     }
 
@@ -579,20 +588,42 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       return numerator / denominator;
     }
 
+    /**
+     * Compute LCOE/LCOCO2 as:
+     *   LCOE_m = - (A_m * N_{m,y}) / (sum_y NΔE_{m,y})
+     *
+     * Returns a number. Throws on invalid input (denominator zero or non-finite).
+     */
+    function computeLevelisedCosts(annuity: number, annualSavings: number[]): number {
+      const years = annualSavings.length;
+      const totalSavings = annualSavings.reduce((a, b) => a + b, 0);
+
+      return -(annuity * years) / totalSavings;
+    }
+
+    /** CALCULATION */
+
     const data = [];
 
     for (const results of session.results) {
-      const deltaE = [...results.data['totalAnnualEnergySavings'].rows[0]]; // ΔE_{m,y} for years 0..4
-      const investmentCosts = [...results.data['investmentCosts'].rows[0]];
+      const deltaE = [...results.data['totalAnnualEnergySavings'].rows[0]];
       deltaE.shift(); // remove measure identifier
+      const deltaCO2 = [...results.data['totalAnnualCO2Savings'].rows[0]];
+      deltaCO2.shift(); // remove measure identifier
+      const investmentCosts = [...results.data['investmentCosts'].rows[0]];
+      investmentCosts.shift(); // remove measure identifier
       const LTm = results.data['lifetime']?.rows[0][1]; // average lifetime
-      const newEnergySavings = computeNewEnergySavings(deltaE, LTm);
+      const newEnergySavings = computeNewSavings(deltaE, LTm);
+      const newCO2Savings = computeNewSavings(deltaCO2, LTm);
       const newInvestments = computeNewInvestments(investmentCosts);
       const GDP = [...results.data['impactOnGrossDomesticProduct'].rows[0]];
       GDP.shift(); // remove measure identifier
       const years = results.data['subsidyRate'].yearColumnNames;
       const fullYears = results.data['totalAnnualEnergySavings'].yearColumnNames;
       const startingYear = parseInt(fullYears[0]);
+      const DR = discountRate.value / 100
+      const CRFFactor = Math.pow(1 + DR, LTm);
+      const CRF = (DR * CRFFactor) / (CRFFactor - 1);
 
       // Map newEnergySavings and newInvestments to years
       const newEnergySavingsByYear: {[year: string]: number} = {};
@@ -640,37 +671,49 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       });
       const totalIndicators: number[] = years.map(year => totalIndicatorsByYear[year]);
 
-      const discountedNewInvestments = discountedAnnualValues(newInvestments, discountRate.value / 100, LTm);
+      const discountedNewInvestments = discountedAnnualValues(newInvestments, CRF);
       // Consider investment sensitivity
       for (let i = 0; i < discountedNewInvestments.length; i++) {
         discountedNewInvestments[i] *= (investmentsSensitivity.value / 100);
       }
-      const discountedGDP = discountedAnnualValues(GDP, discountRate.value / 100, LTm);
+      const discountedGDP = discountedAnnualValues(GDP, CRF);
+      // If GDP is not selected, use null values
+      if (activeIndicators.value.indexOf('impactOnGrossDomesticProduct') === -1) discountedGDP.fill(0);
 
-      const annuity = Array.from({ length: years.length }, (_, i) => discountedNewInvestments[i] - totalIndicators[i]);
+      const annuity = Array.from({ length: years.length }, (_, i) => discountedNewInvestments[i] - discountedGDP[i] - totalIndicators[i]);
       // Consider energy price sensitivity
       for (let i = 0; i < annuity.length; i++) {
         annuity[i] *= (energyPriceSensitivity.value / 100);
       }
-      const annuityWeighted = calculateWeightedAnnuity(
+      const weightedAnnuity = calculateWeightedAnnuity(
         annuity,
         years.map(y => parseInt(y)),
         newEnergySavingsByYear,
         startingYear
       );
+      const netPresentValue = weightedAnnuity / CRF;
+      const LCOE = computeLevelisedCosts(Math.abs(weightedAnnuity), newEnergySavings);
+      const CBR = Array.from({ length: years.length }, (_, i) => discountedNewInvestments[i] / (discountedGDP[i] - totalIndicators[i]));
+      const LCOCO2 = computeLevelisedCosts(Math.abs(weightedAnnuity), newCO2Savings);
 
       console.log("LTm", LTm);
       console.log("years", years);
+      console.log("CRF", CRF);
       console.log("newEnergySavings", newEnergySavingsByYear);
+      console.log("newCO2Savings", newCO2Savings);
       console.log("newInvestments", newInvestmentsByYear);
       console.log("discountedNewInvestments", discountedNewInvestments);
       console.log("discountedGDP", discountedGDP);
       console.log("annuity", annuity);
-      console.log("annuityWeighted", annuityWeighted);
 
       data.push({
         name: results.name,
-        weightedAnnuity: annuityWeighted,
+        years: years,
+        weightedAnnuity: weightedAnnuity,
+        netPresentValue: netPresentValue,
+        LCOE: LCOE,
+        CBR: CBR,
+        LCOCO2: LCOCO2,
         parameters: {
           discountRate: discountRate.value / 100,
           energyPriceSensitivity: energyPriceSensitivity.value / 100,
@@ -981,7 +1024,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   <div
                     v-for="result in cbaResults"
                     v-bind:key="`cba-${result.slug}`"
-                    class="rounded-xl bg-white border border-sky-600 max-w-[450px] self-start"
+                    class="rounded-xl bg-white border border-sky-600 max-w-[450px] self-start mb-2"
                   >
                     <div class="flex items-center px-4 py-2 text-sm text-white justify-items-start bg-sky-600 rounded-t-xl">
                       <span class="grow">{{ result.title }}</span>
@@ -989,69 +1032,25 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                         @click="openModal(`cba-${result.slug}`)"
                         class="inline w-6 h-6 ml-2 cursor-pointer"
                       ></InformationCircleIcon>
-                      <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">absolute</span>
+                      <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">{{ result.slug === 'CBR' ? 'absolute' : '€' }}</span>
                     </div>
-                    <div class="p-4">
+                    <div class="p-4" v-if="result.slug === 'CBR'">
+                      <div
+                        class="flex gap-2"
+                        v-for="(year, index) in programResults.years"
+                        :key="`cba-cbr-year-${index}`"
+                      >
+                        <div class="text-gray-700 col">{{ year }}</div>
+                        <div class="text-gray-300 col">{{ formatter.format(programResults[result.slug][index]) }}</div>
+                        <span class="font-bold col">{{ labelFormatter.format(programResults[result.slug][index]) }}</span>
+                      </div>
+                    </div>
+                    <div class="p-4" v-else>
                       <div class="text-gray-300">{{ formatter.format(programResults[result.slug]) }}</div>
                       <span class="font-bold">{{ labelFormatter.format(programResults[result.slug]) }}</span>
                     </div>
                   </div>
-                </div>  
-                <!-- <div class="relative my-3 bg-white border border-gray-300 rounded-3xl">
-                  <div class="flex">
-                    <div
-                      class="bg-orange-700 rounded-l-3xl self-stretch text-white min-w-[235px]"
-                    >
-                      <div
-                        class="px-4 py-2 text-sm font-bold cursor-pointer"
-                        :class="{
-                          'rounded-tl-3xl': iC === 0,
-                          'bg-opacity-5': iC === 0 && activeCbaResult !== result.slug,
-                          'bg-opacity-10': iC === 1 && activeCbaResult !== result.slug,
-                          'bg-opacity-20': iC === 2 && activeCbaResult !== result.slug,
-                          'bg-opacity-25': iC === 3 && activeCbaResult !== result.slug,
-                          'bg-opacity-30': iC === 4 && activeCbaResult !== result.slug,
-                          'bg-opacity-40': iC === 5 && activeCbaResult !== result.slug,
-                          'bg-opacity-50': iC === 6 && activeCbaResult !== result.slug,
-                          'bg-opacity-60': iC === 7 && activeCbaResult !== result.slug,
-                          'text-orange-700': activeCbaResult === result.slug,
-                          'bg-white': activeCbaResult === result.slug,
-                          'bg-orange-300': activeCbaResult !== result.slug,
-                        }"
-                        v-for="(result, iC) in cbaResults"
-                        v-bind:key="`cba-${result.slug}`"
-                        @click="selectCbaResult(result.slug)"
-                      >
-                        {{ result.title }}
-                      </div>
-                    </div>
-                    <div class="p-5 grow">
-                      <div class="flex items-center gap-5 mb-6" v-if="activeCbaResult === 'marginalCostCurves'">
-                        <div>
-                          <label for="cba-year" class="text-sm dark:text-white">Year</label>
-                          <InformationCircleIcon
-                            @click="openModal('cba-year')"
-                            class="inline w-6 h-6 ml-2 cursor-pointer"
-                          ></InformationCircleIcon>
-                        </div>
-                        <div class="grow">
-                          <select
-                            id="cba-year"
-                            class="py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-white appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
-                            v-model="cbaYear"
-                          >
-                            <option
-                              v-for="year in interpolatedYears" v-bind:key="year" :value="year"
-                              :selected="year == cbaYear"
-                            >
-                              {{ year }}
-                            </option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
+                </div>
               </div>
             </div>  
           </div>

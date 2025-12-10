@@ -200,7 +200,7 @@ export interface ISessionStateFunctions {
 }
 export interface CbaResultInterface {
     title: string;
-    slug: "weightedAnnuity";
+    slug: "weightedAnnuity" | "netPresentValue" | "LCOE" | "LCOCO2" | "CBR";
 }
 export interface CbaData {
     name: string;
