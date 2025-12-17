@@ -1102,12 +1102,12 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                         :key="`cba-${result.slug}-year-${index}`"
                       >
                         <div class="text-gray-700 col">{{ year }}</div>
-                        <span class="font-bold col">{{ labelFormatterSmall.format(programResults[result.slug][index]) }}</span>
+                        <span class="font-bold col">{{ labelFormatterSmall.format((programResults[result.slug] as number[])[index]) }}</span>
                       </div>
                     </div>
                     <div class="p-4" v-else>
-                      <div class="text-gray-300">{{ formatter.format(programResults[result.slug]) }}</div>
-                      <span class="font-bold">{{ labelFormatter.format(programResults[result.slug]) }}</span>
+                      <div class="text-gray-300">{{ formatter.format((programResults[result.slug] as number)) }}</div>
+                      <span class="font-bold">{{ labelFormatter.format((programResults[result.slug] as number)) }}</span>
                     </div>
                   </div>
                 </div>
