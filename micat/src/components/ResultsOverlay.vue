@@ -693,7 +693,7 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       );
       const netPresentValue = 0 - weightedAnnuity / CRF;
       const LCOE = computeLevelisedCosts(Math.abs(weightedAnnuity), newEnergySavings);
-      const CBR = Array.from({ length: years.length }, (_, i) => 0 - (discountedNewInvestments[i] / (discountedGDP[i] - totalIndicators[i])));
+      const CBR = Array.from({ length: years.length }, (_, i) => (discountedGDP[i] - totalIndicators[i]) !== 0 ? (0 - (discountedNewInvestments[i] / (discountedGDP[i] - totalIndicators[i]))) : 0);
       const LCOCO2 = computeLevelisedCosts(Math.abs(weightedAnnuity), newCO2Savings);
 
       console.log("LTm", LTm);
@@ -1041,8 +1041,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                         :key="`cba-cbr-year-${index}`"
                       >
                         <div class="text-gray-700 col">{{ year }}</div>
-                        <div class="text-gray-300 col">{{ formatter.format(programResults[result.slug][index]) }}</div>
-                        <span class="font-bold col">{{ labelFormatter.format(programResults[result.slug][index]) }}</span>
+                        <span class="font-bold col">{{ labelFormatterSmall.format(programResults[result.slug][index]) }}</span>
                       </div>
                     </div>
                     <div class="p-4" v-else>
