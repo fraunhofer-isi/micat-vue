@@ -657,7 +657,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 The following npm packages may be included in this product:
 
  - pinia@2.3.1
- - vue-router@4.6.3
+ - vue-router@4.6.4
 
 These packages each contain the following license:
 
