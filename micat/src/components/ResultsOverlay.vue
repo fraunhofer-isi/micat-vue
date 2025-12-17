@@ -691,9 +691,9 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         newEnergySavingsByYear,
         startingYear
       );
-      const netPresentValue = weightedAnnuity / CRF;
+      const netPresentValue = 0 - weightedAnnuity / CRF;
       const LCOE = computeLevelisedCosts(Math.abs(weightedAnnuity), newEnergySavings);
-      const CBR = Array.from({ length: years.length }, (_, i) => discountedNewInvestments[i] / (discountedGDP[i] - totalIndicators[i]));
+      const CBR = Array.from({ length: years.length }, (_, i) => 0 - (discountedNewInvestments[i] / (discountedGDP[i] - totalIndicators[i])));
       const LCOCO2 = computeLevelisedCosts(Math.abs(weightedAnnuity), newCO2Savings);
 
       console.log("LTm", LTm);
