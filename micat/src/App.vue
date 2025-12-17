@@ -464,6 +464,11 @@ const helpTexts: HelpTextInterface = {
     'text': 'tba',
     'type': 'help'
   },
+  'cba-BCR': {
+    'title': 'Benefit-cost ratio',
+    'text': 'tba',
+    'type': 'help'
+  },
   'cba-weightedAnnuity': {
     'title': 'Weighted annuity',
     'text': 'tba',

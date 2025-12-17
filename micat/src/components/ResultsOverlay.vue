@@ -282,6 +282,10 @@ const cbaResults: Array<CbaResultInterface> = [
     title: "Cost-benefit ratio",
     slug: "CBR",
   },
+  {
+    title: "Benefit-cost ratio",
+    slug: "BCR",
+  }
 ];
 
 // Refs
@@ -601,6 +605,39 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       return -(annuity * years) / totalSavings;
     }
 
+    /** Compute per-year CBR according to weighted formula */
+    function computePerYearCBR(
+      discountedInvestments: number[],       // dI_{m,i}, length = number of years
+      discountedGDP: number[],               // dGDP_{m,i}, length = number of years
+      totalIndicators: number[],             // Σk MI_{m,i,k}, length = number of years
+      newEnergySavings: Record<number, number>, // NΔE_{m,y} by year
+      years: number[],                       // Array of year numbers, e.g., [2025, 2026, ...]
+      startingYear: number                   // First year in the series
+    ): number[] {
+      const nYears = years.length;
+      const perYearCBR: number[] = new Array(nYears).fill(0);
+
+      for (let i = 0; i < nYears; i++) {
+        const denom = discountedGDP[i] + totalIndicators[i];
+        const CBR_i = denom === 0 ? 0 : discountedInvestments[i] / denom;
+
+        const prevYear = i === 0 ? startingYear - 1 : years[i - 1];
+        const currentYear = years[i];
+
+        // Distribute the weighted CBR over each calendar year in this interval
+        for (let y = prevYear + 1; y <= currentYear; y++) {
+          if (newEnergySavings[y] !== undefined) {
+            perYearCBR[i] = CBR_i; // per-year CBR in the interval
+          }
+        }
+      }
+
+      // Map the per-year CBR to the full list of years (calendar years)
+      const fullCBR: number[] = years.map((_, i) => perYearCBR[i]);
+      return fullCBR;
+    }
+
+
     /** CALCULATION */
 
     const data = [];
@@ -693,8 +730,18 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       );
       const netPresentValue = 0 - weightedAnnuity / CRF;
       const LCOE = computeLevelisedCosts(Math.abs(weightedAnnuity), newEnergySavings);
-      const CBR = Array.from({ length: years.length }, (_, i) => (discountedGDP[i] - totalIndicators[i]) !== 0 ? (0 - (discountedNewInvestments[i] / (discountedGDP[i] - totalIndicators[i]))) : 0);
       const LCOCO2 = computeLevelisedCosts(Math.abs(weightedAnnuity), newCO2Savings);
+      const CBR = computePerYearCBR(
+        discountedNewInvestments,
+        discountedGDP,
+        totalIndicators,
+        newEnergySavingsByYear,
+        years.map(y => parseInt(y)),
+        startingYear
+      );
+
+      // Compute BCR per year
+      const BCR = CBR.map(v => (v !== 0 ? 1 / v : 0));
 
       console.log("LTm", LTm);
       console.log("years", years);
@@ -709,11 +756,12 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       data.push({
         name: results.name,
         years: years,
-        weightedAnnuity: weightedAnnuity,
-        netPresentValue: netPresentValue,
-        LCOE: LCOE,
+        weightedAnnuity: weightedAnnuity / 1000000, // in M€
+        netPresentValue: netPresentValue / 1000000, // in M€
+        LCOE: LCOE / 11630, // in €/MWh
+        LCOCO2: LCOCO2 / 1000, // in €/tCO2
         CBR: CBR,
-        LCOCO2: LCOCO2,
+        BCR: BCR,
         parameters: {
           discountRate: discountRate.value / 100,
           energyPriceSensitivity: energyPriceSensitivity.value / 100,
@@ -728,6 +776,19 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
 )
 
 // Functions
+const getCBAUnit = (slug: string): string => {
+  switch (slug) {
+    case 'weightedAnnuity':
+    case 'netPresentValue':
+      return 'M€';
+    case 'LCOE':
+      return '€/MWh';
+    case 'LCOCO2':
+      return '€/tCO2';
+    default:
+      return 'absolute';
+  }
+};
 const selectCategory = (category: string) => {
   activeCategory.value = category;
   activeMeasurement.value = categories[activeCategory.value].measurements.filter(measurement => !measurement.subcategory || measurement.subcategory === activeSubcategory.value)[0];
@@ -1032,13 +1093,13 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                         @click="openModal(`cba-${result.slug}`)"
                         class="inline w-6 h-6 ml-2 cursor-pointer"
                       ></InformationCircleIcon>
-                      <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">{{ result.slug === 'CBR' ? 'absolute' : '€' }}</span>
+                      <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">{{ getCBAUnit(result.slug) }}</span>
                     </div>
-                    <div class="p-4" v-if="result.slug === 'CBR'">
+                    <div class="p-4" v-if="['CBR', 'BCR'].indexOf(result.slug) > -1">
                       <div
                         class="flex gap-2"
                         v-for="(year, index) in programResults.years"
-                        :key="`cba-cbr-year-${index}`"
+                        :key="`cba-${result.slug}-year-${index}`"
                       >
                         <div class="text-gray-700 col">{{ year }}</div>
                         <span class="font-bold col">{{ labelFormatterSmall.format(programResults[result.slug][index]) }}</span>

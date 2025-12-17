@@ -200,13 +200,14 @@ export interface ISessionStateFunctions {
 }
 export interface CbaResultInterface {
     title: string;
-    slug: "weightedAnnuity" | "netPresentValue" | "LCOE" | "LCOCO2" | "CBR";
+    slug: "weightedAnnuity" | "netPresentValue" | "LCOE" | "LCOCO2" | "CBR" | "BCR";
 }
 export interface CbaData {
     name: string;
     weightedAnnuity: number;
     netPresentValue: number;
     CBR: Array<number>;
+    BCR: Array<number>;
     LCOE: number;
     LCOCO2: number;
     years: Array<string>;
