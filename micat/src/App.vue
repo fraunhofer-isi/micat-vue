@@ -57,7 +57,7 @@ const helpTexts: HelpTextInterface = {
   },
   'technology': {
     'title': 'Technology selection',
-    'text': 'This determines the technology used in the program. More information will be provided soon.',
+    'text': 'This determines the assessed renewable energy technology used in the program. More details about the available renewable energy technologies are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-sector-and-id-subsector" target="_blank">here</a>.',
     'type': 'help'
   },
   'improvement': {
@@ -66,8 +66,8 @@ const helpTexts: HelpTextInterface = {
     'type': 'help'
   },
   'savings': {
-    'title': 'How to specify energy savings',
-    'text': 'Please enter the energy savings associated with the selected improvement action as <strong>total annual savings</strong> in the selected unit. More details about the exact meaning of the term total annual savings can be found in the <a class="font-bold" href="https://doc.micatool.eu/user_interface/energy_savings_input.html#total-annual-savings" target="_blank">documentation</a>',
+    'title': 'How to specify energy savings or generated renewable energy',
+    'text': 'Please enter the energy savings or generated renewable energy associated with the selected improvement action as <strong>total annual savings</strong> or <strong>total annual energy generation</strong> in the selected unit. More details about the exact meaning of the terms can be found in the <a class="font-bold" href="https://doc.micatool.eu/user_interface/energy_savings_input.html#total-annual-savings" target="_blank">documentation</a>',
     'type': 'help'
   },
   'energy-price-sensitivity': {
@@ -445,33 +445,33 @@ const helpTexts: HelpTextInterface = {
   },
   // CBA
   'cba-netPresentValue': {
-    'title': 'Net present value',
-    'text': 'The net present value (NPV) calculates the difference between the present value of cash inflows and outflows over a project\'s lifetime. It accounts for the time value of money, helping to assess whether a project will generate more value than its cost. A positive NPV indicates that the projected earnings exceed the anticipated costs, while a negative NPV indicates that the costs outweigh the earnings.',
+    'title': 'Net present value (NPV)',
+    'text': 'The NPV calculates the difference between the present value of cash inflows and outflows over a project\'s lifetime. It accounts for the time value of money, helping to assess whether a project will generate more value than its cost. A positive NPV indicates that the projected earnings exceed the anticipated costs, while a negative NPV indicates that the costs outweigh the earnings. This metric is crucial for decision-making, as it provides a clear indication of the financial viability of a project. In the MICATool, the NPV considers not only costs but also multiple impacts, which can lead to negative values when the benefits outweigh the costs. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
     'type': 'help'
   },
   'cba-LCOE': {
-    'title': 'Levelised costs of energy savings',
-    'text': 'tba',
+    'title': 'Levelised costs of energy savings (LCOE)',
+    'text': 'LCOE expresses the average cost per unit of energy produced or saved over the lifetime of a project. In practice, this means dividing the annuity of a project by the discounted total energy output or savings. The outcome is a single figure in cost per kilowatt-hour that allows direct comparison across technologies. For example, LCOE enables policymakers and investors to weigh the economic efficiency of solar power against wind energy or energy efficiency measures. A lower LCOE indicates that a project delivers energy at a more competitive cost, making it a powerful benchmark for technology selection. In contrast to the general application for electricity generation, LCOE in the MICATool not only include costs (i.e. investments) but also energy savings and renewably generated energy, as well as multiple impacts. These benefits can outweigh the costs per energy unit, resulting in negative LCOE values. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
     'type': 'help'
   },
   'cba-LCOCO2': {
-    'title': 'Levelised costs of carbon dioxide',
-    'text': 'tba',
+    'title': 'Levelised costs of carbon dioxide (LCOCO$`_2`$)',
+    'text': 'LCOCO$`_2`$ represents the average cost per tonne of CO$`_2`$ emissions avoided over the lifetime of a project. It is calculated by dividing the annuity of a project by the total discounted CO$`_2`$ emissions reductions achieved. This metric allows for direct comparison of the cost-effectiveness of different projects or technologies in reducing carbon emissions. A lower LCOCO$`_2`$ indicates that a project achieves CO$`_2`$ reductions at a more competitive cost, making it a valuable tool for policymakers and investors focused on climate change mitigation. In the MICATool, LCOCO$`_2`$ takes into account not only costs but also multiple impacts, which can lead to negative values when the benefits outweigh the costs. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
     'type': 'help'
   },
   'cba-CBR': {
-    'title': 'Cost-benefit ratio',
-    'text': 'tba',
+    'title': 'Cost-benefit ratio (CBR)',
+    'text': 'The CBR offers a straightforward way to evaluate the economic efficiency of a project by comparing the annuitised costs to the annuitised benefits. A CBR less than one indicates that the benefits exceed the costs, suggesting that the project is economically advantageous. Conversely, a CBR greater than one implies that the costs outweigh the benefits, indicating that the project may not be financially viable. This ratio serves as a quick reference for decision-makers to assess the overall value of an investment or policy intervention. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
     'type': 'help'
   },
   'cba-BCR': {
-    'title': 'Benefit-cost ratio',
-    'text': 'tba',
+    'title': 'Benefit-cost ratio (BCR)',
+    'text': 'The BCR provides yet another perspective by comparing the annuitised value of benefits to the annuitised costs, constituting the inverse of the CBR. A BCR greater than one indicates that the benefits outweigh the costs, signalling that the project is economically viable. Conversely, a BCR below one suggests that the project is not cost-effective. This ratio offers a clear decision-making criterion, making it particularly useful for policy evaluation and investment prioritisation. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
     'type': 'help'
   },
   'cba-weightedAnnuity': {
-    'title': 'Weighted annuity',
-    'text': 'tba',
+    'title': 'Annuity',
+    'text': ' The  annuity represents the annualised value of costs and benefits associated with a project. Thereby, it represents an annuitised version of the NPV, representing the annual payments to finance a project. This metric provides a comprehensive view of the financial performance of a project by considering both the costs incurred and the benefits realised over its lifetime. By weighting these components, the weighted annuity offers a nuanced understanding of the project\'s economic viability, facilitating more informed decision-making for policymakers and investors. A negative weighted annuity indicates that the benefits exceed the costs on an annual basis, suggesting that the project is financially advantageous. Conversely, a positive weighted annuity implies that the costs outweigh the benefits, indicating potential financial challenges. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
     'type': 'help'
   }
 };
