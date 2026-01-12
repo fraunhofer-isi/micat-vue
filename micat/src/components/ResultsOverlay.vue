@@ -742,7 +742,7 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       const LCOE = computeLevelisedCosts(Math.abs(weightedAnnuity), newEnergySavings);
       const LCOCO2 = computeLevelisedCosts(Math.abs(weightedAnnuity), newCO2Savings);
       const CBR = computePerYearCBR(
-        discountedNewInvestments,
+        filteredDiscountedNewInvestments,
         discountedGDP,
         totalIndicators,
         newEnergySavingsByYear,
