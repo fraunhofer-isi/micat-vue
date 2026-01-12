@@ -65,6 +65,11 @@ const helpTexts: HelpTextInterface = {
     'text': 'This specifies which improvement actions are part of the program. Each improvement action type bundles measures that similarly affect multiple impacts (i.e. building envelope encompasses window replacements as well as wall or wall and roof insulation). More details about the available improvement actions are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-action-type" target="_blank">here</a>. Furthermore, help on how to decompose a measure into different sectors and improvement actions can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/specifying_subsector_action.html" target="_blank">here</a>.',
     'type': 'help'
   },
+  'renewable-type': {
+    'title': 'Type',
+    'text': 'tba',
+    'type': 'help'
+  },
   'savings': {
     'title': 'How to specify energy savings or generated renewable energy',
     'text': 'Please enter the energy savings or generated renewable energy associated with the selected improvement action as <strong>total annual savings</strong> or <strong>total annual energy generation</strong> in the selected unit. More details about the exact meaning of the terms can be found in the <a class="font-bold" href="https://doc.micatool.eu/user_interface/energy_savings_input.html#total-annual-savings" target="_blank">documentation</a>',

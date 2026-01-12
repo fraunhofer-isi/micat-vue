@@ -1066,7 +1066,7 @@ const start = () => {
                     </option>
                   </select>
                   <InformationCircleIcon
-                    @click="openModal('improvement')"
+                    @click="openModal(program.type === 'renewable' ? 'renewable-type' : 'improvement')"
                     class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
                   ></InformationCircleIcon>
                 </div>

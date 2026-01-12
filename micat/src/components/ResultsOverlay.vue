@@ -662,12 +662,14 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       const CRFFactor = Math.pow(1 + DR, LTm);
       const CRF = (DR * CRFFactor) / (CRFFactor - 1);
 
-      // Map newEnergySavings and newInvestments to years
+      // Map newEnergySavings, deltaE and newInvestments to years
       const newEnergySavingsByYear: {[year: string]: number} = {};
       const newInvestmentsByYear: {[year: string]: number} = {};
+      const deltaEByYear: {[year: string]: number} = {};
       fullYears.forEach((year, i) => {
         newEnergySavingsByYear[year] = newEnergySavings[i];
         newInvestmentsByYear[year] = newInvestments[i];
+        deltaEByYear[year] = deltaE[i];
       });
 
       // Sum up all indicators ΔMI_{m,y}
@@ -686,7 +688,7 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
               row.forEach((value, iY) => {
                 // Scale the original value according to new energy savings
                 const baseYear = years[iY];
-                const deltaE_base = deltaE[0]; // ΔE_{m,i} in base year
+                const deltaE_base = deltaEByYear[baseYear]; // ΔE_{m,i} in base year
                 const MI_base = value; // MI_{m,i} in base year
                 totalIndicatorsByYear[baseYear] = (totalIndicatorsByYear[baseYear] || 0) + computeScaledIndicators(MI_base, deltaE_base, newEnergySavingsByYear[baseYear]);
               });
@@ -699,7 +701,7 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
             row.forEach((value, iY) => {
               // Scale the original value according to new energy savings
               const baseYear = years[iY];
-              const deltaE_base = deltaE[0]; // ΔE_{m,i} in base year
+              const deltaE_base = deltaEByYear[baseYear]; // ΔE_{m,i} in base year
               const MI_base = value; // MI_{m,i} in base year
               totalIndicatorsByYear[baseYear] = (totalIndicatorsByYear[baseYear] || 0) + computeScaledIndicators(MI_base, deltaE_base, newEnergySavingsByYear[baseYear]);
             });
@@ -717,7 +719,15 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       // If GDP is not selected, use null values
       if (activeIndicators.value.indexOf('impactOnGrossDomesticProduct') === -1) discountedGDP.fill(0);
 
-      const annuity = Array.from({ length: years.length }, (_, i) => discountedNewInvestments[i] - discountedGDP[i] - totalIndicators[i]);
+      // Map discountedNewInvestments to years
+      const discountedNewInvestmentsByYear: {[year: string]: number} = {};
+      fullYears.forEach((year, i) => {
+        discountedNewInvestmentsByYear[year] = discountedNewInvestments[i];
+      });
+      // Filter discountedNewInvestments to only selected years
+      const filteredDiscountedNewInvestments: number[] = years.map(year => discountedNewInvestmentsByYear[year]);
+
+      const annuity = Array.from({ length: years.length }, (_, i) => filteredDiscountedNewInvestments[i] - discountedGDP[i] - totalIndicators[i]);
       // Consider energy price sensitivity
       for (let i = 0; i < annuity.length; i++) {
         annuity[i] *= (energyPriceSensitivity.value / 100);
@@ -739,9 +749,12 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         years.map(y => parseInt(y)),
         startingYear
       );
-
-      // Compute BCR per year
-      const BCR = CBR.map(v => (v !== 0 ? 1 / v : 0));
+      const weightedCBR = calculateWeightedAnnuity(
+        CBR,
+        years.map(y => parseInt(y)),
+        newEnergySavingsByYear,
+        startingYear
+      );
 
       console.log("LTm", LTm);
       console.log("years", years);
@@ -751,7 +764,10 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       console.log("newInvestments", newInvestmentsByYear);
       console.log("discountedNewInvestments", discountedNewInvestments);
       console.log("discountedGDP", discountedGDP);
+      console.log("filteredDiscountedNewInvestments", filteredDiscountedNewInvestments);
+      console.log("totalIndicators", totalIndicators);
       console.log("annuity", annuity);
+      console.log("CBR", CBR);
 
       data.push({
         name: results.name,
@@ -760,8 +776,8 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         netPresentValue: netPresentValue / 1000000, // in M€
         LCOE: LCOE / 11630, // in €/MWh
         LCOCO2: LCOCO2 / 1000, // in €/tCO2
-        CBR: CBR,
-        BCR: BCR,
+        CBR: weightedCBR,
+        BCR: 1 / weightedCBR,
         parameters: {
           discountRate: discountRate.value / 100,
           energyPriceSensitivity: energyPriceSensitivity.value / 100,
@@ -1095,17 +1111,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                       ></InformationCircleIcon>
                       <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">{{ getCBAUnit(result.slug) }}</span>
                     </div>
-                    <div class="p-4" v-if="['CBR', 'BCR'].indexOf(result.slug) > -1">
-                      <div
-                        class="flex gap-2"
-                        v-for="(year, index) in programResults.years"
-                        :key="`cba-${result.slug}-year-${index}`"
-                      >
-                        <div class="text-gray-700 col">{{ year }}</div>
-                        <span class="font-bold col">{{ labelFormatterSmall.format((programResults[result.slug] as number[])[index]) }}</span>
-                      </div>
-                    </div>
-                    <div class="p-4" v-else>
+                    <div class="p-4">
                       <div class="text-gray-300">{{ formatter.format((programResults[result.slug] as number)) }}</div>
                       <span class="font-bold">{{ labelFormatter.format((programResults[result.slug] as number)) }}</span>
                     </div>
