@@ -206,8 +206,8 @@ export interface CbaData {
     name: string;
     weightedAnnuity: number;
     netPresentValue: number;
-    CBR: Array<number>;
-    BCR: Array<number>;
+    CBR: number;
+    BCR: number;
     LCOE: number;
     LCOCO2: number;
     years: Array<string>;
