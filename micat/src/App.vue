@@ -66,8 +66,8 @@ const helpTexts: HelpTextInterface = {
     'type': 'help'
   },
   'renewable-type': {
-    'title': 'Type',
-    'text': 'tba',
+    'title': 'Configuration selection',
+    'text': 'This specifies which configuration of the selected renewable energy technology is relevant for the selected program. More details about the available configurations are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-action-type" target="_blank">here</a>.',
     'type': 'help'
   },
   'savings': {
@@ -460,8 +460,8 @@ const helpTexts: HelpTextInterface = {
     'type': 'help'
   },
   'cba-LCOCO2': {
-    'title': 'Levelised costs of carbon dioxide (LCOCO$`_2`$)',
-    'text': 'LCOCO$`_2`$ represents the average cost per tonne of CO$`_2`$ emissions avoided over the lifetime of a project. It is calculated by dividing the annuity of a project by the total discounted CO$`_2`$ emissions reductions achieved. This metric allows for direct comparison of the cost-effectiveness of different projects or technologies in reducing carbon emissions. A lower LCOCO$`_2`$ indicates that a project achieves CO$`_2`$ reductions at a more competitive cost, making it a valuable tool for policymakers and investors focused on climate change mitigation. In the MICATool, LCOCO$`_2`$ takes into account not only costs but also multiple impacts, which can lead to negative values when the benefits outweigh the costs. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
+    'title': 'Levelised costs of carbon dioxide (LCOCO2)',
+    'text': 'LCOCO2 represents the average cost per tonne of CO2 emissions avoided over the lifetime of a project. It is calculated by dividing the annuity of a project by the total discounted CO2 emissions reductions achieved. This metric allows for direct comparison of the cost-effectiveness of different projects or technologies in reducing carbon emissions. A lower LCOCO2 indicates that a project achieves CO2 reductions at a more competitive cost, making it a valuable tool for policymakers and investors focused on climate change mitigation. In the MICATool, LCOCO2 takes into account not only costs but also multiple impacts, which can lead to negative values when the benefits outweigh the costs. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
     'type': 'help'
   },
   'cba-CBR': {
