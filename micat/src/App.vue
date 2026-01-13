@@ -71,8 +71,8 @@ const helpTexts: HelpTextInterface = {
     'type': 'help'
   },
   'savings': {
-    'title': 'How to specify energy savings or generated renewable energy',
-    'text': 'Please enter the energy savings or generated renewable energy associated with the selected improvement action as <strong>total annual savings</strong> or <strong>total annual energy generation</strong> in the selected unit. More details about the exact meaning of the terms can be found in the <a class="font-bold" href="https://doc.micatool.eu/user_interface/energy_savings_input.html#total-annual-savings" target="_blank">documentation</a>',
+    'title': 'How to specify energy savings or renewable capacity',
+    'text': 'Please enter the energy savings or renewable capacity associated with the selected improvement action as <strong>total annual savings</strong> or <strong>total installed capacity</strong> in the selected unit. More details about the exact meaning of the terms can be found in the <a class="font-bold" href="https://doc.micatool.eu/user_interface/energy_savings_input.html#total-annual-savings" target="_blank">documentation</a>',
     'type': 'help'
   },
   'energy-price-sensitivity': {
@@ -96,8 +96,8 @@ const helpTexts: HelpTextInterface = {
     'type': 'help'
   },
   'beta': {
-    'title': 'Beta version',
-    'text': 'The MICATool is still a work in progress, with functions frequently being added or altered. Accordingly, errors may still occur at times, which will be corrected as soon as possible. If this happens or you have other general questions and comments, please send us an email to <a href="mailto:frederic.berger@isi.fraunhofer.de" class="font-bold">frederic.berger@isi.fraunhofer.de</a>.',
+    'title': 'Perpetual Beta',
+    'text': 'Although the MICATool is functional, it is still a work in progress, with functions frequently being added or altered. Accordingly, errors may still occur at times, which will be corrected as soon as possible. If this happens or you have other general questions and comments, please send us an email to <a href="mailto:niklas.reinfandt@isi.fraunhofer.de" class="font-bold">niklas.reinfandt@isi.fraunhofer.de</a>.',
     'type': 'help'
   },
   'global-parameters': {
