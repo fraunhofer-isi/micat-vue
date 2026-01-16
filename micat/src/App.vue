@@ -451,7 +451,7 @@ const helpTexts: HelpTextInterface = {
   // CBA
   'cba-netPresentValue': {
     'title': 'Net present value (NPV)',
-    'text': 'The NPV calculates the difference between the present value of cash inflows and outflows over a project\'s lifetime. It accounts for the time value of money, helping to assess whether a project will generate more value than its cost. A positive NPV indicates that the projected earnings exceed the anticipated costs, while a negative NPV indicates that the costs outweigh the earnings. This metric is crucial for decision-making, as it provides a clear indication of the financial viability of a project. In the MICATool, the NPV considers not only costs but also multiple impacts, which can lead to negative values when the benefits outweigh the costs. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
+    'text': 'The NPV calculates the difference between the present value of cash inflows and outflows over a project\'s lifetime. It accounts for the time value of money, helping to assess whether a project will generate more value than its cost. A positive NPV indicates that the projected earnings exceed the anticipated costs, while a negative NPV indicates that the costs outweigh the earnings. This metric is crucial for decision-making, as it provides a clear indication of the financial viability of a project.  The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
     'type': 'help'
   },
   'cba-LCOE': {
