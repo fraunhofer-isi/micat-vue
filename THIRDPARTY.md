@@ -1,9 +1,3 @@
-<!--
-© 2026 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -139,7 +133,7 @@ END OF TERMS AND CONDITIONS
 
 The following npm package may be included in this product:
 
- - @babel/parser@7.28.6
+ - @babel/parser@7.29.0
 
 This package contains the following license:
 
@@ -211,7 +205,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - entities@7.0.0
+ - entities@7.0.1
 
 This package contains the following license:
 
@@ -313,7 +307,7 @@ The following npm packages may be included in this product:
 
  - @babel/helper-string-parser@7.27.1
  - @babel/helper-validator-identifier@7.28.5
- - @babel/types@7.28.6
+ - @babel/types@7.29.0
 
 These packages each contain the following license:
 
@@ -599,16 +593,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.5.26
- - @vue/compiler-dom@3.5.26
- - @vue/compiler-sfc@3.5.26
- - @vue/compiler-ssr@3.5.26
- - @vue/reactivity@3.5.26
- - @vue/runtime-core@3.5.26
- - @vue/runtime-dom@3.5.26
- - @vue/server-renderer@3.5.26
- - @vue/shared@3.5.26
- - vue@3.5.26
+ - @vue/compiler-core@3.5.27
+ - @vue/compiler-dom@3.5.27
+ - @vue/compiler-sfc@3.5.27
+ - @vue/compiler-ssr@3.5.27
+ - @vue/reactivity@3.5.27
+ - @vue/runtime-core@3.5.27
+ - @vue/runtime-dom@3.5.27
+ - @vue/server-renderer@3.5.27
+ - @vue/shared@3.5.27
+ - vue@3.5.27
 
 These packages each contain the following license:
 
