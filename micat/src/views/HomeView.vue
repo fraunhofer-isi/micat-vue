@@ -431,13 +431,19 @@ const programChanged = (program: ProgramInterface, i: number, subsectorId: numbe
     improvement.id = 0;
     improvement.showParameterWarning = false;
   });
-  const name = subsectors.value.filter(subsector => subsector.id === subsectorId)[0].name;
-  program.subsectorName = name;
+  if (subsectorId === 0) {
+    program.subsectorName = '';
+  } else {
+    const name = subsectors.value.filter(subsector => subsector.id === subsectorId)[0].name;
+    program.subsectorName = name;
+  }
   programs[i] = program;
   session.updatePrograms(programs);
   // If the sub sector changes, we need to reset parameters
   session.updateParameters({});
-  
+  program.improvements.forEach(improvement => {
+    if (improvement.internalId! in session.parameters) delete session.parameters[improvement.internalId!];
+  });
 }
 const unitChanged = (program: ProgramInterface, i: number, oldUnitId: number, unitId: number) => {
   program.unit = unitId;
@@ -897,7 +903,7 @@ const start = () => {
                   'bg-sky-600 text-white': !program.type || program.type === 'energyEfficiency',
                   'bg-white text-gray-400': program.type && program.type !== 'energyEfficiency',
                 }"
-                @click="program.type = 'energyEfficiency'; program.subsector = 0; program.subsectorName = '';"
+                @click="program.type = 'energyEfficiency'; program.subsector = 0; program.subsectorName = ''; programChanged(program, i, 0)"
               >
                 Energy Efficiency
               </span>
@@ -907,7 +913,7 @@ const start = () => {
                   'dark:bg-white text-gray-400': !program.type || program.type !== 'renewable',
                   'bg-sky-600 text-white': program.type && program.type === 'renewable',
                 }"
-                @click="program.type = 'renewable'; program.subsector = 0; program.subsectorName = ''; program.unit = 1;"
+                @click="program.type = 'renewable'; program.subsector = 0; program.subsectorName = ''; program.unit = 1; programChanged(program, i, 0)"
               >
                 Renewables
               </span>
