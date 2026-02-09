@@ -1,9 +1,3 @@
-<!--
-© 2026 Fraunhofer-Gesellschaft e.V., München
-
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 This file was generated with the generate-license-file npm package!
 https://www.npmjs.com/package/generate-license-file
 
@@ -599,16 +593,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 The following npm packages may be included in this product:
 
- - @vue/compiler-core@3.5.27
- - @vue/compiler-dom@3.5.27
- - @vue/compiler-sfc@3.5.27
- - @vue/compiler-ssr@3.5.27
- - @vue/reactivity@3.5.27
- - @vue/runtime-core@3.5.27
- - @vue/runtime-dom@3.5.27
- - @vue/server-renderer@3.5.27
- - @vue/shared@3.5.27
- - vue@3.5.27
+ - @vue/compiler-core@3.5.28
+ - @vue/compiler-dom@3.5.28
+ - @vue/compiler-sfc@3.5.28
+ - @vue/compiler-ssr@3.5.28
+ - @vue/reactivity@3.5.28
+ - @vue/runtime-core@3.5.28
+ - @vue/runtime-dom@3.5.28
+ - @vue/server-renderer@3.5.28
+ - @vue/shared@3.5.28
+ - vue@3.5.28
 
 These packages each contain the following license:
 
