@@ -126,6 +126,8 @@ onMounted(async () => {
   // id_region
   const responseRegion: Response = await fetch(`${import.meta.env.VITE_API_URL}id_region`);
   const dataRegion: { rows: Array<[id: number, name: string]> } = await responseRegion.json();
+  // Sort regions alphabetically
+  dataRegion.rows.sort((a, b) => a[1].localeCompare(b[1]));
   regions.value = dataRegion.rows;
 
   // id_subsector
