@@ -153,7 +153,7 @@ const reset = () => {
   </div>
   <div v-else class="max-w-screen-xl pt-5 pb-10 mx-auto">
     <div class="flex items-center justify-between gap-2 pb-2">
-      <a href="#" @click="$emit('close')" class="text-sm text-orange-700 dark:text-orange-300">back to the entries</a>
+      <a href="#" @click="$emit('close')" class="text-sm text-orange-700 dark:text-orange-300">save & back to the entries</a>
       <button
         class="py-2 pl-3 pr-4 mr-3 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
         @click="reset()"
@@ -165,8 +165,9 @@ const reset = () => {
     </div>
     <div class="relative my-3 bg-white border border-gray-300 rounded-3xl">
       <div @click="$emit('close')"
-           class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-10px] cursor-pointer">
+           class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-20px] cursor-pointer flex items-center justify-center gap-1">
         <XCircleIcon class="text-orange-700 dark:text-orange-300 h-9 w-9"></XCircleIcon>
+        <span class="text-orange-700 dark:text-orange-300 text-xs mr-4">save & close</span>
       </div>
       <div class="flex">
         <div class="self-stretch bg-orange-600 rounded-l-3xl">

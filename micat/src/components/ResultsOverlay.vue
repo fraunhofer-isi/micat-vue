@@ -676,7 +676,7 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       const totalIndicatorsByYear: {[year: string]: number} = {};
       const indicators = categories.monetization.measurements.filter(measurement => activeIndicators.value.indexOf(measurement.identifier) > -1);
       indicators.forEach((indicator, i) => {
-        if (["impactOnGrossDomesticProduct", "addedAssetValueOfBuildings"].indexOf(indicator.identifier) > -1) {
+        if (["impactOnGrossDomesticProduct"].indexOf(indicator.identifier) > -1) {
           return;
         }
         const data: ResultInterface = JSON.parse(JSON.stringify(results.data[indicator.identifier]));
@@ -691,13 +691,15 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
                 const deltaE_base = deltaEByYear[baseYear]; // ΔE_{m,i} in base year
                 const MI_base = value; // MI_{m,i} in base year
                 totalIndicatorsByYear[baseYear] = (totalIndicatorsByYear[baseYear] || 0) + computeScaledIndicators(MI_base, deltaE_base, newEnergySavingsByYear[baseYear]);
+                // Consider energy price sensitivity
+                totalIndicatorsByYear[baseYear] *= (energyPriceSensitivity.value / 100);
               });
             });
           });
         } else {
           data.rows.forEach(row => {
             // Remove first columns to get only year values
-            row.splice(0, 1);
+            row.splice(0, data.idColumnNames.length);
             row.forEach((value, iY) => {
               // Scale the original value according to new energy savings
               const baseYear = years[iY];
@@ -728,10 +730,6 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       const filteredDiscountedNewInvestments: number[] = years.map(year => discountedNewInvestmentsByYear[year]);
 
       const annuity = Array.from({ length: years.length }, (_, i) => filteredDiscountedNewInvestments[i] - discountedGDP[i] - totalIndicators[i]);
-      // Consider energy price sensitivity
-      for (let i = 0; i < annuity.length; i++) {
-        annuity[i] *= (energyPriceSensitivity.value / 100);
-      }
       const weightedAnnuity = calculateWeightedAnnuity(
         annuity,
         years.map(y => parseInt(y)),
@@ -755,19 +753,6 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         newEnergySavingsByYear,
         startingYear
       );
-
-      console.log("LTm", LTm);
-      console.log("years", years);
-      console.log("CRF", CRF);
-      console.log("newEnergySavings", newEnergySavingsByYear);
-      console.log("newCO2Savings", newCO2Savings);
-      console.log("newInvestments", newInvestmentsByYear);
-      console.log("discountedNewInvestments", discountedNewInvestments);
-      console.log("discountedGDP", discountedGDP);
-      console.log("filteredDiscountedNewInvestments", filteredDiscountedNewInvestments);
-      console.log("totalIndicators", totalIndicators);
-      console.log("annuity", annuity);
-      console.log("CBR", CBR);
 
       data.push({
         name: results.name,
