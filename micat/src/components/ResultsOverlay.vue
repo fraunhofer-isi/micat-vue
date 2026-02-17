@@ -149,6 +149,20 @@ const categories: CategoriesInterface = {
         yAxis: "Reduction in MW"
       },
       {
+        subcategory: "Economic",
+        title: "Material demand",
+        description: '<p class="mb-2">tba</p>',
+        identifier: "materialDemand",
+        yAxis: "Value in kg"
+      },
+      {
+        subcategory: "Economic",
+        title: "Supply risk factor",
+        description: '<p class="mb-2">tba</p>',
+        identifier: "supplyRiskFactor",
+        yAxis: "Factor"
+      },
+      {
         subcategory: "Environmental",
         title: "Primary savings by energy carrier",
         description: '<p class="mb-2">This indicator describes the energy saved in terms of primary energy carriers with the proposed measures. The conversion processes necessary for the generation of electricity, heat, and hydrogen and synthetic fuels are taken into account. The default energy mix of these conversion processes comes from past data from Eurostat and projections from PRIMES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/PEC_FEC_savings.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-Energy-cost-savings.pdf">PDF</a>.</p>',
@@ -261,6 +275,7 @@ const categories: CategoriesInterface = {
     measurements: []
   }
 };
+const measurementsForRenewables = ["materialDemand", "supplyRiskFactor"];
 const cbaResults: Array<CbaResultInterface> = [
   {
     title: "Annuity",
@@ -944,7 +959,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   'hover:bg-orange-700': activeMeasurement.identifier !== measurement.identifier,
                   'hover:rounded-br-3xl': activeMeasurement.identifier !== measurement.identifier
                 }"
-                v-for="measurement in categories[activeCategory].measurements.filter(measurement => (!measurement.subcategory || measurement.subcategory === activeSubcategory) && measurement.identifier !== 'changeInUnitCostsOfProduction' && (measurement.identifier !== 'changeInSupplierDiversityByEnergyEfficiencyImpact'))"
+                v-for="measurement in categories[activeCategory].measurements.filter(measurement => (!measurement.subcategory || measurement.subcategory === activeSubcategory) && measurement.identifier !== 'changeInUnitCostsOfProduction' && (measurement.identifier !== 'changeInSupplierDiversityByEnergyEfficiencyImpact') && !(session.programs[0].type !== 'renewable' && measurementsForRenewables.indexOf(measurement.identifier) > -1))"
                 v-bind:key="`measurement-${measurement.identifier}`"
               >
                 <span class="mr-8 font-bold grow whitespace-nowrap">{{ measurement.title }}</span>
