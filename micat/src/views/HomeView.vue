@@ -1091,8 +1091,8 @@ const start = () => {
                           class="bg-white border-0 text-gray-500 rounded-lg focus:ring-0 focus:border-0 px-1.5 py-0.5 inline max-w-[120px]"
                           placeholder="0"
                           :id="`improvement-value-${improvement.id}-${year}`"
-                          @change="(e: Event) => {improvement.values[year] = parseInt((e.target as HTMLInputElement).value.replace(/,/g, '')); improvementValueChanged(improvement)}"
-                          :options="{precision: program.unit === 5 ? 6 : 0}"
+                          @change="(e: Event) => {improvement.values[year] = parseFloat((e.target as HTMLInputElement).value.replace(/,/g, '')); improvementValueChanged(improvement)}"
+                          :options="{precision: program.type === 'renewable' ? 3 : program.unit === 5 ? 6 : 0}"
                         />
                       </span>
                       <span class="p-2 text-xs leading-4 text-gray-400 dark:text-slate-500">{{ program.type === 'renewable' ? unitsRenewables[program.unit || 1].symbol : units[program.unit || 1].symbol }}</span>
