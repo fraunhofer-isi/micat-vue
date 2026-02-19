@@ -2,10 +2,14 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import type { ImprovementInterface, ModalInjectInterface, ProgramInterface, UnitsInterface } from "@/types";
+import type {
+  ImprovementInterface,
+  ModalInjectInterface,
+  ProgramInterface,
+  UnitsInterface
+} from '@/types'
 
-
-export const stages = Object.freeze({ home: 1, full: 2 });
+export const stages = Object.freeze({ home: 1, full: 2 })
 export const defaultModalInject: ModalInjectInterface = {
   showModal: false,
   modalTitle: '',
@@ -19,7 +23,7 @@ export const defaultImprovement: ImprovementInterface = {
   internalId: 0,
   values: {},
   percentage: 0,
-  showParameterWarning: false,
+  showParameterWarning: false
 }
 export const defaultProgram: ProgramInterface = {
   name: 'Program 1',
@@ -41,45 +45,51 @@ export const chartColours: Array<Array<number>> = [
   [255, 242, 92],
   [150, 40, 99],
   [90, 114, 131],
-];
+  [255, 182, 0],
+  [0, 128, 128],
+  [255, 99, 71],
+  [70, 130, 180],
+  [255, 215, 0],
+  [128, 0, 128]
+]
 export const units: UnitsInterface = {
   1: {
-    name: "ktoe (kilo tonne of oil equivalent)",
-    symbol: "ktoe",
+    name: 'ktoe (kilo tonne of oil equivalent)',
+    symbol: 'ktoe',
     factor: 1
   },
   2: {
-    name: "MJ",
-    symbol: "MJ",
+    name: 'MJ',
+    symbol: 'MJ',
     factor: 41868000
   },
   3: {
-    name: "GJ",
-    symbol: "GJ",
+    name: 'GJ',
+    symbol: 'GJ',
     factor: 41868
   },
   5: {
-    name: "PJ",
-    symbol: "PJ",
+    name: 'PJ',
+    symbol: 'PJ',
     factor: 0.041868
   },
   4: {
-    name: "MWh",
-    symbol: "MWh",
+    name: 'MWh',
+    symbol: 'MWh',
     factor: 11630
-  },
+  }
 }
 export const unitsRenewables: UnitsInterface = {
   1: {
-    name: "MW",
-    symbol: "MW",
+    name: 'MW',
+    symbol: 'MW',
     factor: 1
-  },
+  }
 }
 export const mureSubsectorMapping: { [key: number]: number } = {
-  1: 1,  // General cross-cutting *not used*
-  2: 17,  // Household <-> Average residential
-  3: 2,  // Industry <-> Average industry
-  4: 16,  // Services <-> Average tertiary
-  5: 18,  // Transport <-> Average transport
-}  
+  1: 1, // General cross-cutting *not used*
+  2: 17, // Household <-> Average residential
+  3: 2, // Industry <-> Average industry
+  4: 16, // Services <-> Average tertiary
+  5: 18 // Transport <-> Average transport
+}

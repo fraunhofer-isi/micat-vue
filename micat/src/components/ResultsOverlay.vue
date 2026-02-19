@@ -313,7 +313,6 @@ const indicatorInfoTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null);
 const energyPriceSensitivity = ref<number>(100);
 const investmentsSensitivity = ref<number>(100);
 const discountRate = ref<number>(3);
-const cbaYear = ref<string>(session.years[0].toString());
 const activeCbaResult = ref<string>(cbaResults[0].slug);
 
 // Computed
