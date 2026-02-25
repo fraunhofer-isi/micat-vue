@@ -189,6 +189,13 @@ const categories: CategoriesInterface = {
         description: '<p class="mb-2">This indicator examines how energy efficiency and renewables deployment can help member states achieve their target share of energy originating from renewable energy sources (RES) stated in the Renewable Energy Directive (RED). This is also relevant for energy efficiency since by reducing the overall energy consumption, the share of renewable energy carriers is increased, assuming the energy savings affect non-renewable energy sources.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/impact_res_targets.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
         identifier: "renewableEnergyDirectiveTargets",
         yAxis: "Change in RES share in %-points"
+      },
+      {
+        subcategory: "Environmental",
+        title: "Net land use change",
+        description: '<p class="mb-2">tba</p>',
+        identifier: "netLandUseChange",
+        yAxis: "Absolute change"
       }
     ],
   },
@@ -275,7 +282,7 @@ const categories: CategoriesInterface = {
     measurements: []
   }
 };
-const measurementsForRenewables = ["materialDemand", "supplyRiskFactor"];
+const measurementsForRenewables = ["materialDemand", "supplyRiskFactor", "netLandUseChange"];
 const cbaResults: Array<CbaResultInterface> = [
   {
     title: "Annuity",
@@ -824,9 +831,6 @@ const toggleIndicator = (identifier: string) => {
     activeIndicators.value.splice(index, 1);
   }
 }
-const selectCbaResult = (slug: string) => {
-  activeCbaResult.value = slug;
-}
 const clearIndicatorInfoTimeout = () => {
   if (indicatorInfoTimeoutId.value) {
     clearTimeout(indicatorInfoTimeoutId.value);
@@ -1003,7 +1007,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   'hover:bg-sky-700': activeIndicators.indexOf(measurement.identifier) === -1,
                   'rounded-br-3xl': i === categories['monetization'].measurements.length || activeIndicators.indexOf(measurement.identifier) === -1
                 }"
-                v-for="(measurement, i) in categories['monetization'].measurements"
+                v-for="(measurement, i) in categories['monetization'].measurements.filter(measurement => measurement.identifier !== 'addedAssetValueOfBuildings')"
                 v-bind:key="`measurement-cba-${measurement.identifier}`"
               >
                 <span class="mr-8 font-bold grow whitespace-nowrap">{{ measurement.title }}</span>

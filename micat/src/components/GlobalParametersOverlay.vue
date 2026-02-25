@@ -292,7 +292,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               </div>
               <div class="p-4">
                 <div
-                  v-for="(entry, i) in entries"
+                  v-for="(entry, i) in entries.filter(e => !(activeCategory === 'ElectricityGeneration' && e.key === 7))"
                   v-bind:key="`global-parameters-years-${yearOrFactor}-${i}`"
                   class="grid items-center gap-2 py-1"
                   :class="{
