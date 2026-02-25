@@ -349,7 +349,7 @@ const analyze = async () => {
               // Filter out residential parameters, depending on the usage of the annual renovation rate
               if (parameter.parameters.id_parameter === 45 && session.useRenovationRate || [32, 43].indexOf(parameter.parameters.id_parameter as number) > -1 && !session.useRenovationRate) return;
               // Add the parameter value
-              parameter.years.forEach(yearData => result[yearData.key] = yearData.value);
+              parameter.years.forEach(yearData => result[yearData.key] = parameter.parameters.id_parameter === 67 || parameter.parameters.id_parameter === 16 ? yearData.value / 100 : yearData.value);
               if (improvementParameterMapping[result["id_parameter"]] === 'parameters') {
                 parameters.push(result);
               } else if (improvementParameterMapping[result["id_parameter"]] === 'finalParameters') {
