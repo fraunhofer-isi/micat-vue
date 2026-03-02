@@ -28,7 +28,6 @@ import type {
   ResultInterface,
   ModalInjectInterface,
   CbaResultInterface,
-  ParameterCategory,
   CbaData,
 } from "@/types";
 import { defaultModalInject, chartColours, units } from "@/defaults";
@@ -320,7 +319,6 @@ const indicatorInfoTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null);
 const energyPriceSensitivity = ref<number>(100);
 const investmentsSensitivity = ref<number>(100);
 const discountRate = ref<number>(3);
-const activeCbaResult = ref<string>(cbaResults[0].slug);
 
 // Computed
 const data = computed<ResultInterface[]>(() => {
@@ -622,8 +620,7 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
     function computeLevelisedCosts(annuity: number, annualSavings: number[]): number {
       const years = annualSavings.length;
       const totalSavings = annualSavings.reduce((a, b) => a + b, 0);
-
-      return -(annuity * years) / totalSavings;
+      return annuity * years / totalSavings;
     }
 
     /** Compute per-year CBR according to weighted formula */
@@ -757,9 +754,10 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         newEnergySavingsByYear,
         startingYear
       );
+
       const netPresentValue = 0 - weightedAnnuity / CRF;
-      const LCOE = computeLevelisedCosts(Math.abs(weightedAnnuity), newEnergySavings);
-      const LCOCO2 = computeLevelisedCosts(Math.abs(weightedAnnuity), newCO2Savings);
+      const LCOE = computeLevelisedCosts(weightedAnnuity, newEnergySavings);
+      const LCOCO2 = computeLevelisedCosts(weightedAnnuity, newCO2Savings);
       const CBR = computePerYearCBR(
         filteredDiscountedNewInvestments,
         discountedGDP,
