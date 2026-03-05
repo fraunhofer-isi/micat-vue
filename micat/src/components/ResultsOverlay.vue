@@ -149,13 +149,6 @@ const categories: CategoriesInterface = {
       },
       {
         subcategory: "Economic",
-        title: "Material demand",
-        description: '<p class="mb-2">tba</p>',
-        identifier: "materialDemand",
-        yAxis: "Value in kg"
-      },
-      {
-        subcategory: "Economic",
         title: "Supply risk factor",
         description: '<p class="mb-2">tba</p>',
         identifier: "supplyRiskFactor",
@@ -195,6 +188,13 @@ const categories: CategoriesInterface = {
         description: '<p class="mb-2">tba</p>',
         identifier: "netLandUseChange",
         yAxis: "Absolute change"
+      },
+      {
+        subcategory: "Environmental",
+        title: "Material demand",
+        description: '<p class="mb-2">tba</p>',
+        identifier: "materialDemand",
+        yAxis: "Value in kg"
       }
     ],
   },
@@ -281,6 +281,7 @@ const categories: CategoriesInterface = {
     measurements: []
   }
 };
+const measurementsForEnergyEfficiency = ["reductionInDisabilityAdjustedLifeYears", "reductionInDisabilityAdjustedLifeYearsMonetization", "avoidedExcessColdWeatherMortality", "avoidedExcessColdWeatherMortalityMonetization", "reductionOfAdditionalCapacitiesInGrid"];
 const measurementsForRenewables = ["materialDemand", "supplyRiskFactor", "netLandUseChange"];
 const cbaResults: Array<CbaResultInterface> = [
   {
@@ -544,7 +545,7 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       if (deltaE_base === 0 || MI_base === 0 || newSavings === 0) {
         return 0;
       }
-      return MI_base / deltaE_base * newSavings;
+      return (MI_base / deltaE_base) * newSavings;
     }
 
     /**
