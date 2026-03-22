@@ -155,6 +155,13 @@ const categories: CategoriesInterface = {
         yAxis: "Factor"
       },
       {
+        subcategory: "Economic",
+        title: "Total energy system costs of VRE",
+        description: '<p class="mb-2">tba</p>',
+        identifier: "vreEnergySystemCosts",
+        yAxis: "Value in €"
+      },
+      {
         subcategory: "Environmental",
         title: "Primary savings by energy carrier",
         description: '<p class="mb-2">This indicator describes the energy saved in terms of primary energy carriers with the proposed measures. The conversion processes necessary for the generation of electricity, heat, and hydrogen and synthetic fuels are taken into account. The default energy mix of these conversion processes comes from past data from Eurostat and projections from PRIMES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/PEC_FEC_savings.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-Energy-cost-savings.pdf">PDF</a>.</p>',
@@ -282,7 +289,7 @@ const categories: CategoriesInterface = {
   }
 };
 const measurementsForEnergyEfficiency = ["reductionInDisabilityAdjustedLifeYears", "reductionInDisabilityAdjustedLifeYearsMonetization", "avoidedExcessColdWeatherMortality", "avoidedExcessColdWeatherMortalityMonetization", "reductionOfAdditionalCapacitiesInGrid"];
-const measurementsForRenewables = ["materialDemand", "supplyRiskFactor", "netLandUseChange"];
+const measurementsForRenewables = ["materialDemand", "supplyRiskFactor", "netLandUseChange", "vreEnergySystemCosts"];
 const cbaResults: Array<CbaResultInterface> = [
   {
     title: "Annuity",
