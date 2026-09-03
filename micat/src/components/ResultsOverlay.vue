@@ -150,14 +150,14 @@ const categories: CategoriesInterface = {
       {
         subcategory: "Economic",
         title: "Supply risk factor",
-        description: '<p class="mb-2">tba</p>',
+        description: '<p class="mb-2">This indicator weights the material demand of critical raw materials (CRM) needed for renewable energy technologies by their EU supply risk, as assessed in the European Commission\'s Critical Raw Materials Report. The supply risk factor accounts for supply concentration, governance performance, import reliance, trade restrictions, and recycling and substitution rates. It is a relative indicator: rather than being interpreted as a standalone value, it is best used to compare use cases with similar additions of renewable energy capacity but different technology mixes, for example to assess whether a higher share of photovoltaics carries a higher supply risk than an equivalent capacity of wind.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/Material_demand_and_supply_risk.html#supply-risk-factor">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Environmental-impacts-critical-raw-materials-1.pdf">PDF</a>.</p>',
         identifier: "supplyRiskFactor",
         yAxis: "Factor"
       },
       {
         subcategory: "Economic",
         title: "Total energy system costs of VRE",
-        description: '<p class="mb-2">tba</p>',
+        description: '<p class="mb-2">This indicator estimates the broader energy system costs - balancing, profile, and grid costs - associated with integrating variable renewable energy (VRE), namely wind and solar, into the electricity system. These costs rise with the share of VRE in electricity generation and are based on median cost values from the scientific literature, mapped to the VRE penetration rate projected in the EU PRIMES Reference Scenario 2020. The indicator is only quantified for photovoltaics and wind, as non-variable renewables such as hydropower or geothermal do not cause additional system integration costs.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/energy_system_costs.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Economic-impacts-Impact-on-energy-system-costs-1.pdf">PDF</a>.</p>',
         identifier: "vreEnergySystemCosts",
         yAxis: "Value in €"
       },
@@ -192,14 +192,14 @@ const categories: CategoriesInterface = {
       {
         subcategory: "Environmental",
         title: "Net land use change",
-        description: '<p class="mb-2">tba</p>',
+        description: '<p class="mb-2">This indicator assesses the net land use effect of expanding renewable energy generation. It captures both the additional land required for new installations - direct land use such as turbine foundations or PV arrays, and indirect land use such as raw material extraction or component manufacturing - and the land use avoided through the displacement of conventional fossil and nuclear power generation. Land use intensities from the scientific literature are multiplied by the annual renewable energy generation and compared against the land use of the displaced conventional power plants.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/net_land_use_change.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Environmental-impacts-Impact-on-land-use-1.pdf">PDF</a>.</p>',
         identifier: "netLandUseChange",
         yAxis: "Absolute change"
       },
       {
         subcategory: "Environmental",
         title: "Material demand",
-        description: '<p class="mb-2">tba</p>',
+        description: '<p class="mb-2">This indicator estimates the quantity of critical raw materials (CRM) required for a given expansion of renewable energy capacity, based on a review of the scientific literature on material intensities per MW of installed capacity across different renewable technologies. The selection of materials follows the EU\'s Critical Raw Materials list, focusing on materials whose supply may constrain renewable energy deployment, rather than structural materials such as steel or concrete.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/Material_demand_and_supply_risk.html#material-demand">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Environmental-impacts-critical-raw-materials-1.pdf">PDF</a>.</p>',
         identifier: "materialDemand",
         yAxis: "Value in kg"
       }
