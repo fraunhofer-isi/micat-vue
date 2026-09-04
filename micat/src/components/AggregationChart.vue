@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 <script setup lang="ts">
 import { Bar } from "vue-chartjs";
-import { ref, computed } from "vue";
+import { ref, reactive, computed } from "vue";
 import { chartColours } from "@/defaults";
 import { formatter, labelFormatter, labelFormatterSmall } from "@/helpers";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -27,6 +27,15 @@ const props = defineProps<{
 // Variables
 const viewMode = ref<'perYear' | 'annuitized'>('perYear');
 const excludedIdentifiers = ['addedAssetValueOfBuildings'];
+const hiddenIndicators = reactive(new Set<string>());
+
+const toggleIndicatorVisibility = (identifier: string) => {
+  if (hiddenIndicators.has(identifier)) {
+    hiddenIndicators.delete(identifier);
+  } else {
+    hiddenIndicators.add(identifier);
+  }
+};
 
 // Consistent color per indicator, independent of sorting/filtering in either view
 const measurementColors = computed(() => {
@@ -66,14 +75,15 @@ const perYearChartOptions: any = {
     legend: { display: false },
     datalabels: {
       display: (context: any) => {
-        const datasetsInSameStack = context.chart.data.datasets.filter((d: any) => d.stack === context.dataset.stack);
+        const datasetsInSameStack = context.chart.data.datasets.filter((d: any) => d.stack === context.dataset.stack && !d.hidden);
+        if (datasetsInSameStack.length === 0) return false;
         const lastInStack = datasetsInSameStack[datasetsInSameStack.length - 1];
-        return context.chart.data.datasets[context.datasetIndex] === lastInStack;
+        return context.chart.data.datasets[context.datasetIndex] === lastInStack && !context.dataset.hidden;
       },
       formatter: (value: number, context: any) => {
         const stack = context.dataset.stack;
         const total = context.chart.data.datasets
-          .filter((d: any) => d.stack === stack)
+          .filter((d: any) => d.stack === stack && !d.hidden)
           .reduce((sum: number, d: any) => sum + (d.data[context.dataIndex] || 0), 0);
         if (total === 0) return '';
         return total < 1 && total >= 0 ? labelFormatterSmall.format(total) : labelFormatter.format(total);
@@ -155,6 +165,7 @@ const perYearChartData: any = computed(() => {
         borderColor: color,
         backgroundColor: color,
         stack: measurement.impactTiming === 'oneTime' ? 'one-time' : 'recurring',
+        hidden: hiddenIndicators.has(measurement.identifier),
       });
     });
     results.push({
@@ -222,20 +233,34 @@ const chartOptions = computed(() => viewMode.value === 'annuitized' ? annuitized
       @click="viewMode = 'annuitized'"
     >Annuitized</button>
   </div>
-   <div v-if="viewMode === 'perYear'" class="flex flex-wrap gap-x-6 gap-y-2 mx-7 mb-4 text-xs text-gray-600">
+  <div v-if="viewMode === 'perYear'" class="flex flex-wrap gap-x-6 gap-y-2 mx-7 mb-4 text-xs text-gray-600">
     <div class="flex flex-wrap items-center gap-3">
       <span class="font-semibold text-gray-800">One-time</span>
-      <span v-for="m in perYearLegendGroups.oneTime" :key="`legend-onetime-${m.identifier}`" class="flex items-center gap-1">
+      <button
+        type="button"
+        v-for="m in perYearLegendGroups.oneTime"
+        :key="`legend-onetime-${m.identifier}`"
+        class="flex items-center gap-1 cursor-pointer bg-transparent border-0 p-0"
+        :class="{ 'opacity-40 line-through': hiddenIndicators.has(m.identifier) }"
+        @click="toggleIndicatorVisibility(m.identifier)"
+      >
         <span class="inline-block w-2.5 h-2.5 rounded-sm" :style="{ backgroundColor: measurementColors[m.identifier] }"></span>
         {{ m.title }}
-      </span>
+      </button>
     </div>
     <div class="flex flex-wrap items-center gap-3">
       <span class="font-semibold text-gray-800">Recurring</span>
-      <span v-for="m in perYearLegendGroups.recurring" :key="`legend-recurring-${m.identifier}`" class="flex items-center gap-1">
+      <button
+        type="button"
+        v-for="m in perYearLegendGroups.recurring"
+        :key="`legend-recurring-${m.identifier}`"
+        class="flex items-center gap-1 cursor-pointer bg-transparent border-0 p-0"
+        :class="{ 'opacity-40 line-through': hiddenIndicators.has(m.identifier) }"
+        @click="toggleIndicatorVisibility(m.identifier)"
+      >
         <span class="inline-block w-2.5 h-2.5 rounded-sm" :style="{ backgroundColor: measurementColors[m.identifier] }"></span>
         {{ m.title }}
-      </span>
+      </button>
     </div>
   </div>
   <div v-for="(program, i) in session.programs" :key="`program-${i}`" class="p-4 my-5 rounded-lg bg-gray-50 mx-7">

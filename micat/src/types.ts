@@ -144,6 +144,7 @@ export interface DatasetInterface {
     borderColor: string | string[];
     backgroundColor: string | string[];
     stack?: string;
+    hidden?: boolean;
 }
 
 export interface CarrierMapping {
