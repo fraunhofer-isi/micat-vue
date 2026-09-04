@@ -990,6 +990,12 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                 {{ subcategory }}
               </div>
             </div>
+            <div v-if="key === 'cba'" class="pr-5">
+              <InformationCircleIcon
+                @click.stop="openModal('cba-info')"
+                class="inline w-6 h-6 cursor-pointer"
+              ></InformationCircleIcon>
+            </div>
           </div>
         </div>
         <div v-if="['quantification', 'monetization'].indexOf(activeCategory) > -1">

@@ -449,6 +449,11 @@ const helpTexts: HelpTextInterface = {
     'type': 'help'
   },
   // CBA
+  'cba-info': {
+    'title': 'Cost-benefit analysis',
+    'text': 'This tab combines the monetised indicators selected on the left into a single cost-benefit analysis (CBA) per program. Investment costs and the impact on gross domestic product are treated as one-time impacts and discounted using the capital recovery factor; all other selected indicators are treated as annually recurring benefits, scaled to the new energy savings of each year. The three parameters on the right let you test the sensitivity of the results: energy price sensitivity scales the reduction of energy costs, investments sensitivity scales investment costs, and the discount rate determines how future one-time impacts (investments and GDP) are annuitised. The resulting weighted annuity, net present value, levelised costs, and cost-benefit/benefit-cost ratios are shown below for each program. More details can be found in the <a class="font-bold" href="https://doc.micatool.eu/cba/cba.html" target="_blank">documentation</a>.',
+    'type': 'help'
+  },
   'cba-netPresentValue': {
     'title': 'Net present value (NPV)',
     'text': 'The NPV calculates the difference between the present value of cash inflows and outflows over a project\'s lifetime. It accounts for the time value of money, helping to assess whether a project will generate more value than its cost. A positive NPV indicates that the projected earnings exceed the anticipated costs, while a negative NPV indicates that the costs outweigh the earnings. This metric is crucial for decision-making, as it provides a clear indication of the financial viability of a project.  The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
