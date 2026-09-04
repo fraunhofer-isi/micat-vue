@@ -216,6 +216,9 @@ export interface CbaData {
         energyPriceSensitivity: number;
         investmentsSensitivity: number;
     };
+    indicatorAnnuities?: { [key: string]: number };
+    investmentAnnuity?: number;
+    gdpAnnuity?: number;
 }
 export interface CbaDataOld {
     years: string[];
