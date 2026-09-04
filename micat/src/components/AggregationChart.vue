@@ -9,6 +9,7 @@ import { Bar } from "vue-chartjs";
 import { ref, computed } from "vue";
 import { chartColours } from "@/defaults";
 import { formatter, labelFormatter, labelFormatterSmall } from "@/helpers";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import type {
   CategoriesInterface,
   DatasetInterface,
@@ -53,7 +54,24 @@ const perYearChartOptions: any = {
       },
     },
     legend: { display: true },
-    datalabels: { display: () => false }
+    datalabels: {
+      display: (context: any) => {
+        const datasetsInSameStack = context.chart.data.datasets.filter((d: any) => d.stack === context.dataset.stack);
+        const lastInStack = datasetsInSameStack[datasetsInSameStack.length - 1];
+        return context.chart.data.datasets[context.datasetIndex] === lastInStack;
+      },
+      formatter: (value: number, context: any) => {
+        const stack = context.dataset.stack;
+        const total = context.chart.data.datasets
+          .filter((d: any) => d.stack === stack)
+          .reduce((sum: number, d: any) => sum + (d.data[context.dataIndex] || 0), 0);
+        if (total === 0) return '';
+        return total < 1 && total >= 0 ? labelFormatterSmall.format(total) : labelFormatter.format(total);
+      },
+      anchor: 'end',
+      align: 'end',
+      font: { weight: 'normal' },
+    }
   },
   responsive: true,
   interaction: { intersect: false },
