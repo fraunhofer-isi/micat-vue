@@ -38,6 +38,16 @@ const measurementColors = computed(() => {
   return map;
 });
 
+const perYearLegendGroups = computed(() => {
+  const measurements = props.categories.monetization.measurements.filter(
+    measurement => excludedIdentifiers.indexOf(measurement.identifier) === -1
+  );
+  return {
+    oneTime: measurements.filter(m => m.impactTiming === 'oneTime'),
+    recurring: measurements.filter(m => m.impactTiming !== 'oneTime'),
+  };
+});
+
 const perYearChartOptions: any = {
   plugins: {
     title: { display: false, text: 'MICAT - Aggregation' },
@@ -53,7 +63,7 @@ const perYearChartOptions: any = {
         },
       },
     },
-    legend: { display: true },
+    legend: { display: false },
     datalabels: {
       display: (context: any) => {
         const datasetsInSameStack = context.chart.data.datasets.filter((d: any) => d.stack === context.dataset.stack);
@@ -211,6 +221,22 @@ const chartOptions = computed(() => viewMode.value === 'annuitized' ? annuitized
       :class="viewMode === 'annuitized' ? 'bg-sky-600 text-white' : 'bg-white text-sky-600'"
       @click="viewMode = 'annuitized'"
     >Annuitized</button>
+  </div>
+   <div v-if="viewMode === 'perYear'" class="flex flex-wrap gap-x-6 gap-y-2 mx-7 mb-4 text-xs text-gray-600">
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="font-semibold text-gray-800">One-time</span>
+      <span v-for="m in perYearLegendGroups.oneTime" :key="`legend-onetime-${m.identifier}`" class="flex items-center gap-1">
+        <span class="inline-block w-2.5 h-2.5 rounded-sm" :style="{ backgroundColor: measurementColors[m.identifier] }"></span>
+        {{ m.title }}
+      </span>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="font-semibold text-gray-800">Recurring</span>
+      <span v-for="m in perYearLegendGroups.recurring" :key="`legend-recurring-${m.identifier}`" class="flex items-center gap-1">
+        <span class="inline-block w-2.5 h-2.5 rounded-sm" :style="{ backgroundColor: measurementColors[m.identifier] }"></span>
+        {{ m.title }}
+      </span>
+    </div>
   </div>
   <div v-for="(program, i) in session.programs" :key="`program-${i}`" class="p-4 my-5 rounded-lg bg-gray-50 mx-7">
     <h3 class="mb-2 font-bold text-md">{{ program.name }}</h3>
