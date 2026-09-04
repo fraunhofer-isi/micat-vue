@@ -141,8 +141,8 @@ export interface DataInterface {
 export interface DatasetInterface {
     label: string;
     data: DataInterface,
-    borderColor: string;
-    backgroundColor: string;
+    borderColor: string | string[];
+    backgroundColor: string | string[];
     stack?: string;
 }
 
