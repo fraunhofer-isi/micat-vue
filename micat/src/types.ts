@@ -168,10 +168,12 @@ export interface ISessionState {
     stage: number;
     mure: boolean;
     odyssee: boolean;
+    gapFilling: boolean;
     mureToken: MureTokenInterface;
     mureCategory: number;
     mureCountry: number;
     mureMeasurement: number;
+    gapFillingCountry: number;
     odysseeStartYear: number;
     odysseeEndYear: number;
     region: number;
@@ -332,6 +334,15 @@ export interface MureMeasurementInterface {
     "@id": string;
     title: string;
     startingDate: string;
+    isSuccessfulMeasure?: boolean;
+    country?: { id: number; name: string };
+}
+
+export interface ReferenceConsumptionEntry {
+    id: number;
+    id_region: number;
+    id_sector: number;
+    "Final consumption 2021 in PJ": number;
 }
 
 interface MureSavingsInterface {

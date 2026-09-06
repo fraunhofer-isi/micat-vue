@@ -21,10 +21,12 @@ export const useSessionStore = defineStore({
       stage: parseInt(localStorage.getItem("stage") || stages.home.toString()),
       mure: String(localStorage.getItem("mure") || "false").toLowerCase() === "true",
       odyssee: String(localStorage.getItem("odyssee") || "false").toLowerCase() === "true",
+      gapFilling: String(localStorage.getItem("gapFilling") || "false").toLowerCase() === "true",
       mureToken: JSON.parse(localStorage.getItem("mureToken") || JSON.stringify({})),
       mureCategory: parseInt(localStorage.getItem("mureCategory") || "0"),
       mureCountry: parseInt(localStorage.getItem("mureCountry") || "0"),
       mureMeasurement: parseInt(localStorage.getItem("mureMeasurement") || "0"),
+      gapFillingCountry: parseInt(localStorage.getItem("gapFillingCountry") || "0"),
       odysseeStartYear: parseInt(localStorage.getItem("odysseeStartYear") || "2000"),
       odysseeEndYear: parseInt(localStorage.getItem("odysseeEndYear") || "2022"),
       region: parseInt(localStorage.getItem("region") || "0"),
@@ -57,6 +59,10 @@ export const useSessionStore = defineStore({
       if (manualChange) this.resetted = false;
       localStorage.setItem("odyssee", odyssee.toString());
     },
+    updateGapFilling(gapFilling: boolean, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("gapFilling", gapFilling.toString());
+    },
     updateMureToken(mureToken: MureTokenInterface, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("mureToken", JSON.stringify(mureToken));
@@ -72,6 +78,10 @@ export const useSessionStore = defineStore({
     updateMureMeasurement(mureMeasurement: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem("mureMeasurement", JSON.stringify(mureMeasurement));
+    },
+    updateGapFillingCountry(gapFillingCountry: number, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem("gapFillingCountry", JSON.stringify(gapFillingCountry));
     },
     updateOdysseeStartYear(odysseeStartYear: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
@@ -138,9 +148,11 @@ export const useSessionStore = defineStore({
       this.updateStage(stages.home, false);
       this.updateMure(false, false);
       this.updateOdyssee(false, false);
+      this.updateGapFilling(false, false);
       this.updateMureCategory(0, false);
       this.updateMureCountry(0, false);
       this.updateMureMeasurement(0, false);
+      this.updateGapFillingCountry(0, false);
       this.updateOdysseeStartYear(2000, false);
       this.updateOdysseeEndYear(2022, false);
       this.updateRegion(0, false);

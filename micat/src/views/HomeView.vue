@@ -5,10 +5,10 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 <script setup async lang="ts">
-import {inject, onMounted, reactive, ref, watch} from 'vue';
-import type {Ref} from 'vue';
+import { inject, onMounted, reactive, ref, watch } from 'vue';
+import type { Ref } from 'vue';
 import { watchPausable } from '@vueuse/core';
-import router from "@/router";
+import router from '@/router';
 import { storeToRefs } from 'pinia';
 import {
   InformationCircleIcon,
@@ -18,10 +18,10 @@ import {
   ExclamationCircleIcon,
   XCircleIcon,
   PresentationChartBarIcon,
-  AdjustmentsVerticalIcon, 
+  AdjustmentsVerticalIcon,
   ExclamationTriangleIcon,
   ArrowDownTrayIcon,
-  ArrowUpTrayIcon,
+  ArrowUpTrayIcon
 } from '@heroicons/vue/24/outline';
 import type {
   ModalInjectInterface,
@@ -31,45 +31,52 @@ import type {
   PayloadInterface,
   PayloadMeasureInterface,
   SelectedImprovementInterface,
-  ImprovementInterface,
-} from "@/types";
-import { defaultImprovement, defaultModalInject, defaultProgram, stages, units, unitsRenewables } from "@/defaults";
-import { getGlobalParametersPayload } from "@/helpers";
-import { useSessionStore } from "@/stores/session";
-import GlobalParametersOverlay from "@/components/GlobalParametersOverlay.vue";
-import ParametersOverlay from "@/components/ParametersOverlay.vue";
-import MureSelection from "@/components/MureSelection.vue";
+  ImprovementInterface
+} from '@/types';
+import {
+  defaultImprovement,
+  defaultModalInject,
+  defaultProgram,
+  stages,
+  units,
+  unitsRenewables
+} from '@/defaults';
+import { getGlobalParametersPayload } from '@/helpers';
+import { useSessionStore } from '@/stores/session';
+import GlobalParametersOverlay from '@/components/GlobalParametersOverlay.vue';
+import ParametersOverlay from '@/components/ParametersOverlay.vue';
+import MureSelection from '@/components/MureSelection.vue';
 
 const session = useSessionStore();
 
 // Variables
 const improvementParameterMapping: { [key: number]: string } = {
-  14: "finalParameters",
-  15: "finalParameters",
-  16: "finalParameters",
-  17: "finalParameters",
-  18: "finalParameters",
-  29: "parameters",
-  31: "parameters",
-  32: "parameters",
-  34: "parameters",
-  35: "parameters",
-  36: "constants",
-  40: "parameters",
-  42: "parameters",
-  43: "parameters",
-  45: "parameters",
-  64: "parameters",
-  65: "parameters",
-  66: "parameters",
-  67: "finalParameters",
-  68: "parameters",
-  69: "parameters",
-  70: "parameters",
+  14: 'finalParameters',
+  15: 'finalParameters',
+  16: 'finalParameters',
+  17: 'finalParameters',
+  18: 'finalParameters',
+  29: 'parameters',
+  31: 'parameters',
+  32: 'parameters',
+  34: 'parameters',
+  35: 'parameters',
+  36: 'constants',
+  40: 'parameters',
+  42: 'parameters',
+  43: 'parameters',
+  45: 'parameters',
+  64: 'parameters',
+  65: 'parameters',
+  66: 'parameters',
+  67: 'finalParameters',
+  68: 'parameters',
+  69: 'parameters',
+  70: 'parameters'
 };
 
 // Injections
-const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
+const { openModal } = inject<ModalInjectInterface>('modal') || defaultModalInject;
 
 // Session
 const { years, stage, seedInfo } = storeToRefs(session);
@@ -80,40 +87,67 @@ const loading = ref<boolean>(false);
 let regions: Ref<Array<Array<number | string>>> = ref([]);
 let subsectors: Ref<Array<SubsectorInterface>> = ref([]);
 const getNewYears = (filterYears: boolean = true) => {
-  const newYears = [...Array(51).keys()].map(delta => 2000 + delta);
+  const newYears = [...Array(51).keys()].map((delta) => 2000 + delta);
   if (!filterYears) return newYears;
-  return newYears.filter(newYear => years.value.indexOf(newYear) == -1);
+  return newYears.filter((newYear) => years.value.indexOf(newYear) == -1);
 };
 const newYears = ref<Array<number>>(getNewYears());
 const newYearSelected = ref<number>(newYears.value[0]);
 const showGlobalParametersOverlay = ref<boolean>(false);
 const showParametersOverlay = ref<boolean>(false);
-const selectedImprovement = ref<SelectedImprovementInterface>({internalId: 0, unit: 1});
-const error = ref<string>("");
+const selectedImprovement = ref<SelectedImprovementInterface>({ internalId: 0, unit: 1 });
+const error = ref<string>('');
 const fileUpload = ref<HTMLInputElement | null>(null);
 
 // Watchers
-watch(programs, (programs) => {  
+watch(programs, (programs) => {
   session.updatePrograms(programs);
 });
-watch(() => session.mure, (mure) => {
-  session.updateMure(mure);
-});
-watch(() => session.odyssee, (odyssee) => {
-  session.updateOdyssee(odyssee);
-});
-watch(() => session.region, (region) => {
-  session.updateRegion(region);
-  // If the region is changed, we need to reset parameters
-  session.updateGlobalParameters({});
-  session.updateParameters({});
-});
-watch(() => session.municipality, (municipality) => {
-  session.updateMunicipality(municipality);
-});
-watch(() => session.inhabitants, (inhabitants) => {
-  session.updateInhabitants(inhabitants);
-});
+watch(
+  () => session.mure,
+  (mure) => {
+    session.updateMure(mure);
+  }
+);
+watch(
+  () => session.odyssee,
+  (odyssee) => {
+    session.updateOdyssee(odyssee);
+  }
+);
+watch(
+  () => session.odyssee,
+  (odyssee) => {
+    session.updateOdyssee(odyssee);
+  }
+);
+watch(
+  () => session.gapFilling,
+  (gapFilling) => {
+    session.updateGapFilling(gapFilling);
+  }
+);
+watch(
+  () => session.region,
+  (region) => {
+    session.updateRegion(region);
+    // If the region is changed, we need to reset parameters
+    session.updateGlobalParameters({});
+    session.updateParameters({});
+  }
+);
+watch(
+  () => session.municipality,
+  (municipality) => {
+    session.updateMunicipality(municipality);
+  }
+);
+watch(
+  () => session.inhabitants,
+  (inhabitants) => {
+    session.updateInhabitants(inhabitants);
+  }
+);
 watch(stage, (stage: number) => {
   session.updateStage(stage);
 });
@@ -121,8 +155,8 @@ watch(stage, (stage: number) => {
 // Lifecycle
 onMounted(async () => {
   // When travelling back from results, we need to re-assign the stage and years
-  stage.value = parseInt(localStorage.getItem("stage") || stages.home.toString());
-  years.value = JSON.parse(localStorage.getItem("years")!) || [];
+  stage.value = parseInt(localStorage.getItem('stage') || stages.home.toString());
+  years.value = JSON.parse(localStorage.getItem('years')!) || [];
   // id_region
   const responseRegion: Response = await fetch(`${import.meta.env.VITE_API_URL}id_region`);
   const dataRegion: { rows: Array<[id: number, name: string]> } = await responseRegion.json();
@@ -133,20 +167,32 @@ onMounted(async () => {
   // id_subsector
   // Get all database tables related to subsectors and descendants
   const responseSubsector: Response = await fetch(`${import.meta.env.VITE_API_URL}id_subsector`);
-  const dataSubsector: { rows: Array<[id: number, name: string, description: string, renewable: number]> } = await responseSubsector.json();
-  const responseImprovements: Response = await fetch(`${import.meta.env.VITE_API_URL}id_action_type`);
+  const dataSubsector: {
+    rows: Array<[id: number, name: string, description: string, renewable: number]>;
+  } = await responseSubsector.json();
+  const responseImprovements: Response = await fetch(
+    `${import.meta.env.VITE_API_URL}id_action_type`
+  );
   const dataImprovements: {
-    rows: Array<[id: number, name: string, name2: string]>
+    rows: Array<[id: number, name: string, name2: string]>;
   } = await responseImprovements.json();
-  const responseMapping: Response = await fetch(`${import.meta.env.VITE_API_URL}mapping__subsector__action_type`);
+  const responseMapping: Response = await fetch(
+    `${import.meta.env.VITE_API_URL}mapping__subsector__action_type`
+  );
   const dataMapping: {
-    rows: Array<[id: number, idSubsector: number, idImprovement: number]>
+    rows: Array<[id: number, idSubsector: number, idImprovement: number]>;
   } = await responseMapping.json();
 
   const improvements: {
-    [key: number]: { id: number, subsectors: Array<number>, name: string, label: string, values: ImprovementValueInterface }
+    [key: number]: {
+      id: number;
+      subsectors: Array<number>;
+      name: string;
+      label: string;
+      values: ImprovementValueInterface;
+    };
   } = {};
-  dataImprovements.rows.forEach(improvement => {
+  dataImprovements.rows.forEach((improvement) => {
     improvements[improvement[0]] = {
       id: improvement[0],
       label: improvement[1],
@@ -155,37 +201,39 @@ onMounted(async () => {
       subsectors: []
     };
   });
-  dataMapping.rows.forEach(mapping => {
+  dataMapping.rows.forEach((mapping) => {
     improvements[mapping[2]].subsectors.push(mapping[1]);
   });
-  dataSubsector.rows.forEach(subsector => {
+  dataSubsector.rows.forEach((subsector) => {
     subsectors.value.push({
       id: subsector[0],
       name: subsector[1],
       renewable: !!subsector[3],
-      improvements: Object.values(improvements).filter(improvement => improvement.subsectors.indexOf(subsector[0]) > -1)
+      improvements: Object.values(improvements).filter(
+        (improvement) => improvement.subsectors.indexOf(subsector[0]) > -1
+      )
     });
   });
-  subsectors.value.sort((a, b) => a.name.localeCompare(b.name))
+  subsectors.value.sort((a, b) => a.name.localeCompare(b.name));
 
   // Create internal IDs for improvements
-  programs.forEach(program => {
-    program.improvements.forEach(improvement => {
+  programs.forEach((program) => {
+    program.improvements.forEach((improvement) => {
       if (!improvement.internalId) improvement.internalId = getInternalId();
     });
   });
-})
+});
 
 // Functions
 const updateImprovementValues = () => {
-  programs.forEach(program => {
-    program.improvements.forEach(improvement => {
-      Object.keys(improvement.values).forEach(key => {
+  programs.forEach((program) => {
+    program.improvements.forEach((improvement) => {
+      Object.keys(improvement.values).forEach((key) => {
         if (years.value.indexOf(parseInt(key)) === -1) {
           delete improvement.values[key];
         }
       });
-      years.value.forEach(year => {
+      years.value.forEach((year) => {
         if (!improvement.values[year.toString()]) {
           improvement.values[year.toString()] = 0;
         }
@@ -199,17 +247,17 @@ const addYear = () => {
   years.value.sort();
   session.updateYears(years.value);
   session.years = years.value;
-  newYears.value = newYears.value.filter(newYear => newYear !== newYearSelected.value);
+  newYears.value = newYears.value.filter((newYear) => newYear !== newYearSelected.value);
   newYearSelected.value = newYears.value[0];
   // If the time frame changes, we need to reset parameters
   session.updateGlobalParameters({});
-  session.updateParameters({});  
+  session.updateParameters({});
   updateImprovementValues();
 };
 const removeYear = (year: number) => {
   if (years.value.length > 2) {
     // Keep at least two years
-    years.value = years.value.filter(x => x !== year);
+    years.value = years.value.filter((x) => x !== year);
     session.updateYears(years.value);
     session.years = years.value;
     newYears.value.push(year);
@@ -224,7 +272,7 @@ const resetYears = () => {
   // Check if there are valid years defined. If not add default ones.
   let currentYear = new Date().getFullYear();
   currentYear -= 3;
-  years.value = years.value.filter(year => year <= currentYear - 3 && year >= 2000);
+  years.value = years.value.filter((year) => year <= currentYear - 3 && year >= 2000);
   if (years.value.length == 0) {
     // Round down to nearest 5
     const nextValidYear = Math.floor(currentYear / 5) * 5;
@@ -232,32 +280,36 @@ const resetYears = () => {
   }
   newYears.value = getNewYears();
   newYearSelected.value = newYears.value[0];
-  
+
   session.updateYears(years.value);
   session.years = years.value;
   updateImprovementValues();
 };
 const addProgram = () => {
   const clone = JSON.parse(JSON.stringify(defaultProgram));
-  clone.name = `Program ${programs.length + 1}`
+  clone.name = `Program ${programs.length + 1}`;
   programs.push(clone);
   session.programs = programs;
   session.updatePrograms(programs);
-}
+};
 const reset = () => {
   session.reset();
   router.go(0);
-}
+};
 const removeProgram = (i: number) => {
   if (programs.length >= 2) {
     programs.splice(i, 1);
     session.updatePrograms(programs);
   }
-}
+};
 const getInternalId = () => {
   let ids: Array<number> = [];
-  programs.forEach(program => {
-    ids = ids.concat(program.improvements.filter(improvement => typeof improvement.internalId !== 'undefined').map(improvement => improvement.internalId as number));
+  programs.forEach((program) => {
+    ids = ids.concat(
+      program.improvements
+        .filter((improvement) => typeof improvement.internalId !== 'undefined')
+        .map((improvement) => improvement.internalId as number)
+    );
   });
   return ids.length > 0 ? Math.max(...ids) + 1 : 1;
 };
@@ -265,7 +317,7 @@ const copyImprovement = (program: ProgramInterface, i: number) => {
   const newImprovement = JSON.parse(JSON.stringify(program.improvements[i]));
   newImprovement.internalId = getInternalId();
   program.improvements.push(newImprovement);
-}
+};
 const addImprovement = (program: ProgramInterface) => {
   const newImprovement = JSON.parse(JSON.stringify(defaultImprovement));
   newImprovement.internalId = getInternalId();
@@ -274,16 +326,16 @@ const addImprovement = (program: ProgramInterface) => {
     // If a 2nd improvement is added, set the first one to 100%
     program.improvements[0].percentage = 100;
   }
-}
+};
 const removeImprovement = (program: ProgramInterface, i: number) => {
   if (program.improvements.length >= 2) {
     program.improvements.splice(i, 1);
   }
-}
+};
 const getSubsectorImprovements = (subsectorId: number) => {
   if (!subsectorId || subsectors.value.length === 0) return [];
-  return subsectors.value.filter(subsector => subsector.id === subsectorId)[0].improvements;
-}
+  return subsectors.value.filter((subsector) => subsector.id === subsectorId)[0].improvements;
+};
 const setSeedInfo = (value: boolean) => {
   seedInfo.value = value;
   session.updateSeedInfo(value);
@@ -292,38 +344,42 @@ const showParameters = (data: ImprovementInterface, programIndex: number) => {
   const selectedProgram = session.programs[programIndex];
   selectedImprovement.value = {
     internalId: data && data.internalId ? data.internalId : 0,
-    name: data.name, 
-    subsector: selectedProgram.subsectorName, 
-    subsectorId: selectedProgram.subsector, 
+    name: data.name,
+    subsector: selectedProgram.subsectorName,
+    subsectorId: selectedProgram.subsector,
     startingYear: selectedProgram.startingYear,
     program: selectedProgram.name,
     unit: selectedProgram.unit,
-    data,
+    data
   };
-  
+
   showParametersOverlay.value = true;
 };
 const analyze = async () => {
   session.results = [];
   loading.value = true;
-  const url = `${import.meta.env.VITE_API_URL}indicator_data?id_region=${session.region}`
+  const url = `${import.meta.env.VITE_API_URL}indicator_data?id_region=${session.region}`;
   const payloadList: Array<PayloadInterface> = [];
   let i = 1;
   let errors = '';
   error.value = '';
-  programs.forEach(program => {
+  programs.forEach((program) => {
     if (!program.subsector) {
       errors += `Please select a subsector for <em>${program.name}</em>.<br />`;
       return;
     }
     const payload: PayloadInterface = {
-      "starting_year": program.startingYear,
-      "measures": [],
-      "parameters": getGlobalParametersPayload(session.globalParameters, session.monetisationFactorMapping, session.region),
-      "name": program.name,
-    }
-    if (session.municipality) payload["population"] = session.inhabitants;
-    program.improvements.forEach(improvement => {
+      starting_year: program.startingYear,
+      measures: [],
+      parameters: getGlobalParametersPayload(
+        session.globalParameters,
+        session.monetisationFactorMapping,
+        session.region
+      ),
+      name: program.name
+    };
+    if (session.municipality) payload['population'] = session.inhabitants;
+    program.improvements.forEach((improvement) => {
       if (!improvement.id) {
         errors += `<em>${program.name}</em> has invalid improvements.<br />`;
         return;
@@ -341,26 +397,50 @@ const analyze = async () => {
         const improvementParameters = session.parameters[improvement.internalId];
         if (improvementParameters) {
           // parameters are only present if they have been edited
-          const keys: Array<string> = ["main", "affectedFuels", "fuelSwitch", "efficiency", "residential"];
-          keys.forEach(key => {
+          const keys: Array<string> = [
+            'main',
+            'affectedFuels',
+            'fuelSwitch',
+            'efficiency',
+            'residential'
+          ];
+          keys.forEach((key) => {
             if (!improvementParameters[key]) return;
-            improvementParameters[key].forEach(parameter => {
-              const result: { [key: string]: number } = {"id_parameter": parameter.parameters.id_parameter as number};
+            improvementParameters[key].forEach((parameter) => {
+              const result: { [key: string]: number } = {
+                id_parameter: parameter.parameters.id_parameter as number
+              };
               // Filter out residential parameters, depending on the usage of the annual renovation rate
-              if (parameter.parameters.id_parameter === 45 && session.useRenovationRate || [32, 43].indexOf(parameter.parameters.id_parameter as number) > -1 && !session.useRenovationRate) return;
+              if (
+                (parameter.parameters.id_parameter === 45 && session.useRenovationRate) ||
+                ([32, 43].indexOf(parameter.parameters.id_parameter as number) > -1 &&
+                  !session.useRenovationRate)
+              )
+                return;
               // Add the parameter value
-              parameter.years.forEach(yearData => result[yearData.key] = parameter.parameters.id_parameter === 67 || parameter.parameters.id_parameter === 16 ? yearData.value / 100 : yearData.value);
-              if (improvementParameterMapping[result["id_parameter"]] === 'parameters') {
+              parameter.years.forEach(
+                (yearData) =>
+                  (result[yearData.key] =
+                    parameter.parameters.id_parameter === 67 ||
+                    parameter.parameters.id_parameter === 16
+                      ? yearData.value / 100
+                      : yearData.value)
+              );
+              if (improvementParameterMapping[result['id_parameter']] === 'parameters') {
                 parameters.push(result);
-              } else if (improvementParameterMapping[result["id_parameter"]] === 'finalParameters') {
-                if (result["id_parameter"] === 67) {
-                  result["id_primary_energy_carrier"] = parameter.parameters.id_primary_energy_carrier as number;
+              } else if (
+                improvementParameterMapping[result['id_parameter']] === 'finalParameters'
+              ) {
+                if (result['id_parameter'] === 67) {
+                  result['id_primary_energy_carrier'] = parameter.parameters
+                    .id_primary_energy_carrier as number;
                 } else {
-                  result["id_final_energy_carrier"] = parameter.parameters.id_final_energy_carrier as number;
+                  result['id_final_energy_carrier'] = parameter.parameters
+                    .id_final_energy_carrier as number;
                 }
                 finalParameters.push(result);
-              } else if (improvementParameterMapping[result["id_parameter"]] === 'constants') {
-                result["value"] = parameter.parameters.constants as number;
+              } else if (improvementParameterMapping[result['id_parameter']] === 'constants') {
+                result['value'] = parameter.parameters.constants as number;
                 constants.push(result);
               }
             });
@@ -368,23 +448,25 @@ const analyze = async () => {
         }
       }
       const improvementData: PayloadMeasureInterface = {
-        "id": i,
-        "savings": {
-          "details": {
-            "parameters": parameters,
-            "finalParameters": finalParameters,
-            "constants": constants,
+        id: i,
+        savings: {
+          details: {
+            parameters: parameters,
+            finalParameters: finalParameters,
+            constants: constants
           },
-          "id_measure": i,
-          "id_subsector": program.subsector,
-          "id_action_type": improvement.id,
-        },
+          id_measure: i,
+          id_subsector: program.subsector,
+          id_action_type: improvement.id
+        }
       };
-      years.value.filter(year => year >= (program.startingYear || 0)).forEach(year => {
-        const value = improvement.values[year.toString()];
-        const factor = units[program.unit].factor
-        improvementData.savings[year.toString()] = value ? value * 1 / factor : 0;
-      });
+      years.value
+        .filter((year) => year >= (program.startingYear || 0))
+        .forEach((year) => {
+          const value = improvement.values[year.toString()];
+          const factor = units[program.unit].factor;
+          improvementData.savings[year.toString()] = value ? (value * 1) / factor : 0;
+        });
       payload.measures.push(improvementData);
       i++;
     });
@@ -401,23 +483,23 @@ const analyze = async () => {
 
   for (const payload of payloadList) {
     const response = await fetch(url, {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, *cors, same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      mode: 'cors', // no-cors, *cors, same-origin
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'same-origin', // include, *same-origin, omit
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json'
       },
-      redirect: "follow", // manual, *follow, error
-      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-      body: JSON.stringify(payload),
+      redirect: 'follow', // manual, *follow, error
+      referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      body: JSON.stringify(payload)
     });
     session.updatePayload(payload);
     const data = await response.json();
     if (Object.prototype.hasOwnProperty.call(data, 'error')) {
       error.value = `<h2 class="mt-1 font-bold">We are sorry. Your request could not be processed.</h2><p class="text-sm"><em>Details:</em> ${data.error.arg0}<br />Please get in touch.</p>`;
     } else {
-      session.results.push({name: payload.name, data});
+      session.results.push({ name: payload.name, data });
     }
   }
   if (error.value) {
@@ -427,34 +509,35 @@ const analyze = async () => {
     router.push({ name: 'results' });
   }
   loading.value = false;
-}
+};
 const programChanged = (program: ProgramInterface, i: number, subsectorId: number) => {
-  program.improvements.forEach(improvement => {
+  program.improvements.forEach((improvement) => {
     improvement.id = 0;
     improvement.showParameterWarning = false;
   });
   if (subsectorId === 0) {
     program.subsectorName = '';
   } else {
-    const name = subsectors.value.filter(subsector => subsector.id === subsectorId)[0].name;
+    const name = subsectors.value.filter((subsector) => subsector.id === subsectorId)[0].name;
     program.subsectorName = name;
   }
   programs[i] = program;
   session.updatePrograms(programs);
   // If the sub sector changes, we need to reset parameters
   session.updateParameters({});
-  program.improvements.forEach(improvement => {
-    if (improvement.internalId! in session.parameters) delete session.parameters[improvement.internalId!];
+  program.improvements.forEach((improvement) => {
+    if (improvement.internalId! in session.parameters)
+      delete session.parameters[improvement.internalId!];
   });
-}
+};
 const unitChanged = (program: ProgramInterface, i: number, oldUnitId: number, unitId: number) => {
   program.unit = unitId;
   program.unitName = units[unitId].name;
   // Functions to convert all given energy savings in case of unit changes
   const unit = units[unitId];
   const oldUnit = units[oldUnitId];
-  program.improvements.forEach(improvement => {
-    Object.keys(improvement.values).forEach(key => {
+  program.improvements.forEach((improvement) => {
+    Object.keys(improvement.values).forEach((key) => {
       if (oldUnit.symbol === 'ktoe') {
         improvement.values[key] *= unit.factor;
       } else {
@@ -469,15 +552,16 @@ const unitChanged = (program: ProgramInterface, i: number, oldUnitId: number, un
   // If the sub sector changes, we need to reset parameters
   session.updateParameters({});
   // Show parameter warning if unit changes
-  program.improvements.forEach(improvement => {
-    if (improvement.internalId && session.parameters[improvement.internalId]) improvement.showParameterWarning = true;
+  program.improvements.forEach((improvement) => {
+    if (improvement.internalId && session.parameters[improvement.internalId])
+      improvement.showParameterWarning = true;
   });
-}
+};
 const startingYearChanged = (program: ProgramInterface, i: number, newYear: number) => {
   program.startingYear = newYear;
   // Remove all values before starting year
-  program.improvements.forEach(improvement => {
-    Object.keys(improvement.values).forEach(key => {
+  program.improvements.forEach((improvement) => {
+    Object.keys(improvement.values).forEach((key) => {
       if (parseInt(key) < newYear) {
         delete improvement.values[key];
       }
@@ -488,56 +572,73 @@ const startingYearChanged = (program: ProgramInterface, i: number, newYear: numb
   // If the starting year changes, we need to reset parameters
   session.updateParameters({});
   // Show parameter warning if starting year changes
-  program.improvements.forEach(improvement => {
-    if (improvement.internalId && session.parameters[improvement.internalId]) improvement.showParameterWarning = true;
+  program.improvements.forEach((improvement) => {
+    if (improvement.internalId && session.parameters[improvement.internalId])
+      improvement.showParameterWarning = true;
   });
-}
+};
 const improvementChanged = (program: ProgramInterface, i: number, improvementId: number) => {
-  const name = getSubsectorImprovements(program.subsector).filter(improvement => improvement.id === improvementId)[0].name;
-  program.improvements.filter(improvement => improvement.id === improvementId).forEach(improvement => {
-    improvement.name = name;
-    improvement.showParameterWarning = false;
-  });
+  const name = getSubsectorImprovements(program.subsector).filter(
+    (improvement) => improvement.id === improvementId
+  )[0].name;
+  program.improvements
+    .filter((improvement) => improvement.id === improvementId)
+    .forEach((improvement) => {
+      improvement.name = name;
+      improvement.showParameterWarning = false;
+    });
   programs[i] = program;
   session.updatePrograms(programs);
   // If the improvement changes, we need to reset parameters
   session.updateParameters({});
-}
-const percentageDistributionChanged = (percentage: number, program: ProgramInterface, i: number) => {
+};
+const percentageDistributionChanged = (
+  percentage: number,
+  program: ProgramInterface,
+  i: number
+) => {
   if (percentage < 0 || percentage > 100) return;
   // Set value for changed improvement
-  session.years.forEach(year => {
+  session.years.forEach((year) => {
     let amount = 0;
     if (session.mure) {
-      amount = program.mureTotal![year] * percentage / 100;
+      amount = (program.mureTotal![year] * percentage) / 100;
     } else {
-      amount = program.improvements[0]["values"][year] * 100 / program.improvements[0].percentage! * percentage / 100;
+      amount =
+        (((program.improvements[0]['values'][year] * 100) / program.improvements[0].percentage!) *
+          percentage) /
+        100;
     }
     program.improvements[i].values[year] = amount;
   });
-  program.improvements[i].percentage = percentage; 
-}
+  program.improvements[i].percentage = percentage;
+};
 
 const improvementValueChanged = (improvement: ImprovementInterface) => {
-  if (improvement.internalId && session.parameters[improvement.internalId]) improvement.showParameterWarning = true;
-}
+  if (improvement.internalId && session.parameters[improvement.internalId])
+    improvement.showParameterWarning = true;
+};
 
 const exportInput = () => {
-  const blob = new Blob([JSON.stringify({
-      region: session.region,
-      municipality: session.municipality,
-      inhabitants: session.inhabitants,
-      years: years.value,
-      programs: programs,
-      globalParameters: session.globalParameters,
-      parameters: session.parameters,
-      useRenovationRate: session.useRenovationRate,
-      subsectorMapping: session.subsectorMapping,
-      carrierMapping: session.carrierMapping,
-      monetisationFactorMapping: session.monetisationFactorMapping,
-      seedInfo: seedInfo.value,
-
-  })], { type: "text/json" });
+  const blob = new Blob(
+    [
+      JSON.stringify({
+        region: session.region,
+        municipality: session.municipality,
+        inhabitants: session.inhabitants,
+        years: years.value,
+        programs: programs,
+        globalParameters: session.globalParameters,
+        parameters: session.parameters,
+        useRenovationRate: session.useRenovationRate,
+        subsectorMapping: session.subsectorMapping,
+        carrierMapping: session.carrierMapping,
+        monetisationFactorMapping: session.monetisationFactorMapping,
+        seedInfo: seedInfo.value
+      })
+    ],
+    { type: 'text/json' }
+  );
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.style.display = 'none';
@@ -554,7 +655,7 @@ const importInput = async (e: Event) => {
   if (target.files === null) return;
   const file = target.files[0];
   target.value = '';
-  
+
   const data = JSON.parse(await file.text());
   session.region = data.region;
   session.municipality = data.municipality;
@@ -585,7 +686,7 @@ const importInput = async (e: Event) => {
 const start = () => {
   stage.value = stages.full;
   if (!session.mure) {
-    years.value = []; 
+    years.value = [];
     resetYears();
   }
 };
@@ -593,27 +694,72 @@ const start = () => {
 
 <template>
   <main>
-    <GlobalParametersOverlay v-if="showGlobalParametersOverlay" @close="showGlobalParametersOverlay = false;"></GlobalParametersOverlay>
-    <ParametersOverlay v-else-if="showParametersOverlay" :improvement="selectedImprovement" :years="session.years" @close="showParametersOverlay = false;"></ParametersOverlay>
-    <div v-else class="grid grid-cols-5 lg:grid-cols-10 gap-5 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]">
+    <GlobalParametersOverlay
+      v-if="showGlobalParametersOverlay"
+      @close="showGlobalParametersOverlay = false"
+    ></GlobalParametersOverlay>
+    <ParametersOverlay
+      v-else-if="showParametersOverlay"
+      :improvement="selectedImprovement"
+      :years="session.years"
+      @close="showParametersOverlay = false"
+    ></ParametersOverlay>
+    <div
+      v-else
+      class="grid grid-cols-5 lg:grid-cols-10 gap-5 max-w-screen-xl mx-auto pt-[15vh] pb-[20vh]"
+    >
       <div class="col col-span-4 pr-[7rem]" v-if="stage === stages.home">
-        <h1 class="text-4xl font-bold leading-snug dark:text-white">{{ session.mure ? "Assess the impacts of past energy savings or specific policies" : "Assess the impacts of any energy efficiency project" }}</h1>
+        <h1 class="text-4xl font-bold leading-snug dark:text-white">
+          {{
+            session.gapFilling
+              ? 'Scale successful policies to other countries'
+              : session.mure
+              ? 'Assess the impacts of past energy savings or specific policies'
+              : 'Assess the impacts of any energy efficiency project'
+          }}
+        </h1>
         <p class="mt-6 text-lg font-light dark:text-white">
-          <span v-if="session.mure">Browse through statistical data of past energy savings from the <a class="font-bold" target="_blank" href="https://www.indicators.odyssee-mure.eu/">ODYSSEE</a> database or predefined policies and measures with provided energy savings from the <a target="_blank" class="font-bold" href="https://www.measures.odyssee-mure.eu/">MURE</a> database and analyse their multiple impacts.</span>
-          <span v-else>Build your own suitable use case or scenario with your own values and receive a comprehensive multiple impact analysis.</span>
+          <span v-if="session.gapFilling"
+            >Select a successful policy measure from the
+            <a target="_blank" class="font-bold" href="https://www.measures.odyssee-mure.eu/"
+              >MURE</a
+            >
+            database and scale its energy savings to a different country. Analyse the multiple
+            impacts as if the measure were implemented there.</span
+          >
+          <span v-else-if="session.mure"
+            >Browse through statistical data of past energy savings from the
+            <a class="font-bold" target="_blank" href="https://www.indicators.odyssee-mure.eu/"
+              >ODYSSEE</a
+            >
+            database or predefined policies and measures with provided energy savings from the
+            <a target="_blank" class="font-bold" href="https://www.measures.odyssee-mure.eu/"
+              >MURE</a
+            >
+            database and analyse their multiple impacts.</span
+          >
+          <span v-else
+            >Build your own suitable use case or scenario with your own values and receive a
+            comprehensive multiple impact analysis.</span
+          >
         </p>
       </div>
       <div
         class="relative col"
         :class="{
-            'col-span-4': stage === stages.full,
-            'col-span-6': stage === stages.home,
-          }"
+          'col-span-4': stage === stages.full,
+          'col-span-6': stage === stages.home
+        }"
       >
-        <div v-if="seedInfo" class="absolute inset-[-1rem] z-10 bg-white/80 dark:bg-blue-950/80 transition-opacity min-h-full">
+        <div
+          v-if="seedInfo"
+          class="absolute inset-[-1rem] z-10 bg-white/80 dark:bg-blue-950/80 transition-opacity min-h-full"
+        >
           <div class="absolute w-full transform -translate-y-1/2 top-1/2">
             <div class="flex items-center justify-center min-h-full p-2 text-center sm:p-0">
-              <div class="relative overflow-hidden text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg">
+              <div
+                class="relative overflow-hidden text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg"
+              >
                 <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div
@@ -622,24 +768,50 @@ const start = () => {
                       <ExclamationTriangleIcon class="w-6 h-6 text-sky-600" aria-hidden="true" />
                     </div>
                     <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                      <h3 class="text-base font-semibold leading-6 text-gray-900">Important information</h3>
+                      <h3 class="text-base font-semibold leading-6 text-gray-900">
+                        Important information
+                      </h3>
                       <div class="mt-2">
-                        <p class="text-sm text-gray-500">Due to structural changes with the MICATool, linked to the move from the MICAT to the SEED MICAT project, unexpected bugs and results might occur. We are genuinely sorry for the inconvenience and are working hard on fixing these issues. In case you have any questions or remarks, please contact us at <a class="font-bold" href="mailto:frederic.berger@isi.fraunhofer.de">frederic.berger@isi.fraunhofer.de</a>.</p>
+                        <p class="text-sm text-gray-500">
+                          Due to structural changes with the MICATool, linked to the move from the
+                          MICAT to the SEED MICAT project, unexpected bugs and results might occur.
+                          We are genuinely sorry for the inconvenience and are working hard on
+                          fixing these issues. In case you have any questions or remarks, please
+                          contact us at
+                          <a class="font-bold" href="mailto:frederic.berger@isi.fraunhofer.de"
+                            >frederic.berger@isi.fraunhofer.de</a
+                          >.
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="px-4 py-3 bg-gray-50 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button type="button" class="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white bg-gray-600 border-0 rounded-md shadow-sm hover:bg-gray-500 sm:ml-3 sm:w-auto focus:border-0 focus:outline-none" @click="setSeedInfo(false)">Sure</button>
+                  <button
+                    type="button"
+                    class="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white bg-gray-600 border-0 rounded-md shadow-sm hover:bg-gray-500 sm:ml-3 sm:w-auto focus:border-0 focus:outline-none"
+                    @click="setSeedInfo(false)"
+                  >
+                    Sure
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <MureSelection v-if="session.mure" :subsectors="subsectors" :regions="regions"></MureSelection>
-        <div v-else class="relative px-8 py-8 mb-5 border border-gray-300 rounded-3xl dark:border-gray-400">
+        <MureSelection
+          v-if="session.mure"
+          :subsectors="subsectors"
+          :regions="regions"
+        ></MureSelection>
+        <div
+          v-else
+          class="relative px-8 py-8 mb-5 border border-gray-300 rounded-3xl dark:border-gray-400"
+        >
           <div class="absolute top-[-14px] left-0 w-full text-center">
-            <span class="inline-block px-4 italic font-bold bg-white dark:bg-blue-950 dark:text-white">
+            <span
+              class="inline-block px-4 italic font-bold bg-white dark:bg-blue-950 dark:text-white"
+            >
               <span v-if="stage === stages.home">Select your use case</span>
               <span v-else>Options</span>
             </span>
@@ -659,29 +831,57 @@ const start = () => {
                 class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
                 v-model="session.region"
               >
-                <option v-for="(region, i) in regions" v-bind:key="`region-${i}`" :value="region[0]">{{
-                    region[1]
-                  }}
+                <option
+                  v-for="(region, i) in regions"
+                  v-bind:key="`region-${i}`"
+                  :value="region[0]"
+                >
+                  {{ region[1] }}
                 </option>
               </select>
               <div v-if="session.region !== 0">
                 <div class="flex items-center mt-3 mb-2">
-                  <input v-model="session.municipality" id="municipality-1" type="radio" :value="false" name="municipality"
-                         class="w-4 h-4 bg-gray-100 border-gray-300 text-sky-600 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                  <label for="municipality-1" class="ml-2 text-xs font-medium text-gray-500 dark:text-gray-300">Whole
-                    country</label>
+                  <input
+                    v-model="session.municipality"
+                    id="municipality-1"
+                    type="radio"
+                    :value="false"
+                    name="municipality"
+                    class="w-4 h-4 bg-gray-100 border-gray-300 text-sky-600 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label
+                    for="municipality-1"
+                    class="ml-2 text-xs font-medium text-gray-500 dark:text-gray-300"
+                    >Whole country</label
+                  >
                 </div>
                 <div class="flex items-center">
-                  <input v-model="session.municipality" id="municipality-2" type="radio" :value="true" name="municipality"
-                         class="w-4 h-4 bg-gray-100 border-gray-300 text-sky-600 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                  <label for="municipality-2" class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300">Municipality
-                    with <VueNumberFormat
+                  <input
+                    v-model="session.municipality"
+                    id="municipality-2"
+                    type="radio"
+                    :value="true"
+                    name="municipality"
+                    class="w-4 h-4 bg-gray-100 border-gray-300 text-sky-600 focus:ring-sky-500 dark:focus:ring-sky-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label
+                    for="municipality-2"
+                    class="ml-2 text-xs font-medium text-gray-900 dark:text-gray-300"
+                    >Municipality with
+                    <VueNumberFormat
                       :value="session.inhabitants"
                       class="bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[80px]"
                       id="inhabitants"
-                      @change="(e: Event) => session.updateInhabitants(parseInt((e.target as HTMLInputElement).value.replace(/,/g, '')))"
-                    ></VueNumberFormat> <span v-if="stage === stages.home">inhabitants</span><span
-                      v-else>inhab.</span></label>
+                      @change="
+                        (e: Event) =>
+                          session.updateInhabitants(
+                            parseInt((e.target as HTMLInputElement).value.replace(/,/g, ''))
+                          )
+                      "
+                    ></VueNumberFormat>
+                    <span v-if="stage === stages.home">inhabitants</span
+                    ><span v-else>inhab.</span></label
+                  >
                 </div>
               </div>
             </div>
@@ -698,19 +898,27 @@ const start = () => {
             </div>
             <div class="col-span-3">
               <div class="flex flex-wrap">
-                <div v-for="year in years" v-bind:key="year.toString()" class="mb-6 mr-2 rounded-full whitespace-nowrap">
-                  <span class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600">
+                <div
+                  v-for="year in years"
+                  v-bind:key="year.toString()"
+                  class="mb-6 mr-2 rounded-full whitespace-nowrap"
+                >
+                  <span
+                    class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600"
+                  >
                     {{ year }}
                   </span>
-                  <span class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600">
+                  <span
+                    class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600"
+                  >
                     <TrashIcon
                       @click="removeYear(year)"
                       class="mt-[-3px] h-5 w-5 inline"
                       :class="{
-                          'text-red-200': years.length <= 2,
-                          'text-red-700': years.length > 2,
-                          'cursor-pointer': years.length > 2,
-                        }"
+                        'text-red-200': years.length <= 2,
+                        'text-red-700': years.length > 2,
+                        'cursor-pointer': years.length > 2
+                      }"
                     ></TrashIcon>
                   </span>
                 </div>
@@ -722,7 +930,9 @@ const start = () => {
                   v-model="newYearSelected"
                 >
                   <option
-                    v-for="newYear in newYears" v-bind:key="newYear.toString()" :value="newYear"
+                    v-for="newYear in newYears"
+                    v-bind:key="newYear.toString()"
+                    :value="newYear"
                     :selected="newYear === newYearSelected"
                   >
                     {{ newYear }}
@@ -739,9 +949,18 @@ const start = () => {
         </div>
         <button
           class="px-8 py-2 font-bold text-white uppercase bg-orange-500 rounded-full hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
-          @click="start();"
+          @click="start()"
           v-if="stage === stages.home"
-          :disabled="session.mure && (session.mureCategory === 0 || session.mureCountry === 0 || (!session.odyssee && session.mureMeasurement === 0))"
+          :disabled="
+            session.mure &&
+            (session.gapFilling
+              ? session.mureCategory === 0 ||
+                session.mureMeasurement === 0 ||
+                session.gapFillingCountry === 0
+              : session.mureCategory === 0 ||
+                session.mureCountry === 0 ||
+                (!session.odyssee && session.mureMeasurement === 0))
+          "
         >
           Start
         </button>
@@ -755,37 +974,81 @@ const start = () => {
         </a>
         <div class="relative mt-20 text-center" v-if="stage === stages.home">
           <div class="absolute top-[-1.8rem] w-full">
-            <p class="inline-block px-4 italic font-semibold bg-white dark:bg-blue-950 dark:text-white" :class="{
-              'max-w-[40%]': !session.mure,
-              'max-w-[30%]': session.mure,
-            }">
+            <p
+              class="inline-block px-4 italic font-semibold bg-white dark:bg-blue-950 dark:text-white"
+              :class="{
+                'max-w-[40%]': !session.mure,
+                'max-w-[30%]': session.mure
+              }"
+            >
               <span v-if="session.mure">Do you want to use your own inputs?</span>
               <span v-else>Do you want to select data from a predefined use case?</span>
             </p>
           </div>
           <hr class="mb-10 border-gray-200 dark:border-sky-900" />
-          
+
           <div class="flex items-center justify-center gap-5">
-            <div class="text-left dark:text-white" v-if="!session.mure && !session.odyssee">
-              <h3 class="mb-2 font-semibold">Assess the impacts of past energy savings or specific policies</h3>
-              <p class="text-xs">The statistical data of past energy savings originates from the <a class="font-bold" href="https://www.indicators.odyssee-mure.eu/energy-efficiency-database.html" target="_blank">ODYSSEE database</a>, whereas the predefined real policies with provided energy savings stem from the <a class="font-bold" href="https://www.measures.odyssee-mure.eu/energy-efficiency-policies-database.html" target="_blank">MURE database</a>. Both have been developed and maintained in the course of the long-running <a class="font-bold" href="https://www.odyssee-mure.eu/" target="_blank">ODYSSEE-MURE EU-Project</a></p>
+            <div
+              class="text-left dark:text-white"
+              v-if="!session.mure && !session.odyssee && !session.gapFilling"
+            >
+              <h3 class="mb-2 font-semibold">
+                Assess the impacts of past energy savings or specific policies
+              </h3>
+              <p class="text-xs">
+                The statistical data of past energy savings originates from the
+                <a
+                  class="font-bold"
+                  href="https://www.indicators.odyssee-mure.eu/energy-efficiency-database.html"
+                  target="_blank"
+                  >ODYSSEE database</a
+                >, whereas the predefined real policies with provided energy savings stem from the
+                <a
+                  class="font-bold"
+                  href="https://www.measures.odyssee-mure.eu/energy-efficiency-policies-database.html"
+                  target="_blank"
+                  >MURE database</a
+                >. Both have been developed and maintained in the course of the long-running
+                <a class="font-bold" href="https://www.odyssee-mure.eu/" target="_blank"
+                  >ODYSSEE-MURE EU-Project</a
+                >
+              </p>
             </div>
             <div>
               <button
                 v-if="!session.mure || session.odyssee"
                 class="px-6 py-1 mx-1 mb-4 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
-                @click="session.mure = !session.mure; session.odyssee = !session.odyssee;"
+                @click="
+                  session.mure = !session.mure;
+                  session.odyssee = !session.odyssee;
+                "
               >
-                {{ session.mure && session.odyssee ? 'Deselect' : 'Start with statistical data' }}<span class="block font-bold text-white">ODYSSEE</span>
+                {{ session.mure && session.odyssee ? 'Deselect' : 'Start with statistical data'
+                }}<span class="block font-bold text-white">ODYSSEE</span>
               </button>
               <button
-                v-if="!session.mure || !session.odyssee"
-                class="px-6 py-1 mx-1 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
-                @click="session.mure = !session.mure;"
+                v-if="!session.mure || (!session.odyssee && !session.gapFilling)"
+                class="px-6 py-1 mx-1 mb-4 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
+                @click="session.mure = !session.mure"
               >
-                {{ session.mure && !session.odyssee ? 'Deselect' : 'Start with a policy' }}<span class="block font-bold text-white">MURE</span>
+                {{
+                  session.mure && !session.odyssee && !session.gapFilling
+                    ? 'Deselect'
+                    : 'Start with a policy'
+                }}<span class="block font-bold text-white">MURE</span>
               </button>
-            </div>  
+              <button
+                v-if="!session.mure || session.gapFilling"
+                class="px-6 py-1 mx-1 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
+                @click="
+                  session.mure = !session.mure;
+                  session.gapFilling = !session.gapFilling;
+                "
+              >
+                {{ session.mure && session.gapFilling ? 'Deselect' : 'Scale a successful policy'
+                }}<span class="block font-bold text-white">GAP FILLING</span>
+              </button>
+            </div>
           </div>
         </div>
         <div class="mt-5" v-if="!session.resetted && stage !== stages.home">
@@ -805,30 +1068,38 @@ const start = () => {
           </button>
           <button
             class="py-2 pl-2 pr-3 mr-2 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
-            @click="fileUpload!.click();"
+            @click="fileUpload!.click()"
           >
             <ArrowUpTrayIcon class="h-5 w-5 mt-[-3px] inline text-white"></ArrowUpTrayIcon>
-            <input ref="fileUpload" type="file" accept="application/json" class="hidden" @change="importInput" />
+            <input
+              ref="fileUpload"
+              type="file"
+              accept="application/json"
+              class="hidden"
+              @change="importInput"
+            />
             Import
           </button>
           <button
             class="py-2 pl-2 pr-3 text-xs font-bold text-white uppercase bg-gray-500 rounded-full hover:bg-gray-600"
-            @click="showGlobalParametersOverlay = true;"
+            @click="showGlobalParametersOverlay = true"
           >
-            <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
+            <AdjustmentsVerticalIcon
+              class="h-5 w-5 mt-[-3px] inline text-white"
+            ></AdjustmentsVerticalIcon>
             Parameters
           </button>
-           <InformationCircleIcon
-              @click="openModal('global-parameters')"
-              class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
-            ></InformationCircleIcon>
+          <InformationCircleIcon
+            @click="openModal('global-parameters')"
+            class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+          ></InformationCircleIcon>
         </div>
       </div>
-      <div
-        class="relative col-span-6 col"
-        v-if="stage === stages.full"
-      >
-        <div v-if="seedInfo" class="absolute inset-[-1rem] z-10 bg-white/80 dark:bg-blue-950/80 transition-opacity min-h-full"></div>
+      <div class="relative col-span-6 col" v-if="stage === stages.full">
+        <div
+          v-if="seedInfo"
+          class="absolute inset-[-1rem] z-10 bg-white/80 dark:bg-blue-950/80 transition-opacity min-h-full"
+        ></div>
         <div
           v-if="error"
           class="flex p-4 text-red-800 border-t-4 border-red-300 mb-7 bg-red-50 dark:text-red-400 dark:bg-gray-800 dark:border-red-800 rounded-2xl"
@@ -842,11 +1113,23 @@ const start = () => {
             type="button"
             class="ml-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-gray-700"
             aria-label="Close"
-            @click="error = '';"
+            @click="error = ''"
           >
             <span class="sr-only">Dismiss</span>
-            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            <svg
+              class="w-3 h-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 14"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+              />
             </svg>
           </button>
         </div>
@@ -854,7 +1137,7 @@ const start = () => {
           v-if="session.results.length >= session.programs.length"
           class="flex p-4 text-green-800 border-t-4 border-green-300 cursor-pointer mb-7 bg-green-50 dark:text-green-400 dark:bg-gray-800 dark:border-green-800 rounded-2xl"
           role="alert"
-          @click="router.push({ name: 'results' });"
+          @click="router.push({ name: 'results' })"
         >
           <PresentationChartBarIcon class="w-8 h-8"></PresentationChartBarIcon>
           <div class="ml-3 font-medium">
@@ -868,7 +1151,7 @@ const start = () => {
             'border-gray-300': program.subsector,
             'dark:border-gray-400': program.subsector,
             'border-red-300': !program.subsector,
-            'dark:border-red-400': !program.subsector,
+            'dark:border-red-400': !program.subsector
           }"
           v-for="(program, i) in programs"
           v-bind:key="`program-${i}`"
@@ -882,7 +1165,7 @@ const start = () => {
                   class="bg-gray-50 border border-gray-300 text-sky-900 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 w-full px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 max-w-[185px]"
                   v-model="program.name"
                   maxlength="25"
-                >
+                />
                 <TrashIcon
                   v-if="programs.length >= 2"
                   @click="removeProgram(i)"
@@ -899,13 +1182,18 @@ const start = () => {
             <div
               class="inline-flex items-center mb-2 text-sm border cursor-pointer rounded-xl dark:text-gray-800 border-sky-600 dark:border-0"
             >
-              <span 
+              <span
                 class="py-2 pl-5 pr-4 text-center rounded-l-xl leading-1"
                 :class="{
                   'bg-sky-600 text-white': !program.type || program.type === 'energyEfficiency',
-                  'bg-white text-gray-400': program.type && program.type !== 'energyEfficiency',
+                  'bg-white text-gray-400': program.type && program.type !== 'energyEfficiency'
                 }"
-                @click="program.type = 'energyEfficiency'; program.subsector = 0; program.subsectorName = ''; programChanged(program, i, 0)"
+                @click="
+                  program.type = 'energyEfficiency';
+                  program.subsector = 0;
+                  program.subsectorName = '';
+                  programChanged(program, i, 0);
+                "
               >
                 Energy Efficiency
               </span>
@@ -913,9 +1201,15 @@ const start = () => {
                 class="py-2 pl-4 pr-5 text-center rounded-r-xl leading-1"
                 :class="{
                   'dark:bg-white text-gray-400': !program.type || program.type !== 'renewable',
-                  'bg-sky-600 text-white': program.type && program.type === 'renewable',
+                  'bg-sky-600 text-white': program.type && program.type === 'renewable'
                 }"
-                @click="program.type = 'renewable'; program.subsector = 0; program.subsectorName = ''; program.unit = 1; programChanged(program, i, 0)"
+                @click="
+                  program.type = 'renewable';
+                  program.subsector = 0;
+                  program.subsectorName = '';
+                  program.unit = 1;
+                  programChanged(program, i, 0);
+                "
               >
                 Renewables
               </span>
@@ -924,70 +1218,100 @@ const start = () => {
           <div class="grid items-center w-2/3 grid-cols-5">
             <div class="col-span-2 mt-2">
               <div>
-                <label :for="`subsector-${i}`" class="text-sm dark:text-white">{{ program.type === 'renewable' ? 'Technology' : 'Subsector' }}</label>
+                <label :for="`subsector-${i}`" class="text-sm dark:text-white">{{
+                  program.type === 'renewable' ? 'Technology' : 'Subsector'
+                }}</label>
                 <InformationCircleIcon
                   @click="openModal(program.type === 'renewable' ? 'technology' : 'subsector')"
                   class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
                 ></InformationCircleIcon>
               </div>
-            </div>  
+            </div>
             <div class="col-span-3 mt-2">
               <div class="relative inline-block text-left">
                 <div>
-                  <button 
-                    type="button" 
-                    class="inline-flex gap-2 block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2  appearance-none  focus:outline-none focus:ring-0 focus:border-gray-200 pr-2"
+                  <button
+                    type="button"
+                    class="inline-flex gap-2 block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 pr-2"
                     :class="{
                       'border-gray-200': program.subsector,
                       'dark:text-gray-200': program.subsector,
                       'dark:border-gray-200': program.subsector,
                       'border-red-400': !program.subsector,
                       'dark:text-red-400': !program.subsector,
-                      'dark:border-red-200': !program.subsector,
+                      'dark:border-red-200': !program.subsector
                     }"
-                    :id="`subsector-button-${i}`" 
-                    aria-expanded="false" 
+                    :id="`subsector-button-${i}`"
+                    aria-expanded="false"
                     aria-haspopup="true"
                     @click="program.showSubsectorMenu = !program.showSubsectorMenu"
                   >
-                    {{ program.subsectorName || (program.type === 'renewable' ? 'Select technology' : 'Select subsector') }}
-                    <svg class="w-5 h-5 -mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    {{
+                      program.subsectorName ||
+                      (program.type === 'renewable' ? 'Select technology' : 'Select subsector')
+                    }}
+                    <svg
+                      class="w-5 h-5 -mr-1 text-gray-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
                     </svg>
                   </button>
                 </div>
-                <div 
+                <div
                   class="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-[40vh] overflow-y-auto"
                   v-show="program.showSubsectorMenu"
                   role="menu"
-                  aria-orientation="vertical" 
-                  :aria-labelledby="`subsector-button-${i}`" 
+                  aria-orientation="vertical"
+                  :aria-labelledby="`subsector-button-${i}`"
                   tabindex="-1"
                 >
                   <div class="py-1" role="none">
-                    <a 
-                      href="#" 
-                      class="block px-4 py-2 text-sm font-bold text-gray-700" 
-                      role="menuitem" 
+                    <a
+                      href="#"
+                      class="block px-4 py-2 text-sm font-bold text-gray-700"
+                      role="menuitem"
                       tabindex="-1"
-                      :id="`subsector-${i}-${subsector.id}`" 
-                      v-for="subsector in subsectors.filter(s => s.name.toLowerCase().includes('average') && (program.type === 'renewable' ? s.renewable : !s.renewable))" 
+                      :id="`subsector-${i}-${subsector.id}`"
+                      v-for="subsector in subsectors.filter(
+                        (s) =>
+                          s.name.toLowerCase().includes('average') &&
+                          (program.type === 'renewable' ? s.renewable : !s.renewable)
+                      )"
                       v-bind:key="`subsector-${i}-${subsector.id}`"
-                      @click="program.subsector = (subsector.id as number); program.showSubsectorMenu = false; programChanged(program, i, program.subsector!)"
+                      @click="
+                        program.subsector = subsector.id as number;
+                        program.showSubsectorMenu = false;
+                        programChanged(program, i, program.subsector!);
+                      "
                     >
                       {{ subsector.name }}
                     </a>
                   </div>
                   <div class="py-1" role="none">
-                    <a 
-                      href="#" 
-                      class="block px-4 py-2 text-sm text-gray-700" 
-                      role="menuitem" 
+                    <a
+                      href="#"
+                      class="block px-4 py-2 text-sm text-gray-700"
+                      role="menuitem"
                       tabindex="-1"
-                      :id="`subsector-${i}-${subsector.id}`" 
-                      v-for="subsector in subsectors.filter(s => !s.name.toLowerCase().includes('average') && (program.type === 'renewable' ? s.renewable : !s.renewable))" 
+                      :id="`subsector-${i}-${subsector.id}`"
+                      v-for="subsector in subsectors.filter(
+                        (s) =>
+                          !s.name.toLowerCase().includes('average') &&
+                          (program.type === 'renewable' ? s.renewable : !s.renewable)
+                      )"
                       v-bind:key="`subsector-${i}-${subsector.id}`"
-                      @click="program.subsector = (subsector.id as number); program.showSubsectorMenu = false; programChanged(program, i, program.subsector!)"
+                      @click="
+                        program.subsector = subsector.id as number;
+                        program.showSubsectorMenu = false;
+                        programChanged(program, i, program.subsector!);
+                      "
                     >
                       {{ subsector.name }}
                     </a>
@@ -1006,16 +1330,32 @@ const start = () => {
               <select
                 :id="`program-${i}-unit`"
                 class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-                @change="(e) => unitChanged(program, i, program.unit!, parseInt((e.target as HTMLInputElement).value))"
+                @change="
+                  (e) =>
+                    unitChanged(
+                      program,
+                      i,
+                      program.unit!,
+                      parseInt((e.target as HTMLInputElement).value)
+                    )
+                "
               >
-                <option v-for="[key, value] in Object.entries(program.type === 'renewable' ? unitsRenewables : units)" :selected="program.unit === parseInt(key)" v-bind:key="`unit-${key}`" :value="key">{{
-                    value.name
-                  }}
+                <option
+                  v-for="[key, value] in Object.entries(
+                    program.type === 'renewable' ? unitsRenewables : units
+                  )"
+                  :selected="program.unit === parseInt(key)"
+                  v-bind:key="`unit-${key}`"
+                  :value="key"
+                >
+                  {{ value.name }}
                 </option>
               </select>
             </div>
             <div class="col-span-2 mt-3">
-              <label :for="`program-${i}-starting-year`" class="text-sm dark:text-white">Starting Year</label>
+              <label :for="`program-${i}-starting-year`" class="text-sm dark:text-white"
+                >Starting Year</label
+              >
               <InformationCircleIcon
                 @click="openModal('starting-year')"
                 class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
@@ -1025,12 +1365,19 @@ const start = () => {
               <select
                 :id="`program-${i}-starting-year`"
                 class="block py-2.5 px-0 w-full text-sm bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-                @change="(e) => startingYearChanged(program, i, parseInt((e.target as HTMLInputElement).value))"
+                @change="
+                  (e) =>
+                    startingYearChanged(program, i, parseInt((e.target as HTMLInputElement).value))
+                "
               >
                 <option :selected="!program.startingYear" key="year-none" value=""></option>
-                <option v-for="year in getNewYears(false)" :selected="program.startingYear === year" v-bind:key="`year-${year}`" :value="year">{{
-                    year
-                  }}
+                <option
+                  v-for="year in getNewYears(false)"
+                  :selected="program.startingYear === year"
+                  v-bind:key="`year-${year}`"
+                  :value="year"
+                >
+                  {{ year }}
                 </option>
               </select>
             </div>
@@ -1042,7 +1389,7 @@ const start = () => {
                 'border-gray-300': improvement.id,
                 'dark:border-gray-400': improvement.id,
                 'border-red-300': !improvement.id,
-                'dark:border-red-400': !improvement.id,
+                'dark:border-red-400': !improvement.id
               }"
               v-for="(improvement, improvementIndex) in program.improvements"
               v-bind:key="`improvement-${i}-${improvement.id}`"
@@ -1058,12 +1405,14 @@ const start = () => {
                       'dark:border-gray-200': improvement.id,
                       'border-red-400': !improvement.id,
                       'dark:text-red-400': !improvement.id,
-                      'dark:border-red-200': !improvement.id,
+                      'dark:border-red-200': !improvement.id
                     }"
                     v-model="improvement.id"
                     @change="improvementChanged(program, i, improvement.id!)"
                   >
-                    <option value="0" selected disabled>{{ program.type === 'renewable' ? 'Select type' : 'Select improvement' }}</option>
+                    <option value="0" selected disabled>
+                      {{ program.type === 'renewable' ? 'Select type' : 'Select improvement' }}
+                    </option>
                     <option
                       v-for="improvementSelection in getSubsectorImprovements(program.subsector)"
                       v-bind:key="`improvement-selection-${i}-${improvementSelection.id}`"
@@ -1074,28 +1423,50 @@ const start = () => {
                     </option>
                   </select>
                   <InformationCircleIcon
-                    @click="openModal(program.type === 'renewable' ? 'renewable-type' : 'improvement')"
+                    @click="
+                      openModal(program.type === 'renewable' ? 'renewable-type' : 'improvement')
+                    "
                     class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
                   ></InformationCircleIcon>
                 </div>
                 <div class="flex items-center">
                   <div>
-                    <div v-for="year in years.filter(year => year >= (program.startingYear || 0))" v-bind:key="year.toString()" class="mt-5 mb-5 rounded-full whitespace-nowrap">
-                      <span class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600">{{
-                          year
-                        }}</span>
-                      <span class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600">
+                    <div
+                      v-for="year in years.filter((year) => year >= (program.startingYear || 0))"
+                      v-bind:key="year.toString()"
+                      class="mt-5 mb-5 rounded-full whitespace-nowrap"
+                    >
+                      <span
+                        class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600"
+                        >{{ year }}</span
+                      >
+                      <span
+                        class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600"
+                      >
                         <VueNumberFormat
                           :value="improvement.values[year]"
                           :name="`improvement-value-${improvement.id}-${year}`"
                           class="bg-white border-0 text-gray-500 rounded-lg focus:ring-0 focus:border-0 px-1.5 py-0.5 inline max-w-[120px]"
                           placeholder="0"
                           :id="`improvement-value-${improvement.id}-${year}`"
-                          @change="(e: Event) => {improvement.values[year] = parseFloat((e.target as HTMLInputElement).value.replace(/,/g, '')); improvementValueChanged(improvement)}"
-                          :options="{precision: program.type === 'renewable' ? 3 : program.unit === 5 ? 6 : 0}"
+                          @change="
+                            (e: Event) => {
+                              improvement.values[year] = parseFloat(
+                                (e.target as HTMLInputElement).value.replace(/,/g, '')
+                              );
+                              improvementValueChanged(improvement);
+                            }
+                          "
+                          :options="{
+                            precision: program.type === 'renewable' ? 3 : program.unit === 5 ? 6 : 0
+                          }"
                         />
                       </span>
-                      <span class="p-2 text-xs leading-4 text-gray-400 dark:text-slate-500">{{ program.type === 'renewable' ? unitsRenewables[program.unit || 1].symbol : units[program.unit || 1].symbol }}</span>
+                      <span class="p-2 text-xs leading-4 text-gray-400 dark:text-slate-500">{{
+                        program.type === 'renewable'
+                          ? unitsRenewables[program.unit || 1].symbol
+                          : units[program.unit || 1].symbol
+                      }}</span>
                     </div>
                   </div>
                   <div>
@@ -1106,7 +1477,10 @@ const start = () => {
                   </div>
                 </div>
               </div>
-              <div class="px-6 py-3 text-sm text-center text-gray-400 dark:text-slate-300" v-if="program.improvements.length > 1">
+              <div
+                class="px-6 py-3 text-sm text-center text-gray-400 dark:text-slate-300"
+                v-if="program.improvements.length > 1"
+              >
                 <span>Percentage distribution</span>
                 <input
                   :value="improvement.percentage"
@@ -1114,30 +1488,60 @@ const start = () => {
                   class="bg-gray-50 border border-gray-300 text-sky-900 text-xs rounded-lg focus:ring-sky-500 focus:border-sky-500 px-1.5 py-0.5 inline dark:bg-sky-700 dark:border-sky-600 dark:placeholder-sky-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 mx-2"
                   min="0"
                   max="100"
-                  @change="(e: Event) => percentageDistributionChanged(parseInt((e.target as HTMLInputElement).value), program, improvementIndex)"
-                >
-                <span class="text-gray-400 dark:text-slate-500">%</span>         
+                  @change="
+                    (e: Event) =>
+                      percentageDistributionChanged(
+                        parseInt((e.target as HTMLInputElement).value),
+                        program,
+                        improvementIndex
+                      )
+                  "
+                />
+                <span class="text-gray-400 dark:text-slate-500">%</span>
               </div>
-              <div class="px-6 py-3 text-center bg-orange-200 border-t border-gray-200 dark:bg-sky-200">
+              <div
+                class="px-6 py-3 text-center bg-orange-200 border-t border-gray-200 dark:bg-sky-200"
+              >
                 <button
                   class="py-2 pl-3 pr-4 text-xs font-bold text-white uppercase rounded-full"
                   :class="{
-                    'cursor-not-allowed bg-gray-400 hover:bg-gray-400 dark:bg-gray-400 dark:hover:bg-gray-400': improvement.id === 0 || Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) === 0,
-                    'bg-orange-400 hover:bg-orange-500 dark:bg-sky-400 dark:hover:bg-sky-500': improvement.id !== 0 && Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) > 0,
+                    'cursor-not-allowed bg-gray-400 hover:bg-gray-400 dark:bg-gray-400 dark:hover:bg-gray-400':
+                      improvement.id === 0 ||
+                      Object.entries(improvement.values)
+                        .filter(([key, val]) => years.includes(parseInt(key)))
+                        .reduce((partialSum, [k, v]) => partialSum + v, 0) === 0,
+                    'bg-orange-400 hover:bg-orange-500 dark:bg-sky-400 dark:hover:bg-sky-500':
+                      improvement.id !== 0 &&
+                      Object.entries(improvement.values)
+                        .filter(([key, val]) => years.includes(parseInt(key)))
+                        .reduce((partialSum, [k, v]) => partialSum + v, 0) > 0
                   }"
                   @click="showParameters(improvement, i)"
-                  :disabled="improvement.id === 0 || Object.entries(improvement.values).filter(([key, val]) => years.includes(parseInt(key))).reduce((partialSum, [k, v]) => partialSum + v, 0) === 0"
+                  :disabled="
+                    improvement.id === 0 ||
+                    Object.entries(improvement.values)
+                      .filter(([key, val]) => years.includes(parseInt(key)))
+                      .reduce((partialSum, [k, v]) => partialSum + v, 0) === 0
+                  "
                 >
-                  <AdjustmentsVerticalIcon class="h-5 w-5 mt-[-3px] inline text-white"></AdjustmentsVerticalIcon>
+                  <AdjustmentsVerticalIcon
+                    class="h-5 w-5 mt-[-3px] inline text-white"
+                  ></AdjustmentsVerticalIcon>
                   Advanced
                 </button>
                 <InformationCircleIcon
-                    @click="openModal('parameters')"
-                    class="inline w-6 h-6 ml-2 text-orange-400 cursor-pointer dark:text-sky-400"
+                  @click="openModal('parameters')"
+                  class="inline w-6 h-6 ml-2 text-orange-400 cursor-pointer dark:text-sky-400"
                 ></InformationCircleIcon>
                 <div class="relative inline has-tooltip" v-if="improvement.showParameterWarning">
-                  <span class='p-2 top-full mt-1 left-[-75px] text-red-700 w-[200px] text-xs bg-gray-100 rounded shadow-lg tooltip'>The advanced parameters are based on your entries. The entries have changed. The parameters must be reset or checked accordingly.</span>
-                  <ExclamationTriangleIcon class="inline w-6 h-6 ml-2 text-red-400"></ExclamationTriangleIcon>
+                  <span
+                    class="p-2 top-full mt-1 left-[-75px] text-red-700 w-[200px] text-xs bg-gray-100 rounded shadow-lg tooltip"
+                    >The advanced parameters are based on your entries. The entries have changed.
+                    The parameters must be reset or checked accordingly.</span
+                  >
+                  <ExclamationTriangleIcon
+                    class="inline w-6 h-6 ml-2 text-red-400"
+                  ></ExclamationTriangleIcon>
                 </div>
               </div>
               <div
@@ -1169,10 +1573,8 @@ const start = () => {
             Add program
           </button>
         </div>
-        <div
-          class="sticky bottom-0 text-center"
-        >
-          <div class="flex justify-center p-4 mx-2" style="backdrop-filter: blur(2px);">
+        <div class="sticky bottom-0 text-center">
+          <div class="flex justify-center p-4 mx-2" style="backdrop-filter: blur(2px)">
             <button
               class="px-8 py-2 text-xl font-bold uppercase rounded-full bg-amber-300 hover:bg-amber-400"
               @click="analyze()"
@@ -1180,11 +1582,23 @@ const start = () => {
               :disabled="loading"
             >
               <div role="status" v-if="loading">
-                  <svg aria-hidden="true" class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-orange-400" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-                      <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-                  </svg>
-                  <span class="sr-only">Loading...</span>
+                <svg
+                  aria-hidden="true"
+                  class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-orange-400"
+                  viewBox="0 0 100 101"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                    fill="currentFill"
+                  />
+                </svg>
+                <span class="sr-only">Loading...</span>
               </div>
               <span v-else>Analyse</span>
             </button>
@@ -1192,7 +1606,10 @@ const start = () => {
               class="ml-3 text-xs font-semibold bg-transparent dark:text-gray-400"
               @click="reset()"
               :disabled="loading"
-            ><XCircleIcon class="h-5 w-5 mt-[-3px] inline dark:text-gray-400"></XCircleIcon> back to start</button>
+            >
+              <XCircleIcon class="h-5 w-5 mt-[-3px] inline dark:text-gray-400"></XCircleIcon> back
+              to start
+            </button>
           </div>
         </div>
       </div>
