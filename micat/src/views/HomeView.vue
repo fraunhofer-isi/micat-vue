@@ -821,10 +821,7 @@ const start = () => {
                           MICAT to the SEED MICAT project, unexpected bugs and results might occur.
                           We are genuinely sorry for the inconvenience and are working hard on
                           fixing these issues. In case you have any questions or remarks, please
-                          contact us at
-                          <a class="font-bold" href="mailto:frederic.berger@isi.fraunhofer.de"
-                            >frederic.berger@isi.fraunhofer.de</a
-                          >.
+                          contact us at frederic.berger@isi.fraunhofer.de.
                         </p>
                       </div>
                     </div>
@@ -1008,7 +1005,7 @@ const start = () => {
         >
           Start
         </button>
-
+        <a
           class="px-8 py-2 ml-3 font-bold uppercase border rounded-full border-sky-500 text-sky-500 hover:border-sky-600 hover:text-sky-600 hover:dark:border-sky-400 hover:dark:text-sky-400"
           href="https://doc.micatool.eu"
           target="_blank"
@@ -1041,13 +1038,13 @@ const start = () => {
               </h3>
               <p class="text-xs">
                 The statistical data of past energy savings originates from the
-
+                <a
                   class="font-bold"
                   href="https://www.indicators.odyssee-mure.eu/energy-efficiency-database.html"
                   target="_blank"
                   >ODYSSEE database</a
                 >, whereas the predefined real policies with provided energy savings stem from the
-
+                <a
                   class="font-bold"
                   href="https://www.measures.odyssee-mure.eu/energy-efficiency-policies-database.html"
                   target="_blank"
@@ -1318,7 +1315,7 @@ const start = () => {
                   tabindex="-1"
                 >
                   <div class="py-1" role="none">
-
+                    <a
                       href="#"
                       class="block px-4 py-2 text-sm font-bold text-gray-700"
                       role="menuitem"
@@ -1340,7 +1337,7 @@ const start = () => {
                     </a>
                   </div>
                   <div class="py-1" role="none">
-
+                    <a
                       href="#"
                       class="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
