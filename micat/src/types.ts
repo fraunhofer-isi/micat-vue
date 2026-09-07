@@ -191,6 +191,7 @@ export interface ISessionState {
     parameters: Parameters;
     useRenovationRate: boolean;
     seedInfo: boolean;
+    tourRequested: boolean;
 }
 export interface ISessionStateFunctions {
     updateStage: (stage: number) => void;

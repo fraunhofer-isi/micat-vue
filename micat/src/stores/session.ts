@@ -36,6 +36,7 @@ export const useSessionStore = defineStore({
       programs: JSON.parse(localStorage.getItem("programs") || JSON.stringify([structuredClone(defaultProgram)])),
       payload: { "measures": [], "parameters": {}, "name": "" },
       resetted: false,
+      tourRequested: false, // NEU
       results: [],
       globalParameters: JSON.parse(localStorage.getItem("globalParameters") || JSON.stringify({})),
       subsectorMapping: JSON.parse(localStorage.getItem("subsectorMapping") || JSON.stringify({})),

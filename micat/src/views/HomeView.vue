@@ -46,6 +46,7 @@ import { useSessionStore } from '@/stores/session';
 import GlobalParametersOverlay from '@/components/GlobalParametersOverlay.vue';
 import ParametersOverlay from '@/components/ParametersOverlay.vue';
 import MureSelection from '@/components/MureSelection.vue';
+import OnboardingTour, { type OnboardingStepInterface } from '@/components/OnboardingTour.vue'; // NEU
 
 const session = useSessionStore();
 
@@ -74,6 +75,35 @@ const improvementParameterMapping: { [key: number]: string } = {
   69: 'parameters',
   70: 'parameters'
 };
+
+// NEU: onboarding steps
+const homeOnboardingSteps: Array<OnboardingStepInterface> = [
+  {
+    title: 'What are multiple impacts?',
+    text: 'Beyond energy savings, efficiency measures bring further benefits: lower health costs, added economic value, reduced emissions. This tool quantifies and monetises all of them alongside a full cost-benefit analysis.'
+  },
+  {
+    title: 'Choose a region',
+    text: 'This sets the default values used in the calculation, such as energy prices and the energy mix.',
+    target: 'onboarding-region'
+  },
+  {
+    title: 'Set a time frame',
+    text: 'Pick the years for which you want to provide data. Values in between are interpolated linearly.',
+    target: 'onboarding-timeframe'
+  },
+  {
+    title: 'Describe your measure',
+    text: 'Assign your measure to a subsector and improvement type. Advanced parameters are optional and can be adjusted later.',
+    target: 'onboarding-program'
+  },
+  {
+    title: 'Run the analysis',
+    text: 'Calculates all indicators at once and opens the results view automatically.',
+    target: 'onboarding-analyze'
+  }
+];
+const showOnboarding = ref<boolean>(false); // NEU
 
 // Injections
 const { openModal } = inject<ModalInjectInterface>('modal') || defaultModalInject;
@@ -151,6 +181,16 @@ watch(
 watch(stage, (stage: number) => {
   session.updateStage(stage);
 });
+// NEU: reacts to the central "Take a tour" header button
+watch(
+  () => session.tourRequested,
+  (requested) => {
+    if (requested) {
+      showOnboarding.value = true;
+      session.tourRequested = false;
+    }
+  }
+);
 
 // Lifecycle
 onMounted(async () => {
@@ -689,6 +729,10 @@ const start = () => {
     years.value = [];
     resetYears();
   }
+  // NEU: show the tour the first time someone reaches the full form
+  if (!localStorage.getItem('onboardingSeen')) {
+    showOnboarding.value = true;
+  }
 };
 </script>
 
@@ -816,7 +860,7 @@ const start = () => {
               <span v-else>Options</span>
             </span>
           </div>
-          <div class="grid items-center grid-cols-5">
+          <div class="grid items-center grid-cols-5" id="onboarding-region">
             <!-- region -->
             <div class="col-span-2">
               <label for="region" class="text-sm dark:text-white">Region</label>
@@ -887,7 +931,7 @@ const start = () => {
             </div>
             <!-- end region -->
           </div>
-          <div class="grid items-center grid-cols-5 mt-10" v-if="stage !== stages.home">
+          <div class="grid items-center grid-cols-5 mt-10" v-if="stage !== stages.home" id="onboarding-timeframe">
             <!-- timeframe -->
             <div class="col-span-2">
               <label for="region" class="text-sm dark:text-white">Timeframe</label>
@@ -964,7 +1008,7 @@ const start = () => {
         >
           Start
         </button>
-        <a
+
           class="px-8 py-2 ml-3 font-bold uppercase border rounded-full border-sky-500 text-sky-500 hover:border-sky-600 hover:text-sky-600 hover:dark:border-sky-400 hover:dark:text-sky-400"
           href="https://doc.micatool.eu"
           target="_blank"
@@ -997,13 +1041,13 @@ const start = () => {
               </h3>
               <p class="text-xs">
                 The statistical data of past energy savings originates from the
-                <a
+
                   class="font-bold"
                   href="https://www.indicators.odyssee-mure.eu/energy-efficiency-database.html"
                   target="_blank"
                   >ODYSSEE database</a
                 >, whereas the predefined real policies with provided energy savings stem from the
-                <a
+
                   class="font-bold"
                   href="https://www.measures.odyssee-mure.eu/energy-efficiency-policies-database.html"
                   target="_blank"
@@ -1155,6 +1199,7 @@ const start = () => {
           }"
           v-for="(program, i) in programs"
           v-bind:key="`program-${i}`"
+          :id="i === 0 ? 'onboarding-program' : undefined"
         >
           <div class="absolute top-[-14px] left-0 w-full text-center">
             <span class="inline-block pl-4 pr-3 bg-white dark:bg-blue-950 dark:text-white">
@@ -1273,7 +1318,7 @@ const start = () => {
                   tabindex="-1"
                 >
                   <div class="py-1" role="none">
-                    <a
+
                       href="#"
                       class="block px-4 py-2 text-sm font-bold text-gray-700"
                       role="menuitem"
@@ -1295,7 +1340,7 @@ const start = () => {
                     </a>
                   </div>
                   <div class="py-1" role="none">
-                    <a
+
                       href="#"
                       class="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
@@ -1580,6 +1625,7 @@ const start = () => {
               @click="analyze()"
               ref="analyzeButton"
               :disabled="loading"
+              id="onboarding-analyze"
             >
               <div role="status" v-if="loading">
                 <svg
@@ -1614,5 +1660,11 @@ const start = () => {
         </div>
       </div>
     </div>
+    <OnboardingTour
+      v-if="showOnboarding"
+      :steps="homeOnboardingSteps"
+      storage-key="onboardingSeen"
+      @close="showOnboarding = false"
+    ></OnboardingTour>
   </main>
 </template>

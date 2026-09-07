@@ -9,7 +9,11 @@ import { ref, provide } from 'vue';
 import { RouterView } from 'vue-router';
 import NotificationBox from "@/components/NotificationBox.vue";
 import type { HelpTextInterface } from "@/types";
-import {InformationCircleIcon} from "@heroicons/vue/24/outline";
+import { InformationCircleIcon, MapIcon } from "@heroicons/vue/24/outline"; // NEU: MapIcon ergänzt
+import { useSessionStore } from "@/stores/session"; // NEU
+import { stages } from "@/defaults"; // NEU
+
+const session = useSessionStore(); // NEU
 
 // Variables
 const helpTexts: HelpTextInterface = {
@@ -492,7 +496,7 @@ const modalText = ref<String>('');
 const modalType = ref<String>('help');
 
 // Functions
-const openModal = (key: string) => {  
+const openModal = (key: string) => {
   modalTitle.value = helpTexts[key].title;
   modalText.value = helpTexts[key].text;
   modalType.value = helpTexts[key].type;
@@ -528,6 +532,14 @@ provide('modal', {
             >
               beta
               <InformationCircleIcon class="h-5 w-5 ml-1 inline mt-[-2px]"></InformationCircleIcon>
+            </button>
+            <button
+              v-if="session.stage !== stages.home"
+              class="flex items-center gap-1.5 px-3 py-1 ml-3 text-sm font-bold text-white uppercase rounded-full bg-orange-500 hover:bg-orange-600"
+              @click="session.tourRequested = true"
+            >
+              <MapIcon class="h-5 w-5"></MapIcon>
+              Take a tour
             </button>
           </div>
           <div class="w-full md:w-auto">
