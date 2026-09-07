@@ -46,7 +46,7 @@ import { useSessionStore } from '@/stores/session';
 import GlobalParametersOverlay from '@/components/GlobalParametersOverlay.vue';
 import ParametersOverlay from '@/components/ParametersOverlay.vue';
 import MureSelection from '@/components/MureSelection.vue';
-import OnboardingTour, { type OnboardingStepInterface } from '@/components/OnboardingTour.vue'; // NEU
+import OnboardingTour, { type OnboardingStepInterface } from '@/components/OnboardingTour.vue';
 
 const session = useSessionStore();
 
@@ -76,7 +76,7 @@ const improvementParameterMapping: { [key: number]: string } = {
   70: 'parameters'
 };
 
-// NEU: onboarding steps
+// Onboarding steps
 const homeOnboardingSteps: Array<OnboardingStepInterface> = [
   {
     title: 'What are multiple impacts?',
@@ -103,7 +103,7 @@ const homeOnboardingSteps: Array<OnboardingStepInterface> = [
     target: 'onboarding-analyze'
   }
 ];
-const showOnboarding = ref<boolean>(false); // NEU
+const showOnboarding = ref<boolean>(false);
 
 // Injections
 const { openModal } = inject<ModalInjectInterface>('modal') || defaultModalInject;
@@ -181,7 +181,7 @@ watch(
 watch(stage, (stage: number) => {
   session.updateStage(stage);
 });
-// NEU: reacts to the central "Take a tour" header button
+// Reacts to the central "Take a tour" header button
 watch(
   () => session.tourRequested,
   (requested) => {
@@ -729,7 +729,7 @@ const start = () => {
     years.value = [];
     resetYears();
   }
-  // NEU: show the tour the first time someone reaches the full form
+  // Show the tour the first time someone reaches the full form
   if (!localStorage.getItem('onboardingSeen')) {
     showOnboarding.value = true;
   }
