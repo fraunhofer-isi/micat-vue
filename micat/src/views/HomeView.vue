@@ -80,11 +80,11 @@ const improvementParameterMapping: { [key: number]: string } = {
 const homeOnboardingSteps: Array<OnboardingStepInterface> = [
   {
     title: 'What are multiple impacts?',
-    text: 'Beyond energy savings, efficiency measures bring further benefits: lower health costs, added economic value, reduced emissions. This tool quantifies and monetises all of them alongside a full cost-benefit analysis.'
+    text: 'Beyond energy savings, efficiency measures bring further benefits: better health, added economic value, reduced emissions. This tool quantifies and calculates all these indicators and carries out a comprehensive cost-benefit analysis, requiring only a minimal amount of data to be entered by the user (energy savings per improvement measure). The tool contains default values for all other data; however, these can be adjusted by the user at any time to improve the quality of the analysis.'
   },
   {
     title: 'Choose a region',
-    text: 'This sets the default values used in the calculation, such as energy prices and the energy mix.',
+    text: 'This sets the default values used in the calculation, such the energy mix.',
     target: 'onboarding-region'
   },
   {
@@ -94,7 +94,7 @@ const homeOnboardingSteps: Array<OnboardingStepInterface> = [
   },
   {
     title: 'Describe your measure',
-    text: 'Assign your measure to a subsector and improvement type. Advanced parameters are optional and can be adjusted later.',
+    text: 'Assign your measure to a subsector and improvement type and provide respective total annual energy savings. Advanced (per improvement action) and global parameters (affecting all improvement actions) are optional and can be adjusted later.',
     target: 'onboarding-program'
   },
   {
