@@ -158,6 +158,13 @@ const categories: CategoriesInterface = {
         yAxis: "Value in €"
       },
       {
+        subcategory: "Economic",
+        title: "Value of energy",
+        description: '<p class="mb-2">This indicator calculates the monetary value of avoided primary energy use from renewable energy measures. It accounts for wholesale energy prices, ETS prices, and variable non-fuel costs weighted by conversion efficiencies. For district heat technologies, heat-specific non-fuel costs and conversion efficiencies are used instead of electricity-specific ones.</p>',
+        identifier: "valueOfEnergy",
+        yAxis: "Value in €"
+      },
+      {
         subcategory: "Environmental",
         title: "Primary savings by energy carrier",
         description: '<p class="mb-2">This indicator describes the energy saved in terms of primary energy carriers with the proposed measures. The conversion processes necessary for the generation of electricity, heat, and hydrogen and synthetic fuels are taken into account. The default energy mix of these conversion processes comes from past data from Eurostat and projections from PRIMES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/PEC_FEC_savings.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-Energy-cost-savings.pdf">PDF</a>.</p>',
@@ -281,7 +288,7 @@ const categories: CategoriesInterface = {
   }
 };
 const measurementsForEnergyEfficiency = ["reductionInDisabilityAdjustedLifeYears", "reductionInDisabilityAdjustedLifeYearsMonetization", "avoidedExcessColdWeatherMortality", "avoidedExcessColdWeatherMortalityMonetization", "reductionOfAdditionalCapacitiesInGrid"];
-const measurementsForRenewables = ["materialDemand", "supplyRiskFactor", "netLandUseChange", "vreEnergySystemCosts"];
+const measurementsForRenewables = ["materialDemand", "supplyRiskFactor", "netLandUseChange", "vreEnergySystemCosts", "valueOfEnergy"];
 const cbaResults: Array<CbaResultInterface> = [
   {
     title: "Annuity",
