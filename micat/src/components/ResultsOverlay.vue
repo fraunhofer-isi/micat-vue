@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 <script setup lang="ts">
 import { ref, computed, inject, onMounted, watch, type Ref } from 'vue'; // NEU: onMounted, watch ergänzt
-import { computedAsync } from '@vueuse/core'
+import { computedAsync } from '@vueuse/core';
 import {
   UserGroupIcon,
   XCircleIcon,
@@ -16,10 +16,22 @@ import {
   CursorArrowRaysIcon,
   CheckIcon,
   InformationCircleIcon,
-  ArrowDownTrayIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/vue/24/outline';
 import { Bar } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale, type ChartDataset } from 'chart.js';
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  TimeScale,
+  type ChartDataset
+} from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import ChartDataLabels, { type Context } from 'chartjs-plugin-datalabels';
 import type {
@@ -28,21 +40,29 @@ import type {
   ResultInterface,
   ModalInjectInterface,
   CbaResultInterface,
-  CbaData,
-} from "@/types";
-import { defaultModalInject, chartColours, units } from "@/defaults";
-import AggregationChart from "@/components/AggregationChart.vue";
-import OnboardingTour, { type OnboardingStepInterface } from "@/components/OnboardingTour.vue"; // NEU
-import { formatter, labelFormatter, labelFormatterSmall, restructureParameters } from "@/helpers";
-import {
-  Parameters,
-  SavingsInterpolation,
-} from "@/cba.js";
-import { useSessionStore } from "@/stores/session";
-import router from "@/router";
+  CbaData
+} from '@/types';
+import { defaultModalInject, chartColours, units } from '@/defaults';
+import AggregationChart from '@/components/AggregationChart.vue';
+import OnboardingTour, { type OnboardingStepInterface } from '@/components/OnboardingTour.vue'; // NEU
+import { formatter, labelFormatter, labelFormatterSmall, restructureParameters } from '@/helpers';
+import { Parameters, SavingsInterpolation } from '@/cba.js';
+import { useSessionStore } from '@/stores/session';
+import router from '@/router';
 
 const session = useSessionStore();
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, TimeScale, ChartDataLabels);
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  TimeScale,
+  ChartDataLabels
+);
 
 const icons: any = {
   UserGroupIcon,
@@ -51,296 +71,346 @@ const icons: any = {
   PresentationChartBarIcon
 };
 const categories: CategoriesInterface = {
-  "quantification": {
-    icon: "UserGroupIcon",
-    title: "Quantification",
-    subtitle: "Physical values",
-    subcategories: ["Social", "Economic", "Environmental"],
+  quantification: {
+    icon: 'UserGroupIcon',
+    title: 'Quantification',
+    subtitle: 'Physical values',
+    subcategories: ['Social', 'Economic', 'Environmental'],
     measurements: [
       {
-        subcategory: "Social",
-        title: "Health effects linked to reduced air pollution",
-        description: '<p class="mb-2"> This indicator assesses the number of avoided premature death cases and hospitalisations thanks to energy efficiency measures or installed renewables and the resulting decline in air pollution levels. It is based on IIASA\'s GAINS model, taking air pollution reductions, national health data, and other factors into account. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_AP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
-        identifier: "reductionOfMortalityMorbidity",
-        yAxis: "Reduction in casualties"
+        subcategory: 'Social',
+        title: 'Health effects linked to reduced air pollution',
+        description:
+          '<p class="mb-2"> This indicator assesses the number of avoided premature death cases and hospitalisations thanks to energy efficiency measures or installed renewables and the resulting decline in air pollution levels. It is based on IIASA\'s GAINS model, taking air pollution reductions, national health data, and other factors into account. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_AP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
+        identifier: 'reductionOfMortalityMorbidity',
+        yAxis: 'Reduction in casualties'
       },
       {
-        subcategory: "Social",
-        title: "Avoided lost working days due to air pollution",
-        description: '<p class="mb-2"> This indicator assesses the number of prevented lost working days due to health benefits of energy efficiency measures or installed renewables and a resulting decline in air pollution levels. It is based on IIASA\'s GAINS model, taking air pollution reductions, national health data, and other factors into account. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/lost_work_days.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
-        identifier: "reductionOfLostWorkDays",
-        yAxis: "Avoided absences in days"
+        subcategory: 'Social',
+        title: 'Avoided lost working days due to air pollution',
+        description:
+          '<p class="mb-2"> This indicator assesses the number of prevented lost working days due to health benefits of energy efficiency measures or installed renewables and a resulting decline in air pollution levels. It is based on IIASA\'s GAINS model, taking air pollution reductions, national health data, and other factors into account. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/lost_work_days.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
+        identifier: 'reductionOfLostWorkDays',
+        yAxis: 'Avoided absences in days'
       },
       {
-        subcategory: "Social",
-        title: "Alleviation of energy poverty (M/2)",
-        description: '<p class="mb-2"> This indicator shows how energy efficiency improvement actions or PV installations in the residential sector can help lift people out of energy poverty according to the M/2 metric. M/2 defines households whose energy expenditure is below half the national median value as energy poor, assuming an inability to spend more due to financial constraints. To calculate the impact, disaggregated national energy poverty gap values (i.e., the differences between the average energy expenses of energy poor households grouped in deciles and the energy poverty threshold) are com-pared to the expected energy cost savings, taking lifetimes, subsidy rates, average rent of energy poor households, and other parameters into account. To account for the fact that low energy expenditure can also reflect a high level of energy efficiency in a dwelling, the gaps are calculated only for households in the lower five income deciles. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/energy_poverty.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Alleviation-of-energy-poverty.pdf">PDF</a>.</p>',
-        identifier: "alleviationOfEnergyPoverty2M",
-        yAxis: "People lifted out of energy poverty"
+        subcategory: 'Social',
+        title: 'Alleviation of energy poverty (M/2)',
+        description:
+          '<p class="mb-2"> This indicator shows how energy efficiency improvement actions or PV installations in the residential sector can help lift people out of energy poverty according to the M/2 metric. M/2 defines households whose energy expenditure is below half the national median value as energy poor, assuming an inability to spend more due to financial constraints. To calculate the impact, disaggregated national energy poverty gap values (i.e., the differences between the average energy expenses of energy poor households grouped in deciles and the energy poverty threshold) are com-pared to the expected energy cost savings, taking lifetimes, subsidy rates, average rent of energy poor households, and other parameters into account. To account for the fact that low energy expenditure can also reflect a high level of energy efficiency in a dwelling, the gaps are calculated only for households in the lower five income deciles. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/energy_poverty.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Alleviation-of-energy-poverty.pdf">PDF</a>.</p>',
+        identifier: 'alleviationOfEnergyPoverty2M',
+        yAxis: 'People lifted out of energy poverty'
       },
       {
-        subcategory: "Social",
-        title: "Alleviation of energy poverty (2M)",
-        description: '<p class="mb-2"> This indicator shows how energy efficiency improvement actions and PV installations in the residential sector can help lift people out of energy poverty according to the 2M metric. 2M defines households as energy poor, whose share of energy expenditure in in-come is more than twice the national median value, assuming a very bad build-ing quality requiring excessive heating. To calculate the impact, disaggregated national energy poverty gap values (i.e., the differences between the average energy expenses of energy poor households grouped in deciles and the needed amount to lower the share in income below the energy poverty threshold) are compared to the expected energy cost savings, taking lifetimes, subsidy rates, average rent of energy poor households, and other parameters into account. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/energy_poverty.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Alleviation-of-energy-poverty.pdf">PDF</a>.</p>',
-        identifier: "alleviationOfEnergyPovertyM2",
-        yAxis: "People lifted out of energy poverty"
+        subcategory: 'Social',
+        title: 'Alleviation of energy poverty (2M)',
+        description:
+          '<p class="mb-2"> This indicator shows how energy efficiency improvement actions and PV installations in the residential sector can help lift people out of energy poverty according to the 2M metric. 2M defines households as energy poor, whose share of energy expenditure in in-come is more than twice the national median value, assuming a very bad build-ing quality requiring excessive heating. To calculate the impact, disaggregated national energy poverty gap values (i.e., the differences between the average energy expenses of energy poor households grouped in deciles and the needed amount to lower the share in income below the energy poverty threshold) are compared to the expected energy cost savings, taking lifetimes, subsidy rates, average rent of energy poor households, and other parameters into account. </p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/energy_poverty.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Alleviation-of-energy-poverty.pdf">PDF</a>.</p>',
+        identifier: 'alleviationOfEnergyPovertyM2',
+        yAxis: 'People lifted out of energy poverty'
       },
       {
-        subcategory: "Social",
-        title: "Avoided asthma cases",
-        description: '<p class="mb-2">Inter alia, health impacts linked to improved indoor climate are assessed by looking at the reduction in asthma cases. To do so, assumptions regarding the share of renovations occurring in damp and mouldy buildings as well as the share of renovations constituting medium and deep renovations are made. As defaults, the projected rates in PRIMES and the current national prevalence of damp and mould buildings are being used. Finally, a national coefficient describing the number of disability-adjusted life years lost per damp or mould building has been calculated from past data as impact factor.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Avoided-burden-of-Asthma.pdf">PDF</a>.</p>',
-        identifier: "reductionInDisabilityAdjustedLifeYears",
-        yAxis: "Reduction in disability adjusted life years"
+        subcategory: 'Social',
+        title: 'Avoided asthma cases',
+        description:
+          '<p class="mb-2">Inter alia, health impacts linked to improved indoor climate are assessed by looking at the reduction in asthma cases. To do so, assumptions regarding the share of renovations occurring in damp and mouldy buildings as well as the share of renovations constituting medium and deep renovations are made. As defaults, the projected rates in PRIMES and the current national prevalence of damp and mould buildings are being used. Finally, a national coefficient describing the number of disability-adjusted life years lost per damp or mould building has been calculated from past data as impact factor.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Avoided-burden-of-Asthma.pdf">PDF</a>.</p>',
+        identifier: 'reductionInDisabilityAdjustedLifeYears',
+        yAxis: 'Reduction in disability adjusted life years'
       },
       {
-        subcategory: "Social",
-        title: "Reduction in excess cold weather mortality",
-        description: '<p class="mb-2">Energy efficiency improvements in the residential sector can tackle the issue of excess cold weather mortality, which occurs when indoor temperature is below adequate levels. This phenomenon is often linked to inferior building states and residents\' financial inability to heat their dwelling adequately. The calculation is inter alia based on the national prevalence of excess cold weather mortality, the measure\'s focus on the relevant energy poor target group, and the depth of the implemented renovations.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Reduced-or-avoided-excess-cold-weather-mortality-due-to-energy-efficiency-improvements-in-the-residential-building-sector.pdf">PDF</a>.</p>',
-        identifier: "avoidedExcessColdWeatherMortality",
-        yAxis: "Reduction in casualties"
+        subcategory: 'Social',
+        title: 'Reduction in excess cold weather mortality',
+        description:
+          '<p class="mb-2">Energy efficiency improvements in the residential sector can tackle the issue of excess cold weather mortality, which occurs when indoor temperature is below adequate levels. This phenomenon is often linked to inferior building states and residents\' financial inability to heat their dwelling adequately. The calculation is inter alia based on the national prevalence of excess cold weather mortality, the measure\'s focus on the relevant energy poor target group, and the depth of the implemented renovations.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Reduced-or-avoided-excess-cold-weather-mortality-due-to-energy-efficiency-improvements-in-the-residential-building-sector.pdf">PDF</a>.</p>',
+        identifier: 'avoidedExcessColdWeatherMortality',
+        yAxis: 'Reduction in casualties'
       },
       {
-        subcategory: "Economic",
-        title: "Impact on energy intensity",
-        description: '<p class="mb-2">Energy intensity describes the amount of energy necessary to generate a unit of gross domestic product (GDP) in an economy. This graph shows the effect energy efficiency has in reducing it. It is calculated by dividing gross available energy by GDP. The scenario with measures is compared to a scenario without measures populated with past data from Eurostat (ex-post) and projections from PRIMES (ex-ante).</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/energy_intensity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Energy-Intensity.pdf">PDF</a>.</p>',
-        identifier: "energyIntensity",
-        yAxis: "Change in ktoe / M€"
+        subcategory: 'Economic',
+        title: 'Impact on energy intensity',
+        description:
+          '<p class="mb-2">Energy intensity describes the amount of energy necessary to generate a unit of gross domestic product (GDP) in an economy. This graph shows the effect energy efficiency has in reducing it. It is calculated by dividing gross available energy by GDP. The scenario with measures is compared to a scenario without measures populated with past data from Eurostat (ex-post) and projections from PRIMES (ex-ante).</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/energy_intensity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Energy-Intensity.pdf">PDF</a>.</p>',
+        identifier: 'energyIntensity',
+        yAxis: 'Change in ktoe / M€'
       },
       {
-        subcategory: "Economic",
-        title: "Impact on import dependence",
-        description: '<p class="mb-2">This indicator displays the change in import dependence, the imported share of a resource, for the three main fossil fuels. The change is shown in percent points, comparing the measure to a baseline provided by Eurostat data (ex-post) and PRIMES projections (ex-ante). The underlying assumption is that energy savings and installed renewables would merely reduce energy imports rather than domestic production.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/import_dependence.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Import-dependency.pdf">PDF</a>.</p>',
-        identifier: "reductionOfImportDependency",
-        yAxis: "Reduction in %-points"
+        subcategory: 'Economic',
+        title: 'Impact on import dependence',
+        description:
+          '<p class="mb-2">This indicator displays the change in import dependence, the imported share of a resource, for the three main fossil fuels. The change is shown in percent points, comparing the measure to a baseline provided by Eurostat data (ex-post) and PRIMES projections (ex-ante). The underlying assumption is that energy savings and installed renewables would merely reduce energy imports rather than domestic production.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/import_dependence.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Import-dependency.pdf">PDF</a>.</p>',
+        identifier: 'reductionOfImportDependency',
+        yAxis: 'Reduction in %-points'
       },
       {
-        subcategory: "Economic",
-        title: "Impact on gross domestic product",
-        description: '<p class="mb-2">Energy efficiency measures and renewables deployment stimulate added value and increase the gross domestic product (GDP) in economies, which is shown in this indicator. In this case, merely added value linked to the additional investments are considered, whereas potential decreases in additional employments linked to reduced demand of fossil fuels are not taken into account. The calculation uses assumptions from the PRIMES model to adjust coefficients stemming from Eurostat\'s FIGARO input-output tables, which are then multiplied with investment costs. The result represents the added value generated by the assessed measures in a given year.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/GDP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-GDP.pdf">PDF</a>.</p>',
-        identifier: "impactOnGrossDomesticProduct",
-        yAxis: "Added value in €",
-        impactTiming: "oneTime"
+        subcategory: 'Economic',
+        title: 'Impact on gross domestic product',
+        description:
+          '<p class="mb-2">Energy efficiency measures and renewables deployment stimulate added value and increase the gross domestic product (GDP) in economies, which is shown in this indicator. In this case, merely added value linked to the additional investments are considered, whereas potential decreases in additional employments linked to reduced demand of fossil fuels are not taken into account. The calculation uses assumptions from the PRIMES model to adjust coefficients stemming from Eurostat\'s FIGARO input-output tables, which are then multiplied with investment costs. The result represents the added value generated by the assessed measures in a given year.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/GDP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-GDP.pdf">PDF</a>.</p>',
+        identifier: 'impactOnGrossDomesticProduct',
+        yAxis: 'Added value in €',
+        impactTiming: 'oneTime'
       },
       {
-        subcategory: "Economic",
-        title: "Additional employments",
-        description: '<p class="mb-2">With the exeption of purely behavioural measures, energy efficiency improvements and renewables deployment entail additional employments, which are shown in this indicator. In this case, merely additional employments linked to the additional investments are considered, whereas potential job losses linked to reduced demand of fossil fuels are not taken into account. The calculation uses assumptions from the PRIMES model to generate coefficients, which are then multiplied with investment costs. The result represents the additional years of full-time employments generated by the assessed measures in a given year.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/employment_effects.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Employment-effects.pdf">PDF</a>.</p>',
-        identifier: "additionalEmployment",
-        yAxis: "Additional full-time employment years"
+        subcategory: 'Economic',
+        title: 'Additional employments',
+        description:
+          '<p class="mb-2">With the exeption of purely behavioural measures, energy efficiency improvements and renewables deployment entail additional employments, which are shown in this indicator. In this case, merely additional employments linked to the additional investments are considered, whereas potential job losses linked to reduced demand of fossil fuels are not taken into account. The calculation uses assumptions from the PRIMES model to generate coefficients, which are then multiplied with investment costs. The result represents the additional years of full-time employments generated by the assessed measures in a given year.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/employment_effects.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Employment-effects.pdf">PDF</a>.</p>',
+        identifier: 'additionalEmployment',
+        yAxis: 'Additional full-time employment years'
       },
       {
-        subcategory: "Economic",
-        title: "Added asset value of buildings",
-        description: '<p class="mb-2">A variety of studies has found a positive impact of energy efficiency and PV installations on the real estate value of buildings. This indicator shows the additional value of commercial, office, and residential buildings. The calculation is based on the capitalisation rates for real estate investments in residential and tertiary buildings, which stem from surveys among actors in the property market.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/asset_value.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-the-asset-value-of-commercial-buildings.pdf">PDF</a>.</p>',
-        identifier: "addedAssetValueOfBuildings",
-        yAxis: "Value in €",
-        impactTiming: "oneTime"
+        subcategory: 'Economic',
+        title: 'Added asset value of buildings',
+        description:
+          '<p class="mb-2">A variety of studies has found a positive impact of energy efficiency and PV installations on the real estate value of buildings. This indicator shows the additional value of commercial, office, and residential buildings. The calculation is based on the capitalisation rates for real estate investments in residential and tertiary buildings, which stem from surveys among actors in the property market.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/asset_value.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-the-asset-value-of-commercial-buildings.pdf">PDF</a>.</p>',
+        identifier: 'addedAssetValueOfBuildings',
+        yAxis: 'Value in €',
+        impactTiming: 'oneTime'
       },
       {
-        subcategory: "Economic",
-        title: "Reduction of additionally needed generation capacity",
-        description: '<p class="mb-2">As a consequence of energy efficiency measures, fewer new supply-side capacities need to be installed. Assuming that new capacities would alternatively be renewable energies, this indicator assesses the avoided generation capacity. The utilisation factors are calculated from Eurostat\'s Complete Energy Balances (for ex-post) and PRIMES EU Reference Scenario 2020 (for ex-ante).</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/avoided_additional_capacity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Avoided-additional-energy-generation-capacity.pdf">PDF</a>.</p>',
-        identifier: "reductionOfAdditionalCapacitiesInGrid",
-        yAxis: "Reduction in MW"
+        subcategory: 'Economic',
+        title: 'Reduction of additionally needed generation capacity',
+        description:
+          '<p class="mb-2">As a consequence of energy efficiency measures, fewer new supply-side capacities need to be installed. Assuming that new capacities would alternatively be renewable energies, this indicator assesses the avoided generation capacity. The utilisation factors are calculated from Eurostat\'s Complete Energy Balances (for ex-post) and PRIMES EU Reference Scenario 2020 (for ex-ante).</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/avoided_additional_capacity.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Avoided-additional-energy-generation-capacity.pdf">PDF</a>.</p>',
+        identifier: 'reductionOfAdditionalCapacitiesInGrid',
+        yAxis: 'Reduction in MW'
       },
       {
-        subcategory: "Economic",
-        title: "Supply risk factor",
-        description: '<p class="mb-2">This indicator weights the material demand of critical raw materials (CRM) needed for renewable energy technologies by their EU supply risk, as assessed in the European Commission\'s Critical Raw Materials Report. The supply risk factor accounts for supply concentration, governance performance, import reliance, trade restrictions, and recycling and substitution rates. It is a relative indicator: rather than being interpreted as a standalone value, it is best used to compare use cases with similar additions of renewable energy capacity but different technology mixes, for example to assess whether a higher share of photovoltaics carries a higher supply risk than an equivalent capacity of wind.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/Material_demand_and_supply_risk.html#supply-risk-factor">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Environmental-impacts-critical-raw-materials-1.pdf">PDF</a>.</p>',
-        identifier: "supplyRiskFactor",
-        yAxis: "Factor"
+        subcategory: 'Economic',
+        title: 'Supply risk factor',
+        description:
+          '<p class="mb-2">This indicator weights the material demand of critical raw materials (CRM) needed for renewable energy technologies by their EU supply risk, as assessed in the European Commission\'s Critical Raw Materials Report. The supply risk factor accounts for supply concentration, governance performance, import reliance, trade restrictions, and recycling and substitution rates. It is a relative indicator: rather than being interpreted as a standalone value, it is best used to compare use cases with similar additions of renewable energy capacity but different technology mixes, for example to assess whether a higher share of photovoltaics carries a higher supply risk than an equivalent capacity of wind.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/Material_demand_and_supply_risk.html#supply-risk-factor">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Environmental-impacts-critical-raw-materials-1.pdf">PDF</a>.</p>',
+        identifier: 'supplyRiskFactor',
+        yAxis: 'Factor'
       },
       {
-        subcategory: "Economic",
-        title: "Total energy system costs of VRE",
-        description: '<p class="mb-2">This indicator estimates the broader energy system costs - balancing, profile, and grid costs - associated with integrating variable renewable energy (VRE), namely wind and solar, into the electricity system. These costs rise with the share of VRE in electricity generation and are based on median cost values from the scientific literature, mapped to the VRE penetration rate projected in the EU PRIMES Reference Scenario 2020. The indicator is only quantified for photovoltaics and wind, as non-variable renewables such as hydropower or geothermal do not cause additional system integration costs.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/energy_system_costs.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Economic-impacts-Impact-on-energy-system-costs-1.pdf">PDF</a>.</p>',
-        identifier: "vreEnergySystemCosts",
-        yAxis: "Value in €"
+        subcategory: 'Economic',
+        title: 'Total energy system costs of VRE',
+        description:
+          '<p class="mb-2">This indicator estimates the broader energy system costs - balancing, profile, and grid costs - associated with integrating variable renewable energy (VRE), namely wind and solar, into the electricity system. These costs rise with the share of VRE in electricity generation and are based on median cost values from the scientific literature, mapped to the VRE penetration rate projected in the EU PRIMES Reference Scenario 2020. The indicator is only quantified for photovoltaics and wind, as non-variable renewables such as hydropower or geothermal do not cause additional system integration costs.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/energy_system_costs.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Economic-impacts-Impact-on-energy-system-costs-1.pdf">PDF</a>.</p>',
+        identifier: 'vreEnergySystemCosts',
+        yAxis: 'Value in €'
       },
       {
-        subcategory: "Economic",
-        title: "Value of energy",
-        description: '<p class="mb-2">This indicator calculates the monetary value of avoided primary energy use from renewable energy measures. It accounts for wholesale energy prices, ETS prices, and variable non-fuel costs weighted by conversion efficiencies. For district heat technologies, heat-specific non-fuel costs and conversion efficiencies are used instead of electricity-specific ones.</p>',
-        identifier: "valueOfEnergy",
-        yAxis: "Value in €"
+        subcategory: 'Economic',
+        title: 'Value of energy',
+        description:
+          '<p class="mb-2">This indicator calculates the monetary value of avoided primary energy use from renewable energy measures. It accounts for wholesale energy prices, ETS prices, and variable non-fuel costs weighted by conversion efficiencies. For district heat technologies, heat-specific non-fuel costs and conversion efficiencies are used instead of electricity-specific ones.</p>',
+        identifier: 'valueOfEnergy',
+        yAxis: 'Value in €'
       },
       {
-        subcategory: "Environmental",
-        title: "Primary savings by energy carrier",
-        description: '<p class="mb-2">This indicator describes the energy saved in terms of primary energy carriers with the proposed measures. The conversion processes necessary for the generation of electricity, heat, and hydrogen and synthetic fuels are taken into account. The default energy mix of these conversion processes comes from past data from Eurostat and projections from PRIMES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/PEC_FEC_savings.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-Energy-cost-savings.pdf">PDF</a>.</p>',
-        identifier: "energySaving",
-        yAxis: "Value in ktoe"
+        subcategory: 'Environmental',
+        title: 'Primary savings by energy carrier',
+        description:
+          '<p class="mb-2">This indicator describes the energy saved in terms of primary energy carriers with the proposed measures. The conversion processes necessary for the generation of electricity, heat, and hydrogen and synthetic fuels are taken into account. The default energy mix of these conversion processes comes from past data from Eurostat and projections from PRIMES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/PEC_FEC_savings.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-Energy-cost-savings.pdf">PDF</a>.</p>',
+        identifier: 'energySaving',
+        yAxis: 'Value in ktoe'
       },
       {
-        subcategory: "Environmental",
-        title: "Reduction in air pollution",
-        description: '<p class="mb-2">This graph shows the reductions in air pollutants due to energy efficiency measures and installed renewables. The calculation uses coefficients originating from IIASA\'s GAINS model, taking into account the specific emissions of energy carriers in different sectors and subsectors.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/reduction_AP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-Reduction-in-air-pollution-emissions.pdf">PDF</a>.</p>',
-        identifier: "reductionOfAirPollution",
-        yAxis: "Reduction in kt"
+        subcategory: 'Environmental',
+        title: 'Reduction in air pollution',
+        description:
+          '<p class="mb-2">This graph shows the reductions in air pollutants due to energy efficiency measures and installed renewables. The calculation uses coefficients originating from IIASA\'s GAINS model, taking into account the specific emissions of energy carriers in different sectors and subsectors.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/reduction_AP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-Reduction-in-air-pollution-emissions.pdf">PDF</a>.</p>',
+        identifier: 'reductionOfAirPollution',
+        yAxis: 'Reduction in kt'
       },
       {
-        subcategory: "Environmental",
-        title: "Reduction in greenhouse gas emissions",
-        description: '<p class="mb-2">This indicator assesses the greenhouse gas emission reductions entailed by the examined measures. As one of the central drivers for energy efficiency efforts and renewables deployment, this indicator is central in related discussions, supporting the narrative of energy efficiency improvements and renewables helping to tackle climate change. Building on IIASA\'s GAINS model, this indicator merely takes carbon dioxide emissions into account, not considering other greenhouse gases such as methane or nitrous oxide. As such, the result can be considered a conservative approximation for overall greenhouse gas emissions.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/reduction_GHG.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-GHG-savings-savings-of-direct-carbon-emissions.pdf">PDF</a>.</p>',
-        identifier: "reductionOfGreenHouseGasEmission",
-        yAxis: "Reduction in ktCO2"
+        subcategory: 'Environmental',
+        title: 'Reduction in greenhouse gas emissions',
+        description:
+          '<p class="mb-2">This indicator assesses the greenhouse gas emission reductions entailed by the examined measures. As one of the central drivers for energy efficiency efforts and renewables deployment, this indicator is central in related discussions, supporting the narrative of energy efficiency improvements and renewables helping to tackle climate change. Building on IIASA\'s GAINS model, this indicator merely takes carbon dioxide emissions into account, not considering other greenhouse gases such as methane or nitrous oxide. As such, the result can be considered a conservative approximation for overall greenhouse gas emissions.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/reduction_GHG.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-GHG-savings-savings-of-direct-carbon-emissions.pdf">PDF</a>.</p>',
+        identifier: 'reductionOfGreenHouseGasEmission',
+        yAxis: 'Reduction in ktCO2'
       },
       {
-        subcategory: "Environmental",
-        title: "Impact on RES targets",
-        description: '<p class="mb-2">This indicator examines how energy efficiency and renewables deployment can help member states achieve their target share of energy originating from renewable energy sources (RES) stated in the Renewable Energy Directive (RED). This is also relevant for energy efficiency since by reducing the overall energy consumption, the share of renewable energy carriers is increased, assuming the energy savings affect non-renewable energy sources.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/impact_res_targets.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
-        identifier: "renewableEnergyDirectiveTargets",
-        yAxis: "Change in RES share in %-points"
+        subcategory: 'Environmental',
+        title: 'Impact on RES targets',
+        description:
+          '<p class="mb-2">This indicator examines how energy efficiency and renewables deployment can help member states achieve their target share of energy originating from renewable energy sources (RES) stated in the Renewable Energy Directive (RED). This is also relevant for energy efficiency since by reducing the overall energy consumption, the share of renewable energy carriers is increased, assuming the energy savings affect non-renewable energy sources.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/impact_res_targets.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
+        identifier: 'renewableEnergyDirectiveTargets',
+        yAxis: 'Change in RES share in %-points'
       },
       {
-        subcategory: "Environmental",
-        title: "Net land use change",
-        description: '<p class="mb-2">This indicator assesses the net land use effect of expanding renewable energy generation. It captures both the additional land required for new installations - direct land use such as turbine foundations or PV arrays, and indirect land use such as raw material extraction or component manufacturing - and the land use avoided through the displacement of conventional fossil and nuclear power generation. Land use intensities from the scientific literature are multiplied by the annual renewable energy generation and compared against the land use of the displaced conventional power plants.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/net_land_use_change.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Environmental-impacts-Impact-on-land-use-1.pdf">PDF</a>.</p>',
-        identifier: "netLandUseChange",
-        yAxis: "Absolute change"
+        subcategory: 'Environmental',
+        title: 'Net land use change',
+        description:
+          '<p class="mb-2">This indicator assesses the net land use effect of expanding renewable energy generation. It captures both the additional land required for new installations - direct land use such as turbine foundations or PV arrays, and indirect land use such as raw material extraction or component manufacturing - and the land use avoided through the displacement of conventional fossil and nuclear power generation. Land use intensities from the scientific literature are multiplied by the annual renewable energy generation and compared against the land use of the displaced conventional power plants.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/net_land_use_change.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Environmental-impacts-Impact-on-land-use-1.pdf">PDF</a>.</p>',
+        identifier: 'netLandUseChange',
+        yAxis: 'Absolute change'
       },
       {
-        subcategory: "Environmental",
-        title: "Material demand",
-        description: '<p class="mb-2">This indicator estimates the quantity of critical raw materials (CRM) required for a given expansion of renewable energy capacity, based on a review of the scientific literature on material intensities per MW of installed capacity across different renewable technologies. The selection of materials follows the EU\'s Critical Raw Materials list, focusing on materials whose supply may constrain renewable energy deployment, rather than structural materials such as steel or concrete.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/Material_demand_and_supply_risk.html#material-demand">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Environmental-impacts-critical-raw-materials-1.pdf">PDF</a>.</p>',
-        identifier: "materialDemand",
-        yAxis: "Value in kg"
-      }
-    ],
-  },
-  "monetization": {
-    icon: "CurrencyEuroIcon",
-    title: "Monetisation",
-    subtitle: "Monetary values",
-    subcategories: [],
-    measurements: [
-      {
-        title: "Reduction of energy costs",
-        description: '<p class="mb-2">This indicator describes the reduction in energy costs for end users to be expected from energy saving measures and renewables deployment. It is calculated from final energy savings, differentiating between energy carriers and sectors, taking lower taxes and rates for commerce and industry into account. However, it does not take the effects of assessed measures on prices per energy unit into account. In case the energy mix has not been specified in the measure specific parameters, it is calculated from Eurostat (ex-post) and PRIMES (ex-ante) data, accounting for the higher prevalence of certain energy carriers in specific improvement actions.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/energy_cost.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-Energy-cost-savings.pdf">PDF</a>.</p>',
-        identifier: "reductionOfEnergyCost",
-        yAxis: "Savings in €"
-      },
-      {
-        title: "Reduction of greenhouse gas emissions",
-        description: '<p class="mb-2">This graph displays the monetary benefits associated with reduced greenhouse gas emissions. The costs of greenhouse gas emissions can be monetised in several ways, inter alia with the costs of carbon in carbon certificate schemes such as the EU Emission Trading System (ETS), the cost of removal or the cost of avoidance for future generations. The MICATool uses societal costs of carbon as a calculation basis, which are calculated in line with common evaluation methodologies by the German Federal Environmental Agency.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/reduction_GHG.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-GHG-savings-savings-of-direct-carbon-emissions.pdf">PDF</a>.</p>',
-        identifier: "reductionOfGreenHouseGasEmissionMonetization",
-        yAxis: "Value in €"
-      },
-      {
-        title: "Health effects linked to reduced air pollution",
-        description: '<p class="mb-2">This graph shows the monetary impacts of air pollution by attributing cases of premature deaths with statistical costs. As basis for the monetisation, the World Health Organisation\'s figures for country-specific Value of Statistical Life (VSL) are used.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_AP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
-        identifier: "reductionOfMortalityMorbidityMonetization",
-        yAxis: "Value in €"
-      },
-      {
-        title: "Avoided asthma cases",
-        description: '<p class="mb-2">In order to monetise the impact of improved air quality on asthma cases, the value of a disability-adjusted life year (DALY), as provided by the WHO is used as factor.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Avoided-burden-of-Asthma.pdf">PDF</a>.</p>',
-        identifier: "reductionInDisabilityAdjustedLifeYearsMonetization",
-        yAxis: "Value in €"
-      },
-      {
-        title: "Avoided excess cold winter mortality",
-        description: '<p class="mb-2">The monetary impact of avoided excess cold winter mortality is evaluated with the use of statistical figures provided by the WHO regarding the value of statistical life (VSL).</p><p> The fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Reduced-or-avoided-excess-cold-weather-mortality-due-to-energy-efficiency-improvements-in-the-residential-building-sector.pdf">PDF</a>.</p>',
-        identifier: "avoidedExcessColdWeatherMortalityMonetization",
-        yAxis: "Value in €"
-      },
-      {
-        title: "Avoided lost working days due to air pollution",
-        description: '<p class="mb-2">This graph shows the avoided costs linked to lost working days. They can be monetised using the WHO coefficients for the national value of lost working days.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/lost_work_days.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
-        identifier: "reductionOfLostWorkDaysMonetization",
-        yAxis: "Value in €"
-      },
-      {
-        title: "Impact on RES targets",
-        description: '<p class="mb-2">The impact of energy efficiency and installed renewables on renewable energy source (RES) targets (specified in the EU Renewable Energy Directive (RED)) is assessed by calculating the costs of achieving the same objective through the acquisition of statistical transfers of RES. Thereby, underachieving Member States can statistically buy other Member States\' statistical overachievement towards their target. A monetisation factor has been calculated from past public statistical transfers of RES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/Impact_RES_targets.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
-        identifier: "impactOnResTargetsMonetization",
-        yAxis: "Value in €"
-      },
-      {
-        title: "Impact on gross domestic product",
-        description: '<p class="mb-2">Energy efficiency measures and renewables deployment stimulate added value and increase the gross domestic product (GDP) in economies, which is shown in this indicator. The calculation uses assumptions from the PRIMES model to adjust coefficients stemming from Eurostat\'s FIGARO input-output tables, which are then multiplied with investment costs. The result represents the added value generated by the assessed measures in a given year.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/GDP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-GDP.pdf">PDF</a>.</p>',
-        identifier: "impactOnGrossDomesticProduct",
-        yAxis: "Added value in M€",
-        impactTiming: "oneTime"
-      },
-      {
-        title: "Added asset value of buildings",
-        description: '<p class="mb-2">A variety of studies has found a positive impact of energy efficiency on the real estate value of buildings. This indicator shows the additional value of commercial, office, and residential buildings. The calculation is based on the capitalisation rates for real estate investments in residential and tertiary buildings, which stem from surveys among actors in the property market.</p><p><em><strong>Risk of double counting:</strong> Selecting this indicator and "Reduction in energy costs" constitutes double counting, as the increase in asset value captures buyers\' future energy cost savings.</em></p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/asset_value.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-the-asset-value-of-commercial-buildings.pdf">PDF</a>.</p>',
-        identifier: "addedAssetValueOfBuildings",
-        yAxis: "Value in €",
-        impactTiming: "oneTime"
+        subcategory: 'Environmental',
+        title: 'Material demand',
+        description:
+          '<p class="mb-2">This indicator estimates the quantity of critical raw materials (CRM) required for a given expansion of renewable energy capacity, based on a review of the scientific literature on material intensities per MW of installed capacity across different renewable technologies. The selection of materials follows the EU\'s Critical Raw Materials list, focusing on materials whose supply may constrain renewable energy deployment, rather than structural materials such as steel or concrete.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/Material_demand_and_supply_risk.html#material-demand">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/SEED-MICAT-Environmental-impacts-critical-raw-materials-1.pdf">PDF</a>.</p>',
+        identifier: 'materialDemand',
+        yAxis: 'Value in kg'
       }
     ]
   },
-  "aggregation": {
-    icon: "BanknotesIcon",
-    title: "Overview",
-    subtitle: "Overview of all monetary values",
+  monetization: {
+    icon: 'CurrencyEuroIcon',
+    title: 'Monetisation',
+    subtitle: 'Monetary values',
+    subcategories: [],
+    measurements: [
+      {
+        title: 'Reduction of energy costs',
+        description:
+          '<p class="mb-2">This indicator describes the reduction in energy costs for end users to be expected from energy saving measures and renewables deployment. It is calculated from final energy savings, differentiating between energy carriers and sectors, taking lower taxes and rates for commerce and industry into account. However, it does not take the effects of assessed measures on prices per energy unit into account. In case the energy mix has not been specified in the measure specific parameters, it is calculated from Eurostat (ex-post) and PRIMES (ex-ante) data, accounting for the higher prevalence of certain energy carriers in specific improvement actions.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/energy_cost.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-Energy-cost-savings.pdf">PDF</a>.</p>',
+        identifier: 'reductionOfEnergyCost',
+        yAxis: 'Savings in €'
+      },
+      {
+        title: 'Value of energy',
+        description:
+          '<p class="mb-2">This indicator calculates the monetary value of avoided primary energy use from renewable energy measures. It accounts for wholesale energy prices, ETS prices, and variable non-fuel costs weighted by conversion efficiencies. For district heat technologies, heat-specific non-fuel costs and conversion efficiencies are used instead of electricity-specific ones.</p>',
+        identifier: 'valueOfEnergy',
+        yAxis: 'Value in €'
+      },
+      {
+        title: 'Reduction of greenhouse gas emissions',
+        description:
+          '<p class="mb-2">This graph displays the monetary benefits associated with reduced greenhouse gas emissions. The costs of greenhouse gas emissions can be monetised in several ways, inter alia with the costs of carbon in carbon certificate schemes such as the EU Emission Trading System (ETS), the cost of removal or the cost of avoidance for future generations. The MICATool uses societal costs of carbon as a calculation basis, which are calculated in line with common evaluation methodologies by the German Federal Environmental Agency.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/reduction_GHG.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-GHG-savings-savings-of-direct-carbon-emissions.pdf">PDF</a>.</p>',
+        identifier: 'reductionOfGreenHouseGasEmissionMonetization',
+        yAxis: 'Value in €'
+      },
+      {
+        title: 'Health effects linked to reduced air pollution',
+        description:
+          '<p class="mb-2">This graph shows the monetary impacts of air pollution by attributing cases of premature deaths with statistical costs. As basis for the monetisation, the World Health Organisation\'s figures for country-specific Value of Statistical Life (VSL) are used.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_AP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
+        identifier: 'reductionOfMortalityMorbidityMonetization',
+        yAxis: 'Value in €'
+      },
+      {
+        title: 'Avoided asthma cases',
+        description:
+          '<p class="mb-2">In order to monetise the impact of improved air quality on asthma cases, the value of a disability-adjusted life year (DALY), as provided by the WHO is used as factor.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/health_IC.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Avoided-burden-of-Asthma.pdf">PDF</a>.</p>',
+        identifier: 'reductionInDisabilityAdjustedLifeYearsMonetization',
+        yAxis: 'Value in €'
+      },
+      {
+        title: 'Avoided excess cold winter mortality',
+        description:
+          '<p class="mb-2">The monetary impact of avoided excess cold winter mortality is evaluated with the use of statistical figures provided by the WHO regarding the value of statistical life (VSL).</p><p> The fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Reduced-or-avoided-excess-cold-weather-mortality-due-to-energy-efficiency-improvements-in-the-residential-building-sector.pdf">PDF</a>.</p>',
+        identifier: 'avoidedExcessColdWeatherMortalityMonetization',
+        yAxis: 'Value in €'
+      },
+      {
+        title: 'Avoided lost working days due to air pollution',
+        description:
+          '<p class="mb-2">This graph shows the avoided costs linked to lost working days. They can be monetised using the WHO coefficients for the national value of lost working days.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/social_indicators/lost_work_days.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Social-impact-Human-health-due-to-reduced-air-pollution.pdf">PDF</a>.</p>',
+        identifier: 'reductionOfLostWorkDaysMonetization',
+        yAxis: 'Value in €'
+      },
+      {
+        title: 'Impact on RES targets',
+        description:
+          '<p class="mb-2">The impact of energy efficiency and installed renewables on renewable energy source (RES) targets (specified in the EU Renewable Energy Directive (RED)) is assessed by calculating the costs of achieving the same objective through the acquisition of statistical transfers of RES. Thereby, underachieving Member States can statistically buy other Member States\' statistical overachievement towards their target. A monetisation factor has been calculated from past public statistical transfers of RES.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/Impact_RES_targets.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf">PDF</a>.</p>',
+        identifier: 'impactOnResTargetsMonetization',
+        yAxis: 'Value in €'
+      },
+      {
+        title: 'Impact on gross domestic product',
+        description:
+          '<p class="mb-2">Energy efficiency measures and renewables deployment stimulate added value and increase the gross domestic product (GDP) in economies, which is shown in this indicator. The calculation uses assumptions from the PRIMES model to adjust coefficients stemming from Eurostat\'s FIGARO input-output tables, which are then multiplied with investment costs. The result represents the added value generated by the assessed measures in a given year.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/GDP.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-GDP.pdf">PDF</a>.</p>',
+        identifier: 'impactOnGrossDomesticProduct',
+        yAxis: 'Added value in M€',
+        impactTiming: 'oneTime'
+      },
+      {
+        title: 'Added asset value of buildings',
+        description:
+          '<p class="mb-2">A variety of studies has found a positive impact of energy efficiency on the real estate value of buildings. This indicator shows the additional value of commercial, office, and residential buildings. The calculation is based on the capitalisation rates for real estate investments in residential and tertiary buildings, which stem from surveys among actors in the property market.</p><p><em><strong>Risk of double counting:</strong> Selecting this indicator and "Reduction in energy costs" constitutes double counting, as the increase in asset value captures buyers\' future energy cost savings.</em></p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/economic_indicators/asset_value.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Economic-impact-Impact-on-the-asset-value-of-commercial-buildings.pdf">PDF</a>.</p>',
+        identifier: 'addedAssetValueOfBuildings',
+        yAxis: 'Value in €',
+        impactTiming: 'oneTime'
+      }
+    ]
+  },
+  aggregation: {
+    icon: 'BanknotesIcon',
+    title: 'Overview',
+    subtitle: 'Overview of all monetary values',
     subcategories: [],
     measurements: []
   },
-  "cba": {
-    icon: "PresentationChartBarIcon",
-    title: "Cost-benefit analysis",
-    subtitle: "cost effectiveness",
+  cba: {
+    icon: 'PresentationChartBarIcon',
+    title: 'Cost-benefit analysis',
+    subtitle: 'cost effectiveness',
     subcategories: [],
     measurements: []
   }
 };
-const measurementsForEnergyEfficiency = ["reductionInDisabilityAdjustedLifeYears", "reductionInDisabilityAdjustedLifeYearsMonetization", "avoidedExcessColdWeatherMortality", "avoidedExcessColdWeatherMortalityMonetization", "reductionOfAdditionalCapacitiesInGrid"];
-const measurementsForRenewables = ["materialDemand", "supplyRiskFactor", "netLandUseChange", "vreEnergySystemCosts", "valueOfEnergy"];
+const measurementsForEnergyEfficiency = [
+  'reductionOfEnergyCost',
+  'reductionInDisabilityAdjustedLifeYears',
+  'reductionInDisabilityAdjustedLifeYearsMonetization',
+  'avoidedExcessColdWeatherMortality',
+  'avoidedExcessColdWeatherMortalityMonetization',
+  'reductionOfAdditionalCapacitiesInGrid'
+];
+const measurementsForRenewables = [
+  'materialDemand',
+  'supplyRiskFactor',
+  'netLandUseChange',
+  'vreEnergySystemCosts',
+  'valueOfEnergy'
+];
 const cbaResults: Array<CbaResultInterface> = [
   {
-    title: "Annuity",
-    slug: "weightedAnnuity",
+    title: 'Annuity',
+    slug: 'weightedAnnuity'
   },
   {
-    title: "Net present value",
-    slug: "netPresentValue",
+    title: 'Net present value',
+    slug: 'netPresentValue'
   },
   {
-    title: "Levelised costs of energy savings",
-    slug: "LCOE",
+    title: 'Levelised costs of energy savings',
+    slug: 'LCOE'
   },
   {
-    title: "Levelised costs of carbon dioxide",
-    slug: "LCOCO2",
+    title: 'Levelised costs of carbon dioxide',
+    slug: 'LCOCO2'
   },
   {
-    title: "Cost-benefit ratio",
-    slug: "CBR",
+    title: 'Cost-benefit ratio',
+    slug: 'CBR'
   },
   {
-    title: "Benefit-cost ratio",
-    slug: "BCR",
+    title: 'Benefit-cost ratio',
+    slug: 'BCR'
   }
 ];
 
 // NEU: onboarding steps
 const resultsOnboardingSteps: Array<OnboardingStepInterface> = [
   {
-    title: "Quantification",
-    text: "Physical values for every indicator, grouped into Social, Economic, and Environmental.",
-    target: "onboarding-category-quantification"
+    title: 'Quantification',
+    text: 'Physical values for every indicator, grouped into Social, Economic, and Environmental.',
+    target: 'onboarding-category-quantification'
   },
   {
-    title: "Monetisation",
-    text: "The same indicators, wherever they can be monetised, expressed consistently in euros.",
-    target: "onboarding-category-monetization"
+    title: 'Monetisation',
+    text: 'The same indicators, wherever they can be monetised, expressed consistently in euros.',
+    target: 'onboarding-category-monetization'
   },
   {
-    title: "Overview",
-    text: "Combines all monetised indicators into one chart, split into one-time and annually recurring impacts.",
-    target: "onboarding-category-aggregation"
+    title: 'Overview',
+    text: 'Combines all monetised indicators into one chart, split into one-time and annually recurring impacts.',
+    target: 'onboarding-category-aggregation'
   },
   {
-    title: "Cost-benefit analysis",
-    text: "Annuity, net present value, levelised costs, and cost-benefit ratios, with adjustable sensitivities.",
-    target: "onboarding-category-cba"
+    title: 'Cost-benefit analysis',
+    text: 'Annuity, net present value, levelised costs, and cost-benefit ratios, with adjustable sensitivities.',
+    target: 'onboarding-category-cba'
   },
   {
-    title: "Need more detail?",
-    text: "Almost every field has an info icon with an explanation and a link to the full documentation and factsheet for that indicator."
+    title: 'Need more detail?',
+    text: 'Almost every field has an info icon with an explanation and a link to the full documentation and factsheet for that indicator.'
   }
 ];
 const showResultsOnboarding = ref<boolean>(false);
@@ -349,7 +419,18 @@ const showResultsOnboarding = ref<boolean>(false);
 const activeCategory = ref<string>(Object.keys(categories)[0]);
 const activeSubcategory = ref<string>(Object.values(categories)[0].subcategories[0]);
 const activeMeasurement = ref<MeasurementInterface>(Object.values(categories)[0].measurements[0]);
-const activeIndicators = ref<Array<string>>(categories.monetization.measurements.filter(m => ['addedAssetValueOfBuildings', 'impactOnGrossDomesticProduct'].indexOf(m.identifier) === -1).map(measurement => measurement.identifier));
+const activeIndicators = ref<Array<string>>(
+  categories.monetization.measurements
+    .filter((m) => {
+      if (['addedAssetValueOfBuildings', 'impactOnGrossDomesticProduct'].indexOf(m.identifier) > -1)
+        return false;
+      const isRenewable = session.programs[0]?.type === 'renewable';
+      if (!isRenewable && measurementsForRenewables.indexOf(m.identifier) > -1) return false;
+      if (isRenewable && measurementsForEnergyEfficiency.indexOf(m.identifier) > -1) return false;
+      return true;
+    })
+    .map((measurement) => measurement.identifier)
+);
 const indicatorInfo = ref<string>('');
 const indicatorInfoTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null);
 const energyPriceSensitivity = ref<number>(100);
@@ -374,18 +455,29 @@ watch(
 
 // Computed
 const data = computed<ResultInterface[]>(() => {
-  return activeMeasurement.value ? JSON.parse(JSON.stringify(session.results.map(result => result.data[activeMeasurement.value.identifier]))) : [];
+  return activeMeasurement.value
+    ? JSON.parse(
+        JSON.stringify(
+          session.results.map((result) => result.data[activeMeasurement.value.identifier])
+        )
+      )
+    : [];
 });
-const hasMultipleMeasures = computed(() => data.value.length > 1 || data.value[0].idColumnNames.indexOf('id_measure') > -1);
+const hasMultipleMeasures = computed(
+  () => data.value.length > 1 || data.value[0].idColumnNames.indexOf('id_measure') > -1
+);
 const chartLabels = computed(() => {
   // Get labels
   const labels: Array<string> = [];
   if (activeMeasurement.value) {
-    const identifiers = data.value[0].idColumnNames.filter(identifier => identifier !== 'id_measure');
+    const identifiers = data.value[0].idColumnNames.filter(
+      (identifier) => identifier !== 'id_measure'
+    );
     if (identifiers.length > 0) {
-      data.value[0].rows.forEach(row => {
+      data.value[0].rows.forEach((row) => {
         if (identifiers.length === 1 && identifiers[0] === 'label') labels.push(row[0]);
-        else if (!hasMultipleMeasures.value || row[0] === 1) labels.push(row[hasMultipleMeasures.value ? 1: 0]);
+        else if (!hasMultipleMeasures.value || row[0] === 1)
+          labels.push(row[hasMultipleMeasures.value ? 1 : 0]);
       });
     }
     if (hasMultipleMeasures.value && labels.length === 0) labels.push('id_measure');
@@ -401,8 +493,10 @@ const chartOptions = computed(() => {
         display: false
       },
       legend: {
-        display: data.value.length > 1 || chartLabels.value.filter(label => label !== 'id_measure').length > 0,
-        position: 'bottom',
+        display:
+          data.value.length > 1 ||
+          chartLabels.value.filter((label) => label !== 'id_measure').length > 0,
+        position: 'bottom'
       },
       datalabels: {
         display: (context: Context) => {
@@ -415,10 +509,12 @@ const chartOptions = computed(() => {
           if (datasetsPerProgram > 1) {
             const datasetIndex = context.datasetIndex;
             const programIndex = datasetIndex % data.value.length;
-            total = context.chart.data.datasets.filter((_, index) => index % data.value.length === programIndex).reduce((sum, dataset) => {
-              const dataValue = dataset.data[index] as number;
-              return sum + dataValue;
-            }, 0);
+            total = context.chart.data.datasets
+              .filter((_, index) => index % data.value.length === programIndex)
+              .reduce((sum, dataset) => {
+                const dataValue = dataset.data[index] as number;
+                return sum + dataValue;
+              }, 0);
           }
           if (total === 0) return '';
           return total < 1 ? labelFormatterSmall.format(total) : labelFormatter.format(total);
@@ -432,24 +528,27 @@ const chartOptions = computed(() => {
           return typeof value === 'number' && value >= 0 ? 'end' : 'start';
         },
         font: {
-          weight: 'normal',
-        },
+          weight: 'normal'
+        }
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
+          label: function (context: any) {
             let label = context.dataset.label || '';
 
             if (label) {
-                label += ': ';
+              label += ': ';
             }
             if (context.parsed.y !== null) {
-              label += context.parsed.y < 1 && context.parsed.y >= 0 ? labelFormatterSmall.format(context.parsed.y) : labelFormatter.format(context.parsed.y);
+              label +=
+                context.parsed.y < 1 && context.parsed.y >= 0
+                  ? labelFormatterSmall.format(context.parsed.y)
+                  : labelFormatter.format(context.parsed.y);
             }
             return label;
-          },
-        },
-      },
+          }
+        }
+      }
     },
     scales: {
       x: {
@@ -457,22 +556,23 @@ const chartOptions = computed(() => {
         title: {
           display: false,
           text: 'Years'
-        },
+        }
       },
       y: {
         stacked: true,
         grace: '10%',
         ticks: {
-          callback: (label: number | string) => typeof label === "number" ? formatter.format(label) : label,
+          callback: (label: number | string) =>
+            typeof label === 'number' ? formatter.format(label) : label
         },
         title: {
           display: true,
-          text: activeMeasurement.value ? activeMeasurement.value.yAxis : ""
+          text: activeMeasurement.value ? activeMeasurement.value.yAxis : ''
         }
       }
     }
   };
-})
+});
 const chartData = computed(() => {
   const datasets: ChartDataset[] = [];
   chartLabels.value.forEach((label, i) => {
@@ -480,20 +580,30 @@ const chartData = computed(() => {
     const color = chartColours[i];
     data.value.forEach((program, iP) => {
       const dataset = {
-        label: label === 'id_measure' ? session.programs[iP].name : data.value.length > 1 ? `${label} (${session.programs[iP].name})` : label,
+        label:
+          label === 'id_measure'
+            ? session.programs[iP].name
+            : data.value.length > 1
+            ? `${label} (${session.programs[iP].name})`
+            : label,
         data: new Array(program.yearColumnNames.length).fill(0),
-        borderColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
-        backgroundColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${color[2] + iP * factor})`,
-        stack: `stack-${iP}`,
+        borderColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${
+          color[2] + iP * factor
+        })`,
+        backgroundColor: `rgb(${color[0] + iP * factor}, ${color[1] + iP * factor}, ${
+          color[2] + iP * factor
+        })`,
+        stack: `stack-${iP}`
       };
-      program.rows.forEach(row => {
+      program.rows.forEach((row) => {
         if (isNaN(row[0]) && session.programs.length > 1) row.unshift(0); // Somehow the index is missing
         if (row[hasMultipleMeasures.value ? 1 : 0] === label || label === 'id_measure') {
           const values = structuredClone(row);
           values.splice(0, hasMultipleMeasures.value && label !== 'id_measure' ? 2 : 1);
           values.forEach((measure, iM) => {
             // Sum up measurements and check if it's a percentage value
-            dataset.data[iM] += activeMeasurement.value.yAxis.indexOf('%') > -1 ? measure * 100 : measure;
+            dataset.data[iM] +=
+              activeMeasurement.value.yAxis.indexOf('%') > -1 ? measure * 100 : measure;
           });
         }
       });
@@ -518,7 +628,7 @@ const chartData = computed(() => {
     });
   });
   return {
-    labels: session.years.map(year => year.toString()),
+    labels: session.years.map((year) => year.toString()),
     datasets: datasets
   };
 });
@@ -592,7 +702,11 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
      * @param {number[]} newSavings - array of NΔE_{m,y} values (new annual savings per year).
      * @returns {number[]} scaledIndicators - ΔMI_{m,y} per year.
      */
-    function computeScaledIndicators(MI_base: number, deltaE_base: number, newSavings: number): number {
+    function computeScaledIndicators(
+      MI_base: number,
+      deltaE_base: number,
+      newSavings: number
+    ): number {
       if (deltaE_base === 0 || MI_base === 0 || newSavings === 0) {
         return 0;
       }
@@ -610,11 +724,8 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
      * @param LT - Measure lifetime in years
      * @returns Array of discounted annual values
      */
-    function discountedAnnualValues(
-      values: number[],
-      CRF: number
-    ): number[] {
-      return values.map(I => I * CRF);
+    function discountedAnnualValues(values: number[], CRF: number): number[] {
+      return values.map((I) => I * CRF);
     }
 
     /**
@@ -672,17 +783,17 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
     function computeLevelisedCosts(annuity: number, annualSavings: number[]): number {
       const years = annualSavings.length;
       const totalSavings = annualSavings.reduce((a, b) => a + b, 0);
-      return annuity * years / totalSavings;
+      return (annuity * years) / totalSavings;
     }
 
     /** Compute per-year CBR according to weighted formula */
     function computePerYearCBR(
-      discountedInvestments: number[],       // dI_{m,i}, length = number of years
-      discountedGDP: number[],               // dGDP_{m,i}, length = number of years
-      totalIndicators: number[],             // Σk MI_{m,i,k}, length = number of years
+      discountedInvestments: number[], // dI_{m,i}, length = number of years
+      discountedGDP: number[], // dGDP_{m,i}, length = number of years
+      totalIndicators: number[], // Σk MI_{m,i,k}, length = number of years
       newEnergySavings: Record<number, number>, // NΔE_{m,y} by year
-      years: number[],                       // Array of year numbers, e.g., [2025, 2026, ...]
-      startingYear: number                   // First year in the series
+      years: number[], // Array of year numbers, e.g., [2025, 2026, ...]
+      startingYear: number // First year in the series
     ): number[] {
       const nYears = years.length;
       const perYearCBR: number[] = new Array(nYears).fill(0);
@@ -707,7 +818,6 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       return fullCBR;
     }
 
-
     /** CALCULATION */
 
     const data = [];
@@ -728,14 +838,14 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       const years = results.data['subsidyRate'].yearColumnNames;
       const fullYears = results.data['totalAnnualEnergySavings'].yearColumnNames;
       const startingYear = parseInt(fullYears[0]);
-      const DR = discountRate.value / 100
+      const DR = discountRate.value / 100;
       const CRFFactor = Math.pow(1 + DR, LTm);
       const CRF = (DR * CRFFactor) / (CRFFactor - 1);
 
       // Map newEnergySavings, deltaE and newInvestments to years
-      const newEnergySavingsByYear: {[year: string]: number} = {};
-      const newInvestmentsByYear: {[year: string]: number} = {};
-      const deltaEByYear: {[year: string]: number} = {};
+      const newEnergySavingsByYear: { [year: string]: number } = {};
+      const newInvestmentsByYear: { [year: string]: number } = {};
+      const deltaEByYear: { [year: string]: number } = {};
       fullYears.forEach((year, i) => {
         newEnergySavingsByYear[year] = newEnergySavings[i];
         newInvestmentsByYear[year] = newInvestments[i];
@@ -743,34 +853,55 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       });
 
       // Sum up all indicators ΔMI_{m,y}
-      const totalIndicatorsByYear: {[year: string]: number} = {};
-      const perIndicatorByYear: {[identifier: string]: {[year: string]: number}} = {};
-      const indicators = categories.monetization.measurements.filter(measurement => activeIndicators.value.indexOf(measurement.identifier) > -1);
+      const totalIndicatorsByYear: { [year: string]: number } = {};
+      const perIndicatorByYear: { [identifier: string]: { [year: string]: number } } = {};
+      const indicators = categories.monetization.measurements.filter(
+        (measurement) => activeIndicators.value.indexOf(measurement.identifier) > -1
+      );
       indicators.forEach((indicator, i) => {
-        if (["impactOnGrossDomesticProduct"].indexOf(indicator.identifier) > -1) {
+        if (['impactOnGrossDomesticProduct'].indexOf(indicator.identifier) > -1) {
           return;
         }
+        if (!results.data[indicator.identifier]) return;
         perIndicatorByYear[indicator.identifier] = {};
-        const data: ResultInterface = JSON.parse(JSON.stringify(results.data[indicator.identifier]));
+        const data: ResultInterface = JSON.parse(
+          JSON.stringify(results.data[indicator.identifier])
+        );
+        const isEnergyCostIndicator =
+          indicator.identifier === 'reductionOfEnergyCost' ||
+          indicator.identifier === 'valueOfEnergy';
         if (indicator.identifier === 'reductionOfEnergyCost') {
-          data.rows.filter(row => row[0] === 1).map(row => row[1]).forEach((label, iL) => {
-            data.rows.filter(row => row[1] === label).forEach(row => {
-              // Remove first columns to get only year values
-              row.splice(0, 2);
-              row.forEach((value, iY) => {
-                // Scale the original value according to new energy savings
-                const baseYear = years[iY];
-                const deltaE_base = deltaEByYear[baseYear]; // ΔE_{m,i} in base year
-                const MI_base = value; // MI_{m,i} in base year
-                // Consider energy price sensitivity on this contribution only (not the running total)
-                const scaled = computeScaledIndicators(MI_base, deltaE_base, newEnergySavingsByYear[baseYear]) * (energyPriceSensitivity.value / 100);
-                totalIndicatorsByYear[baseYear] = (totalIndicatorsByYear[baseYear] || 0) + scaled;
-                perIndicatorByYear[indicator.identifier][baseYear] = (perIndicatorByYear[indicator.identifier][baseYear] || 0) + scaled;
-              });
+          data.rows
+            .filter((row) => row[0] === 1)
+            .map((row) => row[1])
+            .forEach((label, iL) => {
+              data.rows
+                .filter((row) => row[1] === label)
+                .forEach((row) => {
+                  // Remove first columns to get only year values
+                  row.splice(0, 2);
+                  row.forEach((value, iY) => {
+                    // Scale the original value according to new energy savings
+                    const baseYear = years[iY];
+                    const deltaE_base = deltaEByYear[baseYear]; // ΔE_{m,i} in base year
+                    const MI_base = value; // MI_{m,i} in base year
+                    // Consider energy price sensitivity on this contribution only (not the running total)
+                    const scaled =
+                      computeScaledIndicators(
+                        MI_base,
+                        deltaE_base,
+                        newEnergySavingsByYear[baseYear]
+                      ) *
+                      (energyPriceSensitivity.value / 100);
+                    totalIndicatorsByYear[baseYear] =
+                      (totalIndicatorsByYear[baseYear] || 0) + scaled;
+                    perIndicatorByYear[indicator.identifier][baseYear] =
+                      (perIndicatorByYear[indicator.identifier][baseYear] || 0) + scaled;
+                  });
+                });
             });
-          });
         } else {
-          data.rows.forEach(row => {
+          data.rows.forEach((row) => {
             // Remove first columns to get only year values
             row.splice(0, data.idColumnNames.length);
             row.forEach((value, iY) => {
@@ -778,48 +909,57 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
               const baseYear = years[iY];
               const deltaE_base = deltaEByYear[baseYear]; // ΔE_{m,i} in base year
               const MI_base = value; // MI_{m,i} in base year
-              const scaled = computeScaledIndicators(MI_base, deltaE_base, newEnergySavingsByYear[baseYear]);
+              const scaled =
+                computeScaledIndicators(MI_base, deltaE_base, newEnergySavingsByYear[baseYear]) *
+                (isEnergyCostIndicator ? energyPriceSensitivity.value / 100 : 1);
               totalIndicatorsByYear[baseYear] = (totalIndicatorsByYear[baseYear] || 0) + scaled;
-              perIndicatorByYear[indicator.identifier][baseYear] = (perIndicatorByYear[indicator.identifier][baseYear] || 0) + scaled;
+              perIndicatorByYear[indicator.identifier][baseYear] =
+                (perIndicatorByYear[indicator.identifier][baseYear] || 0) + scaled;
             });
           });
         }
       });
-      const totalIndicators: number[] = years.map(year => totalIndicatorsByYear[year]);
+      const totalIndicators: number[] = years.map((year) => totalIndicatorsByYear[year]);
 
       const discountedNewInvestments = discountedAnnualValues(newInvestments, CRF);
       // Consider investment sensitivity
       for (let i = 0; i < discountedNewInvestments.length; i++) {
-        discountedNewInvestments[i] *= (investmentsSensitivity.value / 100);
+        discountedNewInvestments[i] *= investmentsSensitivity.value / 100;
       }
       const discountedGDP = discountedAnnualValues(GDP, CRF);
       // If GDP is not selected, use null values
-      if (activeIndicators.value.indexOf('impactOnGrossDomesticProduct') === -1) discountedGDP.fill(0);
+      if (activeIndicators.value.indexOf('impactOnGrossDomesticProduct') === -1)
+        discountedGDP.fill(0);
 
       // Map discountedNewInvestments to years
-      const discountedNewInvestmentsByYear: {[year: string]: number} = {};
+      const discountedNewInvestmentsByYear: { [year: string]: number } = {};
       fullYears.forEach((year, i) => {
         discountedNewInvestmentsByYear[year] = discountedNewInvestments[i];
       });
       // Filter discountedNewInvestments to only selected years
-      const filteredDiscountedNewInvestments: number[] = years.map(year => discountedNewInvestmentsByYear[year]);
+      const filteredDiscountedNewInvestments: number[] = years.map(
+        (year) => discountedNewInvestmentsByYear[year]
+      );
 
-      const annuity = Array.from({ length: years.length }, (_, i) => filteredDiscountedNewInvestments[i] - discountedGDP[i] - totalIndicators[i]);
+      const annuity = Array.from(
+        { length: years.length },
+        (_, i) => filteredDiscountedNewInvestments[i] - discountedGDP[i] - totalIndicators[i]
+      );
       const weightedAnnuity = calculateWeightedAnnuity(
         annuity,
-        years.map(y => parseInt(y)),
+        years.map((y) => parseInt(y)),
         newEnergySavingsByYear,
         startingYear
       );
 
       // Per-indicator annuities (positive = annually recurring benefit), for the Overview tab
-      const indicatorAnnuities: {[identifier: string]: number} = {};
-      indicators.forEach(indicator => {
+      const indicatorAnnuities: { [identifier: string]: number } = {};
+      indicators.forEach((indicator) => {
         if (!perIndicatorByYear[indicator.identifier]) return;
-        const series = years.map(year => perIndicatorByYear[indicator.identifier][year] || 0);
+        const series = years.map((year) => perIndicatorByYear[indicator.identifier][year] || 0);
         indicatorAnnuities[indicator.identifier] = calculateWeightedAnnuity(
           series,
-          years.map(y => parseInt(y)),
+          years.map((y) => parseInt(y)),
           newEnergySavingsByYear,
           startingYear
         );
@@ -827,13 +967,13 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       // Annuitized investments (negative = cost) and GDP effect (positive = benefit), for the Overview tab
       const investmentAnnuity = -calculateWeightedAnnuity(
         filteredDiscountedNewInvestments,
-        years.map(y => parseInt(y)),
+        years.map((y) => parseInt(y)),
         newEnergySavingsByYear,
         startingYear
       );
       const gdpAnnuity = calculateWeightedAnnuity(
         discountedGDP,
-        years.map(y => parseInt(y)),
+        years.map((y) => parseInt(y)),
         newEnergySavingsByYear,
         startingYear
       );
@@ -846,12 +986,12 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         discountedGDP,
         totalIndicators,
         newEnergySavingsByYear,
-        years.map(y => parseInt(y)),
+        years.map((y) => parseInt(y)),
         startingYear
       );
       const weightedCBR = calculateWeightedAnnuity(
         CBR,
-        years.map(y => parseInt(y)),
+        years.map((y) => parseInt(y)),
         newEnergySavingsByYear,
         startingYear
       );
@@ -868,18 +1008,18 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         parameters: {
           discountRate: discountRate.value / 100,
           energyPriceSensitivity: energyPriceSensitivity.value / 100,
-          investmentsSensitivity: investmentsSensitivity.value / 100,
+          investmentsSensitivity: investmentsSensitivity.value / 100
         },
         indicatorAnnuities,
         investmentAnnuity,
-        gdpAnnuity,
+        gdpAnnuity
       });
     }
 
     return data;
   },
-  [], // initial state
-)
+  [] // initial state
+);
 
 // Functions
 const getCBAUnit = (slug: string): string => {
@@ -897,11 +1037,43 @@ const getCBAUnit = (slug: string): string => {
 };
 const selectCategory = (category: string) => {
   activeCategory.value = category;
-  activeMeasurement.value = categories[activeCategory.value].measurements.filter(measurement => !measurement.subcategory || measurement.subcategory === activeSubcategory.value)[0];
+  const isRenewable = session.programs[0]?.type === 'renewable';
+  activeMeasurement.value = categories[activeCategory.value].measurements
+    .filter(
+      (measurement) =>
+        !measurement.subcategory || measurement.subcategory === activeSubcategory.value
+    )
+    .filter((measurement) =>
+      isRenewable
+        ? measurementsForRenewables.indexOf(measurement.identifier) > -1
+        : measurementsForEnergyEfficiency.indexOf(measurement.identifier) > -1
+    )[0];
+  if (!activeMeasurement.value) {
+    activeMeasurement.value = categories[activeCategory.value].measurements.filter(
+      (measurement) =>
+        !measurement.subcategory || measurement.subcategory === activeSubcategory.value
+    )[0];
+  }
 };
 const selectSubcategory = (subcategory: string) => {
   activeSubcategory.value = subcategory;
-  activeMeasurement.value = categories[activeCategory.value].measurements.filter(measurement => !measurement.subcategory || measurement.subcategory === activeSubcategory.value)[0];
+  const isRenewable = session.programs[0]?.type === 'renewable';
+  activeMeasurement.value = categories[activeCategory.value].measurements
+    .filter(
+      (measurement) =>
+        !measurement.subcategory || measurement.subcategory === activeSubcategory.value
+    )
+    .filter((measurement) =>
+      isRenewable
+        ? measurementsForRenewables.indexOf(measurement.identifier) > -1
+        : measurementsForEnergyEfficiency.indexOf(measurement.identifier) > -1
+    )[0];
+  if (!activeMeasurement.value) {
+    activeMeasurement.value = categories[activeCategory.value].measurements.filter(
+      (measurement) =>
+        !measurement.subcategory || measurement.subcategory === activeSubcategory.value
+    )[0];
+  }
 };
 const toggleIndicator = (identifier: string) => {
   const index = activeIndicators.value.indexOf(identifier);
@@ -914,61 +1086,68 @@ const toggleIndicator = (identifier: string) => {
   } else {
     activeIndicators.value.splice(index, 1);
   }
-}
+};
 const clearIndicatorInfoTimeout = () => {
   if (indicatorInfoTimeoutId.value) {
     clearTimeout(indicatorInfoTimeoutId.value);
     indicatorInfoTimeoutId.value = null;
   }
-}
+};
 const removeIndicatorInfo = () => {
   clearIndicatorInfoTimeout();
   indicatorInfoTimeoutId.value = setTimeout(() => {
     indicatorInfo.value = '';
   }, 2000);
-}
+};
 const exportResults = () => {
   // Check if all programs have a unit name; if not, set it
-  session.programs.forEach(program => {
+  session.programs.forEach((program) => {
     if (!program.unitName || !units.hasOwnProperty(program.unitName)) {
       program.unitName = units[program.unit].name;
     }
   });
   fetch(`${import.meta.env.VITE_API_URL}export-results`, {
-    method: "POST",
+    method: 'POST',
     body: JSON.stringify({
       results: session.results,
       categories,
       cbaData: cbaData.value,
       years: session.years,
       region: session.region,
-      programs: session.programs,
+      programs: session.programs
     }),
     headers: {
-      "Content-Type": "application/json",
-    },
-  }).then(res => res.blob()).then(blob => {
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = 'MICAT_results.xlsx';
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
-    // window.location.assign(url);
-  });
+      'Content-Type': 'application/json'
+    }
+  })
+    .then((res) => res.blob())
+    .then((blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'MICAT_results.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+      // window.location.assign(url);
+    });
 };
 
 // Injections
-const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
+const { openModal } = inject<ModalInjectInterface>('modal') || defaultModalInject;
 </script>
 
 <template>
   <div class="max-w-screen-xl pt-5 pb-10 mx-auto">
     <div class="flex justify-between">
-      <a href="#" @click="router.push({ name: 'home' });" class="text-sm text-sky-700 dark:text-sky-300">back to the entries</a>
+      <a
+        href="#"
+        @click="router.push({ name: 'home' })"
+        class="text-sm text-sky-700 dark:text-sky-300"
+        >back to the entries</a
+      >
       <div>
         <InformationCircleIcon
           @click="openModal('export')"
@@ -984,7 +1163,10 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
       </div>
     </div>
     <div class="relative my-3 bg-white border border-gray-300 rounded-3xl">
-      <div @click="router.push({ name: 'home' });" class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-10px] cursor-pointer">
+      <div
+        @click="router.push({ name: 'home' })"
+        class="bg-white dark:bg-blue-950 rounded-full p-1 absolute top-[-20px] right-[-10px] cursor-pointer"
+      >
         <XCircleIcon class="text-sky-700 dark:text-sky-300 h-9 w-9"></XCircleIcon>
       </div>
       <div class="flex">
@@ -1000,7 +1182,7 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               'hover:bg-sky-900': activeCategory !== key,
               'rounded-tl-3xl': i === 0,
               'rounded-bl-3xl': activeCategory === key && i === Object.keys(categories).length - 1,
-              'pr-16': !category.subcategories,
+              'pr-16': !category.subcategories
             }"
             v-for="([key, category], i) in Object.entries(categories)"
             v-bind:key="`category-${key}`"
@@ -1010,7 +1192,8 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               <component :is="icons[category.icon]" class="w-5 h-5 mr-5"></component>
             </div>
             <div class="py-5 grow">
-              <span class="font-bold">{{ category.title }}</span><br />
+              <span class="font-bold">{{ category.title }}</span
+              ><br />
               <span>{{ category.subtitle }}</span>
             </div>
             <div v-if="category.subcategories">
@@ -1021,10 +1204,11 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                 :class="{
                   'text-white': activeSubcategory !== subcategory,
                   'text-sky-700': activeSubcategory === subcategory,
-                  'bg-gradient-to-r from-sky-600 to-sky-700 hover:bg-gradient-to-r hover:from-sky-600 hover:to-sky-700': activeSubcategory !== subcategory,
+                  'bg-gradient-to-r from-sky-600 to-sky-700 hover:bg-gradient-to-r hover:from-sky-600 hover:to-sky-700':
+                    activeSubcategory !== subcategory,
                   'bg-white hover:bg-sky-100': activeSubcategory === subcategory,
                   'rounded-tl-2xl': i === 0,
-                  'rounded-bl-2xl': i === category.subcategories.length - 1,
+                  'rounded-bl-2xl': i === category.subcategories.length - 1
                 }"
                 @click="selectSubcategory(subcategory)"
               >
@@ -1053,11 +1237,28 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   'hover:bg-orange-700': activeMeasurement.identifier !== measurement.identifier,
                   'hover:rounded-br-3xl': activeMeasurement.identifier !== measurement.identifier
                 }"
-                v-for="measurement in categories[activeCategory].measurements.filter(measurement => (!measurement.subcategory || measurement.subcategory === activeSubcategory) && measurement.identifier !== 'changeInUnitCostsOfProduction' && (measurement.identifier !== 'changeInSupplierDiversityByEnergyEfficiencyImpact') && !(session.programs[0].type !== 'renewable' && measurementsForRenewables.indexOf(measurement.identifier) > -1))"
+                v-for="measurement in categories[activeCategory].measurements.filter(
+                  (measurement) =>
+                    (!measurement.subcategory || measurement.subcategory === activeSubcategory) &&
+                    measurement.identifier !== 'changeInUnitCostsOfProduction' &&
+                    measurement.identifier !==
+                      'changeInSupplierDiversityByEnergyEfficiencyImpact' &&
+                    !(
+                      session.programs[0].type !== 'renewable' &&
+                      measurementsForRenewables.indexOf(measurement.identifier) > -1
+                    ) &&
+                    !(
+                      session.programs[0].type === 'renewable' &&
+                      measurementsForEnergyEfficiency.indexOf(measurement.identifier) > -1
+                    )
+                )"
                 v-bind:key="`measurement-${measurement.identifier}`"
               >
                 <span class="mr-8 font-bold grow whitespace-nowrap">{{ measurement.title }}</span>
-                <CheckIcon v-if="activeMeasurement.identifier === measurement.identifier" class="w-5 h-5"></CheckIcon>
+                <CheckIcon
+                  v-if="activeMeasurement.identifier === measurement.identifier"
+                  class="w-5 h-5"
+                ></CheckIcon>
                 <CursorArrowRaysIcon v-else class="w-5 h-5"></CursorArrowRaysIcon>
               </div>
             </div>
@@ -1073,8 +1274,8 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
             <Bar
               class="w-full max-w-[100%]"
               id="chart"
-              :options="(chartOptions as any)"
-              :data="(chartData as ChartData<'line'>)"
+              :options="chartOptions as any"
+              :data="chartData as ChartData<'line'>"
             />
           </div>
         </div>
@@ -1088,7 +1289,10 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               <div
                 class="flex items-center py-3 pl-4 pr-2 text-sm cursor-pointer"
                 @click="toggleIndicator(measurement.identifier)"
-                @mouseover="indicatorInfo = measurement.description; clearIndicatorInfoTimeout();"
+                @mouseover="
+                  indicatorInfo = measurement.description;
+                  clearIndicatorInfoTimeout();
+                "
                 @mouseleave="removeIndicatorInfo"
                 :class="{
                   'text-white': activeIndicators.indexOf(measurement.identifier) === -1,
@@ -1096,13 +1300,29 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                   'bg-sky-100': activeIndicators.indexOf(measurement.identifier) > -1,
                   'hover:text-sky-600': activeIndicators.indexOf(measurement.identifier) > -1,
                   'hover:bg-sky-700': activeIndicators.indexOf(measurement.identifier) === -1,
-                  'rounded-br-3xl': i === categories['monetization'].measurements.length || activeIndicators.indexOf(measurement.identifier) === -1
+                  'rounded-br-3xl':
+                    i === categories['monetization'].measurements.length ||
+                    activeIndicators.indexOf(measurement.identifier) === -1
                 }"
-                v-for="(measurement, i) in categories['monetization'].measurements.filter(measurement => measurement.identifier !== 'addedAssetValueOfBuildings')"
+                v-for="(measurement, i) in categories['monetization'].measurements.filter(
+                  (measurement) =>
+                    measurement.identifier !== 'addedAssetValueOfBuildings' &&
+                    !(
+                      session.programs[0].type !== 'renewable' &&
+                      measurementsForRenewables.indexOf(measurement.identifier) > -1
+                    ) &&
+                    !(
+                      session.programs[0].type === 'renewable' &&
+                      measurementsForEnergyEfficiency.indexOf(measurement.identifier) > -1
+                    )
+                )"
                 v-bind:key="`measurement-cba-${measurement.identifier}`"
               >
                 <span class="mr-8 font-bold grow whitespace-nowrap">{{ measurement.title }}</span>
-                <CheckIcon v-if="activeIndicators.indexOf(measurement.identifier) > -1" class="w-5 h-5"></CheckIcon>
+                <CheckIcon
+                  v-if="activeIndicators.indexOf(measurement.identifier) > -1"
+                  class="w-5 h-5"
+                ></CheckIcon>
                 <CursorArrowRaysIcon v-else class="w-5 h-5"></CursorArrowRaysIcon>
               </div>
             </div>
@@ -1113,14 +1333,16 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                 @mouseleave="removeIndicatorInfo()"
                 class="absolute p-4 text-sm text-white rounded-lg bg-sky-600 top-5 left-5"
                 :class="{
-                  'hidden': !indicatorInfo,
+                  hidden: !indicatorInfo
                 }"
               ></div>
               <div class="p-4 mx-5 my-5 text-sm text-white bg-orange-600 rounded-lg">
                 <h3 class="mb-2 font-bold">Parameters</h3>
                 <div class="flex gap-5 mt-2">
                   <div>
-                    <label for="energy-price-sensitivity" class="text-sm dark:text-white">Energy price sensitivity</label>
+                    <label for="energy-price-sensitivity" class="text-sm dark:text-white"
+                      >Energy price sensitivity</label
+                    >
                     <InformationCircleIcon
                       @click="openModal('energy-price-sensitivity')"
                       class="inline w-6 h-6 ml-2 cursor-pointer"
@@ -1143,7 +1365,9 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
                 </div>
                 <div class="flex gap-5 mt-2">
                   <div>
-                    <label for="investments-sensitivity" class="text-sm dark:text-white">Investments sensitivity</label>
+                    <label for="investments-sensitivity" class="text-sm dark:text-white"
+                      >Investments sensitivity</label
+                    >
                     <InformationCircleIcon
                       @click="openModal('investments-sensitivity')"
                       class="inline w-6 h-6 ml-2 cursor-pointer"
@@ -1190,24 +1414,36 @@ const {openModal} = inject<ModalInjectInterface>('modal') || defaultModalInject
               </div>
 
               <div class="flex flex-wrap" v-if="cbaData">
-                <div v-for="(programResults, i) in cbaData" :key="`program-${i}`" class="p-3 mx-5 mt-3 mb-2 rounded-lg bg-gray-50">
+                <div
+                  v-for="(programResults, i) in cbaData"
+                  :key="`program-${i}`"
+                  class="p-3 mx-5 mt-3 mb-2 rounded-lg bg-gray-50"
+                >
                   <h3 class="mb-2 font-bold text-md max-w-[450px]">{{ programResults.name }}</h3>
                   <div
                     v-for="result in cbaResults"
                     v-bind:key="`cba-${result.slug}`"
                     class="rounded-xl bg-white border border-sky-600 max-w-[450px] self-start mb-2"
                   >
-                    <div class="flex items-center px-4 py-2 text-sm text-white justify-items-start bg-sky-600 rounded-t-xl">
+                    <div
+                      class="flex items-center px-4 py-2 text-sm text-white justify-items-start bg-sky-600 rounded-t-xl"
+                    >
                       <span class="grow">{{ result.title }}</span>
                       <InformationCircleIcon
                         @click="openModal(`cba-${result.slug}`)"
                         class="inline w-6 h-6 ml-2 cursor-pointer"
                       ></InformationCircleIcon>
-                      <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">{{ getCBAUnit(result.slug) }}</span>
+                      <span class="px-2 py-1 ml-2 bg-white rounded-xl text-sky-600">{{
+                        getCBAUnit(result.slug)
+                      }}</span>
                     </div>
                     <div class="p-4">
-                      <div class="text-gray-300">{{ formatter.format((programResults[result.slug] as number)) }}</div>
-                      <span class="font-bold">{{ labelFormatter.format((programResults[result.slug] as number)) }}</span>
+                      <div class="text-gray-300">
+                        {{ formatter.format(programResults[result.slug] as number) }}
+                      </div>
+                      <span class="font-bold">{{
+                        labelFormatter.format(programResults[result.slug] as number)
+                      }}</span>
                     </div>
                   </div>
                 </div>
