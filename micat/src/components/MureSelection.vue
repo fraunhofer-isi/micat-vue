@@ -5,10 +5,10 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 <script setup lang="ts">
-import { onMounted, ref, watch, inject } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useSessionStore } from '@/stores/session'
-import { InformationCircleIcon } from '@heroicons/vue/24/outline'
+import { onMounted, ref, watch, inject } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useSessionStore } from '@/stores/session';
+import { InformationCircleIcon } from '@heroicons/vue/24/outline';
 import type {
   MureCategoryInterface,
   MureCountryInterface,
@@ -18,30 +18,30 @@ import type {
   OdysseeDataInterface,
   ReferenceConsumptionEntry,
   ModalInjectInterface
-} from '@/types'
+} from '@/types';
 import {
   stages,
   mureSubsectorMapping,
   mureCategoryToSectorMapping,
   defaultModalInject
-} from '@/defaults'
+} from '@/defaults';
 
 const props = defineProps<{
-  subsectors: Array<SubsectorInterface>
-  regions: Array<Array<number | string>>
-}>()
+  subsectors: Array<SubsectorInterface>;
+  regions: Array<Array<number | string>>;
+}>();
 
-const session = useSessionStore()
-let categories: Array<MureCategoryInterface> = []
-let countries: Array<MureCountryInterface> = []
-const currentYear = new Date().getFullYear()
-const startingDates = [...Array(50).keys()].map((delta) => currentYear - delta)
-const odysseeYears = [...Array(23).keys()].map((delta) => 2022 - delta)
-let mureData: MureMeasurementDataInterface | null = null
-let odysseeData: OdysseeDataInterface | null = null
+const session = useSessionStore();
+let categories: Array<MureCategoryInterface> = [];
+let countries: Array<MureCountryInterface> = [];
+const currentYear = new Date().getFullYear();
+const startingDates = [...Array(50).keys()].map((delta) => currentYear - delta);
+const odysseeYears = [...Array(23).keys()].map((delta) => 2022 - delta);
+let mureData: MureMeasurementDataInterface | null = null;
+let odysseeData: OdysseeDataInterface | null = null;
 
 // Refs
-const loading = ref<boolean>(true)
+const loading = ref<boolean>(true);
 const {
   mureCategory,
   mureCountry,
@@ -51,25 +51,25 @@ const {
   region,
   odysseeStartYear,
   odysseeEndYear
-} = storeToRefs(session)
-const measurements = ref<Array<MureMeasurementInterface>>([])
-const startingDate = ref<number>()
+} = storeToRefs(session);
+const measurements = ref<Array<MureMeasurementInterface>>([]);
+const startingDate = ref<number>();
 
 // Injections
-const { openModal } = inject<ModalInjectInterface>('modal') || defaultModalInject
+const { openModal } = inject<ModalInjectInterface>('modal') || defaultModalInject;
 
 // Lifecycle
 onMounted(async () => {
-  await getCategories()
-  await getCountries()
+  await getCategories();
+  await getCountries();
   if (session.gapFilling) {
     if (mureCategory.value) {
-      await getGapFillingMeasurements()
+      await getGapFillingMeasurements();
     }
   } else if (mureCategory.value && mureCountry.value && !session.odyssee) {
-    await getMeasurements()
+    await getMeasurements();
   }
-})
+});
 
 // Functions
 const getToken = async () => {
@@ -82,62 +82,62 @@ const getToken = async () => {
       username: import.meta.env.VITE_MURE_USERNAME,
       password: import.meta.env.VITE_MURE_PASSWORD
     })
-  })
-  const data = await response.json()
+  });
+  const data = await response.json();
   session.mureToken = {
     token: data.token,
     expires: Date.now() + 1000 * 60 * 60
-  }
-  session.updateMureToken(session.mureToken)
-}
+  };
+  session.updateMureToken(session.mureToken);
+};
 const getCategories = async () => {
-  loading.value = true
+  loading.value = true;
   if (
     !Object.prototype.hasOwnProperty.call(session.mureToken, 'token') ||
     session.mureToken.expires < Date.now()
   ) {
     // Refresh token
-    await getToken()
+    await getToken();
   }
   const response = await fetch(`${import.meta.env.VITE_MURE_API_URL}categories`, {
     headers: {
       Authorization: `Bearer ${session.mureToken?.token}`
     }
-  })
-  const data = await response.json()
+  });
+  const data = await response.json();
   // Do not show "General cross-cutting" category
-  categories = data['hydra:member'].filter((category: MureCategoryInterface) => category.id !== 1)
-  loading.value = false
-}
+  categories = data['hydra:member'].filter((category: MureCategoryInterface) => category.id !== 1);
+  loading.value = false;
+};
 const getCountries = async () => {
-  loading.value = true
+  loading.value = true;
   if (
     !Object.prototype.hasOwnProperty.call(session.mureToken, 'token') ||
     session.mureToken.expires < Date.now()
   ) {
     // Refresh token
-    await getToken()
+    await getToken();
   }
   const response = await fetch(`${import.meta.env.VITE_MURE_API_URL}countries`, {
     headers: {
       Authorization: `Bearer ${session.mureToken?.token}`
     }
-  })
-  const data = await response.json()
-  const regions = props.regions.map((region) => region[1])
+  });
+  const data = await response.json();
+  const regions = props.regions.map((region) => region[1]);
   countries = data['hydra:member'].filter((country: MureCountryInterface) =>
     regions.includes(country.name)
-  )
-  loading.value = false
-}
+  );
+  loading.value = false;
+};
 const getMeasurements = async () => {
-  loading.value = true
+  loading.value = true;
   if (
     !Object.prototype.hasOwnProperty.call(session.mureToken, 'token') ||
     session.mureToken.expires < Date.now()
   ) {
     // Refresh token
-    await getToken()
+    await getToken();
   }
   const response = await fetch(
     `${import.meta.env.VITE_MURE_API_URL}measures?category.id=${mureCategory.value}&country.id=${
@@ -148,31 +148,31 @@ const getMeasurements = async () => {
         Authorization: `Bearer ${session.mureToken?.token}`
       }
     }
-  )
-  const data = await response.json()
-  measurements.value = data['hydra:member']
+  );
+  const data = await response.json();
+  measurements.value = data['hydra:member'];
 
   if (startingDate.value) {
     measurements.value = measurements.value.filter(
       (measurement: MureMeasurementInterface) =>
         parseInt(measurement.startingDate) >= startingDate.value!
-    )
+    );
   }
   measurements.value.map((measurement: MureMeasurementInterface) => {
-    const id = measurement['@id'].split('/').pop()
-    if (id) measurement.id = parseInt(id)
-    return measurement
-  })
-  loading.value = false
-}
+    const id = measurement['@id'].split('/').pop();
+    if (id) measurement.id = parseInt(id);
+    return measurement;
+  });
+  loading.value = false;
+};
 const getMeasurementDetails = async () => {
-  loading.value = true
+  loading.value = true;
   if (
     !Object.prototype.hasOwnProperty.call(session.mureToken, 'token') ||
     session.mureToken.expires < Date.now()
   ) {
     // Refresh token
-    await getToken()
+    await getToken();
   }
   const response = await fetch(
     `${import.meta.env.VITE_MURE_API_URL}measures/${mureMeasurement.value}`,
@@ -181,9 +181,9 @@ const getMeasurementDetails = async () => {
         Authorization: `Bearer ${session.mureToken?.token}`
       }
     }
-  )
-  const data = await response.json()
-  mureData = data
+  );
+  const data = await response.json();
+  mureData = data;
 
   // Set years
   if (mureData!.targetedEndUses[0].cumulativeAnnualSavings.length == 1) {
@@ -193,130 +193,128 @@ const getMeasurementDetails = async () => {
         mureData!.targetedEndUses.filter((x) => x.cumulativeAnnualSavings.length > 0)[0]
           .cumulativeAnnualSavings[0].year
       )
-    ]
+    ];
   } else {
     years.value = mureData!.targetedEndUses
       .filter((x) => x.cumulativeAnnualSavings.length > 0)[0]
-      .cumulativeAnnualSavings.map((savings: any) => parseInt(savings.year))
+      .cumulativeAnnualSavings.map((savings: any) => parseInt(savings.year));
   }
-  session.updateYears(years.value)
+  session.updateYears(years.value);
   // Set subsector for programs and values
-  const measureObj = measurements.value.find((m) => m.id === mureMeasurement.value)
-  const programs = session.programs
+  const measureObj = measurements.value.find((m) => m.id === mureMeasurement.value);
+  const programs = session.programs;
 
   programs.forEach((program) => {
     // If MURE data is used, set unit to PJ, if ODYSSEE data is used, set unit to ktoe
-    program.unit = session.odyssee ? 1 : 5
-    if (measureObj) program.name = measureObj.title
-    program.mureTotal = {}
+    program.unit = session.odyssee ? 1 : 5;
+    if (measureObj) program.name = measureObj.title;
+    program.mureTotal = {};
     program.improvements.forEach((improvement) => {
-      improvement.percentage = 100
-      program.subsector = mureSubsectorMapping[session.mureCategory]
+      improvement.percentage = 100;
+      program.subsector = mureSubsectorMapping[session.mureCategory];
       const name = props.subsectors.filter((subsector) => subsector.id === program.subsector)[0]
-        .name
-      program.subsectorName = name
+        .name;
+      program.subsectorName = name;
       Object.keys(improvement.values).forEach((key) => {
         if (years.value.indexOf(parseInt(key)) === -1) {
-          delete improvement.values[key]
+          delete improvement.values[key];
         }
-      })
+      });
       years.value.forEach((year) => {
         const value = mureData!.targetedEndUses
           .filter((x) => x.cumulativeAnnualSavings.length > 0)[0]
-          .cumulativeAnnualSavings.find((savings: any) => savings.year === year.toString())
+          .cumulativeAnnualSavings.find((savings: any) => savings.year === year.toString());
         if (typeof value === 'undefined') {
-          improvement.values[year.toString()] = 0
+          improvement.values[year.toString()] = 0;
         } else {
           improvement.values[year.toString()] = value.calculatedPj
             ? value.calculatedPj
             : value.pj
             ? value.pj
-            : 0
-          program.mureTotal![year.toString()] = improvement.values[year.toString()]
+            : 0;
+          program.mureTotal![year.toString()] = improvement.values[year.toString()];
         }
-      })
-    })
-  })
-  session.updatePrograms(programs)
-  loading.value = false
-}
+      });
+    });
+  });
+  session.updatePrograms(programs);
+  loading.value = false;
+};
 const getOdysseeData = async () => {
-  if (!mureCountry.value || !mureCategory.value) return
+  if (!mureCountry.value || !mureCategory.value) return;
   const response = await fetch(
     `${import.meta.env.VITE_API_URL}odyssee?region=${countries.find(
       (c) => c.id === mureCountry.value
     )?.name}&category=${mureCategory.value}&start=${odysseeStartYear.value}&end=${
       odysseeEndYear.value
     }`
-  )
-  const data = await response.json()
-  odysseeData = data
+  );
+  const data = await response.json();
+  odysseeData = data;
 
   // Set years
-  years.value = Object.keys(odysseeData!).map((year) => parseInt(year))
-  session.updateYears(years.value)
+  years.value = Object.keys(odysseeData!).map((year) => parseInt(year));
+  session.updateYears(years.value);
   // Set subsector for programs and values
-  const programs = session.programs
+  const programs = session.programs;
   programs.forEach((program) => {
-    program.mureTotal = {}
+    program.mureTotal = {};
     program.improvements.forEach((improvement) => {
-      improvement.percentage = 100
-      program.subsector = mureSubsectorMapping[session.mureCategory]
+      improvement.percentage = 100;
+      program.subsector = mureSubsectorMapping[session.mureCategory];
       const name = props.subsectors.filter((subsector) => subsector.id === program.subsector)[0]
-        .name
-      program.subsectorName = name
+        .name;
+      program.subsectorName = name;
       Object.keys(improvement.values).forEach((key) => {
         if (years.value.indexOf(parseInt(key)) === -1) {
-          delete improvement.values[key]
+          delete improvement.values[key];
         }
-      })
+      });
       years.value.forEach((year) => {
-        improvement.values[year.toString()] = odysseeData![year]
-        program.mureTotal![year.toString()] = odysseeData![year]
-      })
-    })
-  })
-  session.updatePrograms(programs)
-  loading.value = false
-}
+        improvement.values[year.toString()] = odysseeData![year];
+        program.mureTotal![year.toString()] = odysseeData![year];
+      });
+    });
+  });
+  session.updatePrograms(programs);
+  loading.value = false;
+};
 
 const getGapFillingMeasurements = async () => {
-  loading.value = true
+  loading.value = true;
   if (
     !Object.prototype.hasOwnProperty.call(session.mureToken, 'token') ||
     session.mureToken.expires < Date.now()
   ) {
-    await getToken()
+    await getToken();
   }
   const response = await fetch(
-    `${import.meta.env.VITE_MURE_API_URL}measures?category.id=${mureCategory.value}`,
+    `${import.meta.env.VITE_MURE_API_URL}measures?isSuccessfulMeasure=true&category.id=${
+      mureCategory.value
+    }`,
     {
       headers: {
         Authorization: `Bearer ${session.mureToken?.token}`
       }
     }
-  )
-  const data = await response.json()
-  // measurements.value = data['hydra:member'].filter(
-  //   (m: MureMeasurementInterface) => m.isSuccessfulMeasure === true
-  // )
-  // Currently there are no successful measures, so we include all measurements
-  measurements.value = data['hydra:member']
+  );
+  const data = await response.json();
+  measurements.value = data['hydra:member'];
   measurements.value.map((measurement: MureMeasurementInterface) => {
-    const id = measurement['@id'].split('/').pop()
-    if (id) measurement.id = parseInt(id)
-    return measurement
-  })
-  loading.value = false
-}
+    const id = measurement['@id'].split('/').pop();
+    if (id) measurement.id = parseInt(id);
+    return measurement;
+  });
+  loading.value = false;
+};
 const getGapFillingMeasurementDetails = async () => {
-  if (!mureMeasurement.value || !gapFillingCountry.value) return
-  loading.value = true
+  if (!mureMeasurement.value || !gapFillingCountry.value) return;
+  loading.value = true;
   if (
     !Object.prototype.hasOwnProperty.call(session.mureToken, 'token') ||
     session.mureToken.expires < Date.now()
   ) {
-    await getToken()
+    await getToken();
   }
   const response = await fetch(
     `${import.meta.env.VITE_MURE_API_URL}measures/${mureMeasurement.value}`,
@@ -325,43 +323,43 @@ const getGapFillingMeasurementDetails = async () => {
         Authorization: `Bearer ${session.mureToken?.token}`
       }
     }
-  )
-  const data = await response.json()
-  mureData = data
+  );
+  const data = await response.json();
+  mureData = data;
 
-  const measureObj = measurements.value.find((m) => m.id === mureMeasurement.value)
-  const originalCountryName = measureObj?.country?.name
+  const measureObj = measurements.value.find((m) => m.id === mureMeasurement.value);
+  const originalCountryName = measureObj?.country?.name;
   const originalRegionId = originalCountryName
     ? (props.regions.find((r) => r[1] === originalCountryName)?.[0] as number)
-    : undefined
-  const targetCountryName = countries.find((c) => c.id === gapFillingCountry.value)?.name
+    : undefined;
+  const targetCountryName = countries.find((c) => c.id === gapFillingCountry.value)?.name;
   const targetRegionId = targetCountryName
     ? (props.regions.find((r) => r[1] === targetCountryName)?.[0] as number)
-    : undefined
-  const sectorId = mureCategoryToSectorMapping[session.mureCategory]
+    : undefined;
+  const sectorId = mureCategoryToSectorMapping[session.mureCategory];
 
-  region.value = targetRegionId || 0
-  session.updateRegion(region.value)
+  region.value = targetRegionId || 0;
+  session.updateRegion(region.value);
 
-  let scalingFactor = 1
+  let scalingFactor = 1;
   if (originalRegionId !== undefined && targetRegionId !== undefined && sectorId) {
-    const refResponse = await fetch(`${import.meta.env.VITE_API_URL}reference_energy_consumption`)
-    const refJson = await refResponse.json()
-    const refHeaders: string[] = refJson.headers
+    const refResponse = await fetch(`${import.meta.env.VITE_API_URL}reference_energy_consumption`);
+    const refJson = await refResponse.json();
+    const refHeaders: string[] = refJson.headers;
     const refData: ReferenceConsumptionEntry[] = refJson.rows.map((row: any[]) => {
-      const obj: any = {}
-      refHeaders.forEach((h, i) => obj[h] = row[i])
-      return obj as ReferenceConsumptionEntry
-    })
+      const obj: any = {};
+      refHeaders.forEach((h, i) => (obj[h] = row[i]));
+      return obj as ReferenceConsumptionEntry;
+    });
     const refOriginal = refData.find(
       (r) => r.id_region === originalRegionId && r.id_sector === sectorId
-    )
+    );
     const refTarget = refData.find(
       (r) => r.id_region === targetRegionId && r.id_sector === sectorId
-    )
+    );
     if (refOriginal && refTarget && refOriginal['Final consumption 2021 in PJ'] > 0) {
       scalingFactor =
-        refTarget['Final consumption 2021 in PJ'] / refOriginal['Final consumption 2021 in PJ']
+        refTarget['Final consumption 2021 in PJ'] / refOriginal['Final consumption 2021 in PJ'];
     }
   }
 
@@ -372,109 +370,109 @@ const getGapFillingMeasurementDetails = async () => {
         mureData!.targetedEndUses.filter((x) => x.cumulativeAnnualSavings.length > 0)[0]
           .cumulativeAnnualSavings[0].year
       )
-    ]
+    ];
   } else {
     years.value = mureData!.targetedEndUses
       .filter((x) => x.cumulativeAnnualSavings.length > 0)[0]
-      .cumulativeAnnualSavings.map((savings: any) => parseInt(savings.year))
+      .cumulativeAnnualSavings.map((savings: any) => parseInt(savings.year));
   }
-  session.updateYears(years.value)
+  session.updateYears(years.value);
 
-  const programs = session.programs
+  const programs = session.programs;
   programs.forEach((program) => {
-    program.unit = 5
-    if (measureObj) program.name = measureObj.title
-    program.mureTotal = {}
+    program.unit = 5;
+    if (measureObj) program.name = measureObj.title;
+    program.mureTotal = {};
     program.improvements.forEach((improvement) => {
-      improvement.percentage = 100
-      program.subsector = mureSubsectorMapping[session.mureCategory]
+      improvement.percentage = 100;
+      program.subsector = mureSubsectorMapping[session.mureCategory];
       const name = props.subsectors.filter((subsector) => subsector.id === program.subsector)[0]
-        .name
-      program.subsectorName = name
+        .name;
+      program.subsectorName = name;
       Object.keys(improvement.values).forEach((key) => {
         if (years.value.indexOf(parseInt(key)) === -1) {
-          delete improvement.values[key]
+          delete improvement.values[key];
         }
-      })
+      });
       years.value.forEach((year) => {
         const value = mureData!.targetedEndUses
           .filter((x) => x.cumulativeAnnualSavings.length > 0)[0]
-          .cumulativeAnnualSavings.find((savings: any) => savings.year === year.toString())
+          .cumulativeAnnualSavings.find((savings: any) => savings.year === year.toString());
         if (typeof value === 'undefined') {
-          improvement.values[year.toString()] = 0
+          improvement.values[year.toString()] = 0;
         } else {
-          const originalPj = value.calculatedPj ? value.calculatedPj : value.pj ? value.pj : 0
-          improvement.values[year.toString()] = originalPj * scalingFactor
-          program.mureTotal![year.toString()] = improvement.values[year.toString()]
+          const originalPj = value.calculatedPj ? value.calculatedPj : value.pj ? value.pj : 0;
+          improvement.values[year.toString()] = originalPj * scalingFactor;
+          program.mureTotal![year.toString()] = improvement.values[year.toString()];
         }
-      })
-    })
-  })
-  session.updatePrograms(programs)
-  loading.value = false
-}
+      });
+    });
+  });
+  session.updatePrograms(programs);
+  loading.value = false;
+};
 
 // Watchers
 watch(mureCategory, (mureCategory) => {
-  session.updateMureCategory(mureCategory)
+  session.updateMureCategory(mureCategory);
   if (session.gapFilling) {
-    getGapFillingMeasurements()
+    getGapFillingMeasurements();
   } else if (session.odyssee) {
-    getOdysseeData()
+    getOdysseeData();
   } else {
-    getMeasurements()
+    getMeasurements();
   }
-})
+});
 watch(mureCountry, (mureCountry) => {
-  session.updateMureCountry(mureCountry)
-  const mureCountryName = countries.find((country) => country.id === mureCountry)?.name
-  region.value = props.regions.find((region) => region[1] === mureCountryName)![0] as number
-  session.updateRegion(region.value)
+  session.updateMureCountry(mureCountry);
+  const mureCountryName = countries.find((country) => country.id === mureCountry)?.name;
+  region.value = props.regions.find((region) => region[1] === mureCountryName)![0] as number;
+  session.updateRegion(region.value);
   if (session.odyssee) {
-    getOdysseeData()
+    getOdysseeData();
   } else if (!session.gapFilling) {
-    getMeasurements()
+    getMeasurements();
   }
-})
+});
 watch(startingDate, (startingDate) => {
-  getMeasurements()
-})
+  getMeasurements();
+});
 watch(mureMeasurement, (mureMeasurement) => {
-  session.updateMureMeasurement(mureMeasurement)
+  session.updateMureMeasurement(mureMeasurement);
   if (session.gapFilling) {
     if (gapFillingCountry.value) {
-      getGapFillingMeasurementDetails()
+      getGapFillingMeasurementDetails();
     }
   } else {
-    getMeasurementDetails()
+    getMeasurementDetails();
   }
-})
+});
 watch(gapFillingCountry, (gapFillingCountry) => {
-  session.updateGapFillingCountry(gapFillingCountry)
+  session.updateGapFillingCountry(gapFillingCountry);
   if (session.gapFilling && mureMeasurement.value) {
-    const countryName = countries.find((c) => c.id === gapFillingCountry)?.name
-    region.value = (props.regions.find((r) => r[1] === countryName)?.[0] as number) || 0
-    session.updateRegion(region.value)
-    getGapFillingMeasurementDetails()
+    const countryName = countries.find((c) => c.id === gapFillingCountry)?.name;
+    region.value = (props.regions.find((r) => r[1] === countryName)?.[0] as number) || 0;
+    session.updateRegion(region.value);
+    getGapFillingMeasurementDetails();
   }
-})
+});
 watch(odysseeStartYear, (odysseeStartYear) => {
   if (odysseeStartYear > odysseeEndYear.value) {
-    odysseeEndYear.value = odysseeStartYear
+    odysseeEndYear.value = odysseeStartYear;
   }
-  session.updateOdysseeStartYear(odysseeStartYear)
-  getOdysseeData()
-})
+  session.updateOdysseeStartYear(odysseeStartYear);
+  getOdysseeData();
+});
 watch(odysseeEndYear, (odysseeEndYear) => {
   if (odysseeEndYear < odysseeStartYear.value) {
-    odysseeStartYear.value = odysseeEndYear
+    odysseeStartYear.value = odysseeEndYear;
   }
-  session.updateOdysseeEndYear(odysseeEndYear)
-  getOdysseeData()
-})
+  session.updateOdysseeEndYear(odysseeEndYear);
+  getOdysseeData();
+});
 const truncate = (text: string, length: number) => {
-  return text.length > length ? text.substring(0, length) + '...' : text
-}
+  return text.length > length ? text.substring(0, length) + '...' : text;
+};
 </script>
 
 <template>
