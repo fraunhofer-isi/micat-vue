@@ -802,7 +802,15 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         discountedNewInvestmentsByYear[year] = discountedNewInvestments[i];
       });
       // Filter discountedNewInvestments to only selected years
-      const filteredDiscountedNewInvestments: number[] = years.map(year => discountedNewInvestmentsByYear[year]);
+      const filteredDiscountedNewInvestments: number[] = years.map((year, i) => {
+        const currentYear = parseInt(year);
+        const prevYear = i === 0 ? startingYear - 1 : parseInt(years[i - 1]);
+        let sum = 0;
+        for (let y = prevYear + 1; y <= currentYear; y++) {
+          sum += discountedNewInvestmentsByYear[y] || 0;
+        }
+        return sum;
+      });
 
       const annuity = Array.from({ length: years.length }, (_, i) => filteredDiscountedNewInvestments[i] - discountedGDP[i] - totalIndicators[i]);
       const weightedAnnuity = calculateWeightedAnnuity(
