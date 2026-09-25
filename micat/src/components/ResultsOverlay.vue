@@ -812,13 +812,6 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         return sum;
       });
 
-      const annuity = Array.from({ length: years.length }, (_, i) => filteredDiscountedNewInvestments[i] - discountedGDP[i] - totalIndicators[i]);
-      const weightedAnnuity = calculateWeightedAnnuity(
-        annuity,
-        years.map(y => parseInt(y)),
-        newEnergySavingsByYear,
-        startingYear
-      );
 
       // Per-indicator annuities (positive = annually recurring benefit), for the Overview tab
       const indicatorAnnuities: {[identifier: string]: number} = {};
@@ -833,9 +826,12 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         );
       });
       // Annuitized investments (negative = cost) and GDP effect (positive = benefit), for the Overview tab
+      // Investments sind bereits in voller Jahresauflösung (fullYears) verfügbar –
+      // direkt darauf gewichten statt künstlich auf Stützjahre zusammenzufassen.
+      // Das macht das Ergebnis unabhängig davon, wie viele Stützjahre gewählt wurden.
       const investmentAnnuity = -calculateWeightedAnnuity(
-        filteredDiscountedNewInvestments,
-        years.map(y => parseInt(y)),
+        discountedNewInvestments,
+        fullYears.map(y => parseInt(y)),
         newEnergySavingsByYear,
         startingYear
       );
@@ -844,6 +840,14 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
         years.map(y => parseInt(y)),
         newEnergySavingsByYear,
         startingYear
+      );
+
+      // Ersetzt die alte, separate annuity-Array-Berechnung von oben —
+      // nutzt dieselbe Identität: -weightedAnnuity = investmentAnnuity + gdpAnnuity + Σ indicatorAnnuities
+      const weightedAnnuity = -(
+        investmentAnnuity +
+        gdpAnnuity +
+        Object.values(indicatorAnnuities).reduce((sum, v) => sum + v, 0)
       );
 
       const netPresentValue = 0 - weightedAnnuity / CRF;
