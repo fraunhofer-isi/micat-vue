@@ -2,9 +2,17 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-import { defineStore } from "pinia";
+import { defineStore } from 'pinia';
 import { defaultProgram, stages } from '@/defaults';
-import type { CarrierMapping, ProgramInterface, ISessionState, PayloadInterface, Parameters, GlobalParameters, MureTokenInterface } from "@/types";
+import type {
+  CarrierMapping,
+  ProgramInterface,
+  ISessionState,
+  PayloadInterface,
+  Parameters,
+  GlobalParameters,
+  MureTokenInterface
+} from '@/types';
 
 const currentYear = new Date().getFullYear();
 const nextValidYear = Math.floor(currentYear / 5) * 5;
@@ -14,103 +22,109 @@ const getYears = () => {
 };
 
 export const useSessionStore = defineStore({
-  id: "session",
+  id: 'session',
   state: (): ISessionState => {
     return {
-      currentYear: parseInt(localStorage.getItem("currentYear") || currentYear.toString()),
-      stage: parseInt(localStorage.getItem("stage") || stages.home.toString()),
-      mure: String(localStorage.getItem("mure") || "false").toLowerCase() === "true",
-      odyssee: String(localStorage.getItem("odyssee") || "false").toLowerCase() === "true",
-      gapFilling: String(localStorage.getItem("gapFilling") || "false").toLowerCase() === "true",
-      mureToken: JSON.parse(localStorage.getItem("mureToken") || JSON.stringify({})),
-      mureCategory: parseInt(localStorage.getItem("mureCategory") || "0"),
-      mureCountry: parseInt(localStorage.getItem("mureCountry") || "0"),
-      mureMeasurement: parseInt(localStorage.getItem("mureMeasurement") || "0"),
-      gapFillingCountry: parseInt(localStorage.getItem("gapFillingCountry") || "0"),
-      odysseeStartYear: parseInt(localStorage.getItem("odysseeStartYear") || "2000"),
-      odysseeEndYear: parseInt(localStorage.getItem("odysseeEndYear") || "2022"),
-      region: parseInt(localStorage.getItem("region") || "0"),
-      municipality: String(localStorage.getItem("municipality") || "false").toLowerCase() === "true",
-      inhabitants: parseInt(localStorage.getItem("inhabitants") || "100000"),
-      years: JSON.parse(localStorage.getItem("years") || JSON.stringify(getYears())),
-      programs: JSON.parse(localStorage.getItem("programs") || JSON.stringify([structuredClone(defaultProgram)])),
-      payload: { "measures": [], "parameters": {}, "name": "" },
+      currentYear: parseInt(localStorage.getItem('currentYear') || currentYear.toString()),
+      stage: parseInt(localStorage.getItem('stage') || stages.home.toString()),
+      mure: String(localStorage.getItem('mure') || 'false').toLowerCase() === 'true',
+      odyssee: String(localStorage.getItem('odyssee') || 'false').toLowerCase() === 'true',
+      gapFilling: String(localStorage.getItem('gapFilling') || 'false').toLowerCase() === 'true',
+      mureToken: JSON.parse(localStorage.getItem('mureToken') || JSON.stringify({})),
+      mureCategory: parseInt(localStorage.getItem('mureCategory') || '0'),
+      mureCountry: parseInt(localStorage.getItem('mureCountry') || '0'),
+      mureMeasurement: parseInt(localStorage.getItem('mureMeasurement') || '0'),
+      gapFillingCountry: parseInt(localStorage.getItem('gapFillingCountry') || '0'),
+      odysseeStartYear: parseInt(localStorage.getItem('odysseeStartYear') || '2000'),
+      odysseeEndYear: parseInt(localStorage.getItem('odysseeEndYear') || '2022'),
+      region: parseInt(localStorage.getItem('region') || '0'),
+      municipality:
+        String(localStorage.getItem('municipality') || 'false').toLowerCase() === 'true',
+      inhabitants: parseInt(localStorage.getItem('inhabitants') || '100000'),
+      years: JSON.parse(localStorage.getItem('years') || JSON.stringify(getYears())),
+      programs: JSON.parse(
+        localStorage.getItem('programs') || JSON.stringify([structuredClone(defaultProgram)])
+      ),
+      payload: { measures: [], parameters: {}, name: '' },
       resetted: false,
       tourRequested: false, // NEU
       results: [],
-      globalParameters: JSON.parse(localStorage.getItem("globalParameters") || JSON.stringify({})),
-      subsectorMapping: JSON.parse(localStorage.getItem("subsectorMapping") || JSON.stringify({})),
-      carrierMapping: JSON.parse(localStorage.getItem("carrierMapping") || JSON.stringify({})),
-      monetisationFactorMapping: JSON.parse(localStorage.getItem("monetisationFactorMapping") || JSON.stringify({})),
-      parameters: JSON.parse(localStorage.getItem("parameters") || JSON.stringify({})),
-      useRenovationRate: String(localStorage.getItem("useRenovationRate") || "false").toLowerCase() === "true",
-      seedInfo: String(localStorage.getItem("seedInfo") || "false").toLowerCase() === "true",
-    }
+      globalParameters: JSON.parse(localStorage.getItem('globalParameters') || JSON.stringify({})),
+      subsectorMapping: JSON.parse(localStorage.getItem('subsectorMapping') || JSON.stringify({})),
+      carrierMapping: JSON.parse(localStorage.getItem('carrierMapping') || JSON.stringify({})),
+      monetisationFactorMapping: JSON.parse(
+        localStorage.getItem('monetisationFactorMapping') || JSON.stringify({})
+      ),
+      parameters: JSON.parse(localStorage.getItem('parameters') || JSON.stringify({})),
+      useRenovationRate:
+        String(localStorage.getItem('useRenovationRate') || 'false').toLowerCase() === 'true',
+      seedInfo: String(localStorage.getItem('seedInfo') || 'false').toLowerCase() === 'true'
+    };
   },
   actions: {
     updateStage(stage: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("stage", stage.toString());
+      localStorage.setItem('stage', stage.toString());
     },
     updateMure(mure: boolean, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("mure", mure.toString());
+      localStorage.setItem('mure', mure.toString());
     },
     updateOdyssee(odyssee: boolean, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("odyssee", odyssee.toString());
+      localStorage.setItem('odyssee', odyssee.toString());
     },
     updateGapFilling(gapFilling: boolean, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("gapFilling", gapFilling.toString());
+      localStorage.setItem('gapFilling', gapFilling.toString());
     },
     updateMureToken(mureToken: MureTokenInterface, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("mureToken", JSON.stringify(mureToken));
+      localStorage.setItem('mureToken', JSON.stringify(mureToken));
     },
     updateMureCategory(mureCategory: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("mureCategory", JSON.stringify(mureCategory));
+      localStorage.setItem('mureCategory', JSON.stringify(mureCategory));
     },
     updateMureCountry(mureCountry: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("mureCountry", JSON.stringify(mureCountry));
+      localStorage.setItem('mureCountry', JSON.stringify(mureCountry));
     },
     updateMureMeasurement(mureMeasurement: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("mureMeasurement", JSON.stringify(mureMeasurement));
+      localStorage.setItem('mureMeasurement', JSON.stringify(mureMeasurement));
     },
     updateGapFillingCountry(gapFillingCountry: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("gapFillingCountry", JSON.stringify(gapFillingCountry));
+      localStorage.setItem('gapFillingCountry', JSON.stringify(gapFillingCountry));
     },
     updateOdysseeStartYear(odysseeStartYear: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("odysseeStartYear", JSON.stringify(odysseeStartYear));
+      localStorage.setItem('odysseeStartYear', JSON.stringify(odysseeStartYear));
     },
     updateOdysseeEndYear(odysseeEndYear: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("odysseeEndYear", JSON.stringify(odysseeEndYear));
+      localStorage.setItem('odysseeEndYear', JSON.stringify(odysseeEndYear));
     },
     updateRegion(region: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("region", region.toString());
+      localStorage.setItem('region', region.toString());
     },
     updateMunicipality(municipality: boolean, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("municipality", municipality.toString());
+      localStorage.setItem('municipality', municipality.toString());
     },
     updateInhabitants(inhabitants: number, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("inhabitants", inhabitants.toString());
+      localStorage.setItem('inhabitants', inhabitants.toString());
     },
     updateYears(years: Array<number>, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("years", JSON.stringify(years));
+      localStorage.setItem('years', JSON.stringify(years));
     },
     updatePrograms(programs: Array<ProgramInterface>, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("programs", JSON.stringify(programs));
+      localStorage.setItem('programs', JSON.stringify(programs));
     },
     updatePayload(payload: PayloadInterface, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
@@ -118,31 +132,34 @@ export const useSessionStore = defineStore({
     },
     updateParameters(parameters: Parameters, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("parameters", JSON.stringify(parameters));
+      localStorage.setItem('parameters', JSON.stringify(parameters));
     },
     updateGlobalParameters(globalParameters: GlobalParameters, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("globalParameters", JSON.stringify(globalParameters));
+      localStorage.setItem('globalParameters', JSON.stringify(globalParameters));
     },
     updateSubsectorMapping(subsectorMapping: { [key: number]: string }, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("subsectorMapping", JSON.stringify(subsectorMapping));
+      localStorage.setItem('subsectorMapping', JSON.stringify(subsectorMapping));
     },
     updateCarrierMapping(carrierMapping: CarrierMapping, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("carrierMapping", JSON.stringify(carrierMapping));
+      localStorage.setItem('carrierMapping', JSON.stringify(carrierMapping));
     },
-    updateMonetisationFactorMapping(monetisationFactorMapping: { [key: number]: string }, manualChange?: boolean) {
+    updateMonetisationFactorMapping(
+      monetisationFactorMapping: { [key: number]: string },
+      manualChange?: boolean
+    ) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("monetisationFactorMapping", JSON.stringify(monetisationFactorMapping));
+      localStorage.setItem('monetisationFactorMapping', JSON.stringify(monetisationFactorMapping));
     },
     updateUseRenovationRate(useRenovationRate: boolean, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("useRenovationRate", useRenovationRate.toString());
+      localStorage.setItem('useRenovationRate', useRenovationRate.toString());
     },
     updateSeedInfo(seedInfo: boolean, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
-      localStorage.setItem("seedInfo", seedInfo.toString());
+      localStorage.setItem('seedInfo', seedInfo.toString());
     },
     reset() {
       this.resetted = true;
@@ -161,13 +178,13 @@ export const useSessionStore = defineStore({
       this.updateInhabitants(100000, false);
       this.updateYears(getYears(), false);
       this.updatePrograms([structuredClone(defaultProgram)], false);
-      this.updatePayload({ "measures": [], "parameters": {}, "name": "" }, false);
+      this.updatePayload({ measures: [], parameters: {}, name: '' }, false);
       this.updateParameters({}, false);
       this.updateGlobalParameters({}, false);
       this.updateSubsectorMapping({}, false);
       this.updateCarrierMapping({}, false);
       this.updateMonetisationFactorMapping({}, false);
       this.updateUseRenovationRate(false, false);
-    },
-  },
+    }
+  }
 });

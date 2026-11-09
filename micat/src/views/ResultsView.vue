@@ -5,16 +5,16 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 <script setup async lang="ts">
-import {onBeforeMount} from 'vue';
-import ResultsOverlay from "@/components/ResultsOverlay.vue";
-import { useSessionStore } from "@/stores/session";
-import router from "@/router";
+import { onBeforeMount } from 'vue';
+import ResultsOverlay from '@/components/ResultsOverlay.vue';
+import { useSessionStore } from '@/stores/session';
+import router from '@/router';
 
 const session = useSessionStore();
 
 // Lifecycle
 onBeforeMount(async () => {
-  if (session.results.length == 0) router.push({name: 'home'});
+  if (session.results.length == 0) router.push({ name: 'home' });
 });
 </script>
 

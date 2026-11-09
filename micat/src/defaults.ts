@@ -7,9 +7,9 @@ import type {
   ModalInjectInterface,
   ProgramInterface,
   UnitsInterface
-} from '@/types'
+} from '@/types';
 
-export const stages = Object.freeze({ home: 1, full: 2 })
+export const stages = Object.freeze({ home: 1, full: 2 });
 export const defaultModalInject: ModalInjectInterface = {
   showModal: false,
   modalTitle: '',
@@ -17,14 +17,14 @@ export const defaultModalInject: ModalInjectInterface = {
   modalType: '',
   openModal: () => null,
   closeModal: () => null
-}
+};
 export const defaultImprovement: ImprovementInterface = {
   id: 0,
   internalId: 0,
   values: {},
   percentage: 0,
   showParameterWarning: false
-}
+};
 export const defaultProgram: ProgramInterface = {
   name: 'Program 1',
   type: 'energyEfficiency',
@@ -34,7 +34,7 @@ export const defaultProgram: ProgramInterface = {
   subsectorName: '',
   showSubsectorMenu: false,
   improvements: [{ ...defaultImprovement }]
-}
+};
 export const chartColours: Array<Array<number>> = [
   [252, 107, 32],
   [7, 89, 133],
@@ -55,7 +55,7 @@ export const chartColours: Array<Array<number>> = [
   [75, 192, 192],
   [153, 102, 255],
   [255, 159, 64]
-]
+];
 export const units: UnitsInterface = {
   1: {
     name: 'ktoe (kilo tonne of oil equivalent)',
@@ -82,24 +82,24 @@ export const units: UnitsInterface = {
     symbol: 'MWh',
     factor: 11630
   }
-}
+};
 export const unitsRenewables: UnitsInterface = {
   1: {
     name: 'MW',
     symbol: 'MW',
     factor: 1
   }
-}
+};
 export const mureSubsectorMapping: { [key: number]: number } = {
   1: 1, // General cross-cutting *not used*
   2: 17, // Household <-> Average residential
   3: 2, // Industry <-> Average industry
   4: 16, // Services <-> Average tertiary
   5: 18 // Transport <-> Average transport
-}
+};
 export const mureCategoryToSectorMapping: { [key: number]: number } = {
   2: 4, // Household -> Residential
   3: 2, // Industry -> Industry
   4: 3, // Services -> Tertiary
-  5: 5  // Transport -> Transport
-}
+  5: 5 // Transport -> Transport
+};

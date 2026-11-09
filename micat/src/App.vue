@@ -7,486 +7,487 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <script setup lang="ts">
 import { ref, provide } from 'vue';
 import { RouterView } from 'vue-router';
-import NotificationBox from "@/components/NotificationBox.vue";
-import type { HelpTextInterface } from "@/types";
-import { InformationCircleIcon, MapIcon } from "@heroicons/vue/24/outline"; // NEU: MapIcon ergänzt
-import { useSessionStore } from "@/stores/session"; // NEU
-import { stages } from "@/defaults"; // NEU
+import NotificationBox from '@/components/NotificationBox.vue';
+import type { HelpTextInterface } from '@/types';
+import { InformationCircleIcon, MapIcon } from '@heroicons/vue/24/outline'; // NEU: MapIcon ergänzt
+import { useSessionStore } from '@/stores/session'; // NEU
+import { stages } from '@/defaults'; // NEU
 
 const session = useSessionStore(); // NEU
 
 // Variables
 const helpTexts: HelpTextInterface = {
-  'timeframe': {
-    'title': 'Time frame',
-    'text': 'This relates to when the measure is implemented and also affects which data is used.<br />' +
+  timeframe: {
+    title: 'Time frame',
+    text:
+      'This relates to when the measure is implemented and also affects which data is used.<br />' +
       'For completed programs, please use <strong>PAST</strong>. Thereby, the calculations mainly rely on measured values from the past, predominantly stemming from Eurostat.<br />' +
-      'For current or future programs, please use <strong>FUTURE</strong>. As a result, data from PRIMES\' EU Reference Scenario 2020 is used, which constitute projected values.',
-    'type': 'help'
+      "For current or future programs, please use <strong>FUTURE</strong>. As a result, data from PRIMES' EU Reference Scenario 2020 is used, which constitute projected values.",
+    type: 'help'
   },
-  'region': {
-    'title': 'Region',
-    'text': 'This selects which Member State\'s (or EU27) default values are used in calculations. In case of a country, it is also possible to merely assess a region or municipality in it. Then, absolute default values (i.e. GDP, energy consumption) are scaled using population data. More information about the selection and impact of the geographic area can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/geography.html" target="_blank">here</a>.',
-    'type': 'help'
+  region: {
+    title: 'Region',
+    text: 'This selects which Member State\'s (or EU27) default values are used in calculations. In case of a country, it is also possible to merely assess a region or municipality in it. Then, absolute default values (i.e. GDP, energy consumption) are scaled using population data. More information about the selection and impact of the geographic area can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/geography.html" target="_blank">here</a>.',
+    type: 'help'
   },
-  'unit': {
-    'title': 'Unit',
-    'text': 'This allows to input the energy savings in different units. This does not have an effect on the results\' units.',
-    'type': 'help'
+  unit: {
+    title: 'Unit',
+    text: "This allows to input the energy savings in different units. This does not have an effect on the results' units.",
+    type: 'help'
   },
   'unit-renewables': {
-    'title': 'Unit',
-    'text': 'This allows to input the capacities in different units. This does not have an effect on the results\' units.',
-    'type': 'help'
+    title: 'Unit',
+    text: "This allows to input the capacities in different units. This does not have an effect on the results' units.",
+    type: 'help'
   },
-  'years': {
-    'title': 'Time frame',
-    'text': 'Here, you can select the years for which you want to provide data. Between these, the tool interpolates value linearly.',
-    'type': 'help'
+  years: {
+    title: 'Time frame',
+    text: 'Here, you can select the years for which you want to provide data. Between these, the tool interpolates value linearly.',
+    type: 'help'
   },
-  'programs': {
-    'title': 'Programmes',
-    'text': 'A programme represents a policy or a group of measures, which you can name here. It can encompass several improvement actions within one (sub-)sector.',
-    'type': 'help'
+  programs: {
+    title: 'Programmes',
+    text: 'A programme represents a policy or a group of measures, which you can name here. It can encompass several improvement actions within one (sub-)sector.',
+    type: 'help'
   },
-  'subsector': {
-    'title': 'Subsector selection',
-    'text': 'This determines the sector or subsector, the program is carried out in. More details about the available (sub-)sectors are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-sector-and-id-subsector" target="_blank">here</a>. Furthermore, help on how to decompose a measure into different sectors and improvement actions can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/specifying_subsector_action.html" target="_blank">here</a>.',
-    'type': 'help'
+  subsector: {
+    title: 'Subsector selection',
+    text: 'This determines the sector or subsector, the program is carried out in. More details about the available (sub-)sectors are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-sector-and-id-subsector" target="_blank">here</a>. Furthermore, help on how to decompose a measure into different sectors and improvement actions can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/specifying_subsector_action.html" target="_blank">here</a>.',
+    type: 'help'
   },
   'starting-year': {
-    'title': 'Starting year selection',
-    'text': 'This specifies the year in which the program has started.',
-    'type': 'help'
+    title: 'Starting year selection',
+    text: 'This specifies the year in which the program has started.',
+    type: 'help'
   },
-  'technology': {
-    'title': 'Technology selection',
-    'text': 'This determines the assessed renewable energy technology used in the program. More details about the available renewable energy technologies are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-sector-and-id-subsector" target="_blank">here</a>.',
-    'type': 'help'
+  technology: {
+    title: 'Technology selection',
+    text: 'This determines the assessed renewable energy technology used in the program. More details about the available renewable energy technologies are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-sector-and-id-subsector" target="_blank">here</a>.',
+    type: 'help'
   },
-  'improvement': {
-    'title': 'Improvement action selection',
-    'text': 'This specifies which improvement actions are part of the program. Each improvement action type bundles measures that similarly affect multiple impacts (i.e. building envelope encompasses window replacements as well as wall or wall and roof insulation). More details about the available improvement actions are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-action-type" target="_blank">here</a>. Furthermore, help on how to decompose a measure into different sectors and improvement actions can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/specifying_subsector_action.html" target="_blank">here</a>.',
-    'type': 'help'
+  improvement: {
+    title: 'Improvement action selection',
+    text: 'This specifies which improvement actions are part of the program. Each improvement action type bundles measures that similarly affect multiple impacts (i.e. building envelope encompasses window replacements as well as wall or wall and roof insulation). More details about the available improvement actions are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-action-type" target="_blank">here</a>. Furthermore, help on how to decompose a measure into different sectors and improvement actions can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/specifying_subsector_action.html" target="_blank">here</a>.',
+    type: 'help'
   },
   'renewable-type': {
-    'title': 'Configuration selection',
-    'text': 'This specifies which configuration of the selected renewable energy technology is relevant for the selected program. More details about the available configurations are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-action-type" target="_blank">here</a>.',
-    'type': 'help'
+    title: 'Configuration selection',
+    text: 'This specifies which configuration of the selected renewable energy technology is relevant for the selected program. More details about the available configurations are available <a class="font-bold" href="https://doc.micatool.eu/indices/indices_description.html#id-action-type" target="_blank">here</a>.',
+    type: 'help'
   },
-  'savings': {
-    'title': 'How to specify energy savings or renewable capacity',
-    'text': 'Please enter the energy savings or renewable capacity associated with the selected improvement action as <strong>total annual savings</strong> or <strong>total installed capacity</strong> in the selected unit. More details about the exact meaning of the terms can be found in the <a class="font-bold" href="https://doc.micatool.eu/user_interface/energy_savings_input.html#total-annual-savings" target="_blank">documentation</a>',
-    'type': 'help'
+  savings: {
+    title: 'How to specify energy savings or renewable capacity',
+    text: 'Please enter the energy savings or renewable capacity associated with the selected improvement action as <strong>total annual savings</strong> or <strong>total installed capacity</strong> in the selected unit. More details about the exact meaning of the terms can be found in the <a class="font-bold" href="https://doc.micatool.eu/user_interface/energy_savings_input.html#total-annual-savings" target="_blank">documentation</a>',
+    type: 'help'
   },
   'energy-price-sensitivity': {
-    'title': 'Energy price sensitivity',
-    'text': 'This setting allows to apply a multiplier to all energy costs calculated within the tool. As price shocks tend to come unannounced, this can help to simply counteract inaccurate price projections.',
-    'type': 'help'
+    title: 'Energy price sensitivity',
+    text: 'This setting allows to apply a multiplier to all energy costs calculated within the tool. As price shocks tend to come unannounced, this can help to simply counteract inaccurate price projections.',
+    type: 'help'
   },
   'investments-sensitivity': {
-    'title': 'Investments sensitivity',
-    'text': 'This setting allows to apply a multiplier to the investment costs used in the cost-benefit analysis. However, this does not affect the prior calculation of multiple impacts scaling with investments (i.e. GDP, employments, and energy poverty in case the number of affected dwellings has not been specified).',
-    'type': 'help'
+    title: 'Investments sensitivity',
+    text: 'This setting allows to apply a multiplier to the investment costs used in the cost-benefit analysis. However, this does not affect the prior calculation of multiple impacts scaling with investments (i.e. GDP, employments, and energy poverty in case the number of affected dwellings has not been specified).',
+    type: 'help'
   },
   'discount-rate': {
-    'title': 'Discount rate',
-    'text': 'This allows to adjust the discount rate in the cost-benefit analysis, which specifies what interest rate is assumed for alternative investment possibilities. Thus, it allows to compare the expected return on investment of energy efficiency with the default expected across the economy. However, this setting does not affect indicator calculations which might have some underlying discount rate assumptions (i.e. capitalisation rate for asset values or coefficients for GDP).',
-    'type': 'help'
+    title: 'Discount rate',
+    text: 'This allows to adjust the discount rate in the cost-benefit analysis, which specifies what interest rate is assumed for alternative investment possibilities. Thus, it allows to compare the expected return on investment of energy efficiency with the default expected across the economy. However, this setting does not affect indicator calculations which might have some underlying discount rate assumptions (i.e. capitalisation rate for asset values or coefficients for GDP).',
+    type: 'help'
   },
   'cba-year': {
-    'title': 'Year',
-    'text': 'Please select the desired year for which the calculation of the marginal cost curves is to be carried out.',
-    'type': 'help'
+    title: 'Year',
+    text: 'Please select the desired year for which the calculation of the marginal cost curves is to be carried out.',
+    type: 'help'
   },
-  'beta': {
-    'title': 'Perpetual Beta',
-    'text': 'Although the MICATool is functional, it is still a work in progress, with functions frequently being added or altered. Accordingly, errors may still occur at times, which will be corrected as soon as possible. If this happens or you have other general questions and comments, please send us an email to <a href="mailto:niklas.reinfandt@isi.fraunhofer.de" class="font-bold">niklas.reinfandt@isi.fraunhofer.de</a>.',
-    'type': 'help'
+  beta: {
+    title: 'Perpetual Beta',
+    text: 'Although the MICATool is functional, it is still a work in progress, with functions frequently being added or altered. Accordingly, errors may still occur at times, which will be corrected as soon as possible. If this happens or you have other general questions and comments, please send us an email to <a href="mailto:niklas.reinfandt@isi.fraunhofer.de" class="font-bold">niklas.reinfandt@isi.fraunhofer.de</a>.',
+    type: 'help'
   },
   'global-parameters': {
-    'title': 'Global parameters',
-    'text': 'These parameters define the context in which the assessed measures take place. Inter alia, this concerns energy prices, the energy mix used in electricity and heat generation, the employed monetisation factors or the energy mix in certain sectors and subsectors. Thus, these settings apply to all measures, unless specified otherwise in measures\' advanced parameters.<br /><br />The region and years for which these values can be input reflects the selection of <strong>Region</strong> and years in the prompt <strong>Time frame</strong>, respectively.<br /><br /><strong>Important:</strong> Please note, that any changes are lost if you change the given region or time frame.',
-    'type': 'help'
+    title: 'Global parameters',
+    text: "These parameters define the context in which the assessed measures take place. Inter alia, this concerns energy prices, the energy mix used in electricity and heat generation, the employed monetisation factors or the energy mix in certain sectors and subsectors. Thus, these settings apply to all measures, unless specified otherwise in measures' advanced parameters.<br /><br />The region and years for which these values can be input reflects the selection of <strong>Region</strong> and years in the prompt <strong>Time frame</strong>, respectively.<br /><br /><strong>Important:</strong> Please note, that any changes are lost if you change the given region or time frame.",
+    type: 'help'
   },
-  'parameters': {
-    'title': 'Advanced parameters',
-    'text': 'These parameters merely pertain to the corresponding measure. More information can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/user_interface_description.html#measure-specific-parameters" target="_blank">here</a>. <br /><br /><strong>Important:</strong> Please note, that any changes are lost if you change the given region, time frame, subsector or improvement.',
-    'type': 'help'
+  parameters: {
+    title: 'Advanced parameters',
+    text: 'These parameters merely pertain to the corresponding measure. More information can be found <a class="font-bold" href="https://doc.micatool.eu/user_interface/user_interface_description.html#measure-specific-parameters" target="_blank">here</a>. <br /><br /><strong>Important:</strong> Please note, that any changes are lost if you change the given region, time frame, subsector or improvement.',
+    type: 'help'
   },
-  'renovation': {
-    'title': 'Switch between number of affected dwellings and annual renovation rate',
-    'text': 'This switch allows to swap the standard input of number of affected dwellings by the provision of an annual renovation rate (which is then multiplied with the total number of dwellings). Thus, this switch allows you to choose the input that suits your data and needs.',
-    'type': 'help'
+  renovation: {
+    title: 'Switch between number of affected dwellings and annual renovation rate',
+    text: 'This switch allows to swap the standard input of number of affected dwellings by the provision of an annual renovation rate (which is then multiplied with the total number of dwellings). Thus, this switch allows you to choose the input that suits your data and needs.',
+    type: 'help'
   },
-  'export': {
-    'title': 'Export',
-    'text': 'Please note that global and advanced parameters are not exported. If you want to download your parameter entries, please use the <i>save</i> function.',
-    'type': 'help'
+  export: {
+    title: 'Export',
+    text: 'Please note that global and advanced parameters are not exported. If you want to download your parameter entries, please use the <i>save</i> function.',
+    type: 'help'
   },
   // Global parameters
-  'FuelSplitCoefficient': {
-    'title': 'Energy mix coefficient',
-    'text': 'These parameters describe which energy carriers are used in the different available sectors and subsectors and there percentage in the energy mix. These values are used to calculate the affected energy mixes for the different selectable improvement actions. Thus, altering these figures changes the proposed default energy mix for the measures selected in the related sector. Yet, it is still possible to alter the affected energy mix for a measure in the measures\' advanced parameters. How this impacts assumed energy mixes is described in more detail <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html" target="_blank">here</a>.<br /><br /><i>For ex-post evaluations, default values stem from Eurostat\'s complete energy balances. For ex-ante evaluations, the values are provided from e3modelling\'s EU Reference Scenario 2020, computed with their PRIMES model.</i><br /><br />Since some default values are confidential, the respective fields might be blank. Nonetheless, you have the possibility to input your own value, which overrides the database\'s default value.',
-    'type': 'help'
+  FuelSplitCoefficient: {
+    title: 'Energy mix coefficient',
+    text: 'These parameters describe which energy carriers are used in the different available sectors and subsectors and there percentage in the energy mix. These values are used to calculate the affected energy mixes for the different selectable improvement actions. Thus, altering these figures changes the proposed default energy mix for the measures selected in the related sector. Yet, it is still possible to alter the affected energy mix for a measure in the measures\' advanced parameters. How this impacts assumed energy mixes is described in more detail <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html" target="_blank">here</a>.<br /><br /><i>For ex-post evaluations, default values stem from Eurostat\'s complete energy balances. For ex-ante evaluations, the values are provided from e3modelling\'s EU Reference Scenario 2020, computed with their PRIMES model.</i><br /><br />Since some default values are confidential, the respective fields might be blank. Nonetheless, you have the possibility to input your own value, which overrides the database\'s default value.',
+    type: 'help'
   },
-  'EnergyPrice': {
-    'title': 'Energy prices',
-    'text': 'These parameters specify the costs of different energy carriers per kiloton of oil equivalent (ktoe). This data stems from a wide range of sources, oftentimes adjusted to account for projected price developments. <br /><br /><i>For ex-post evaluations, default values have been compiled by e3m. For ex-ante evaluations, past values are projected into the future using the price development projections from the IEA\'s World Energy Outlook.</i><br /><br />Since some default values are confidential, the respective fields might be blank. Nonetheless, you have the possibility to input your own value, which overrides the database\'s default value.',
-    'type': 'help'
+  EnergyPrice: {
+    title: 'Energy prices',
+    text: "These parameters specify the costs of different energy carriers per kiloton of oil equivalent (ktoe). This data stems from a wide range of sources, oftentimes adjusted to account for projected price developments. <br /><br /><i>For ex-post evaluations, default values have been compiled by e3m. For ex-ante evaluations, past values are projected into the future using the price development projections from the IEA's World Energy Outlook.</i><br /><br />Since some default values are confidential, the respective fields might be blank. Nonetheless, you have the possibility to input your own value, which overrides the database's default value.",
+    type: 'help'
   },
-  'ElectricityGeneration': {
-    'title': 'Electricity Generation',
-    'text': 'This specifies the average amounts of the different primary energy carriers to generate one unit of electricity. Given the typically low efficiency of thermal power plants, the sum of final energy carriers\' factors can significantly surpass 1. The sum of the given values across all energy carriers is therefore equal to the average primary energy factor for the electricity generation. How this impacts assumed energy mixes and how these values are calculated is described in more detail <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html" target="_blank">here</a>.<br /><br /><i>For ex-post measures, these values are calculated from Eurostat\'s Complete Energy Balances. For ex-ante, the calculation is based on results from the EU Reference Scenario 2020 modelled using PRIMES.</i>',
-    'type': 'help'
+  ElectricityGeneration: {
+    title: 'Electricity Generation',
+    text: 'This specifies the average amounts of the different primary energy carriers to generate one unit of electricity. Given the typically low efficiency of thermal power plants, the sum of final energy carriers\' factors can significantly surpass 1. The sum of the given values across all energy carriers is therefore equal to the average primary energy factor for the electricity generation. How this impacts assumed energy mixes and how these values are calculated is described in more detail <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html" target="_blank">here</a>.<br /><br /><i>For ex-post measures, these values are calculated from Eurostat\'s Complete Energy Balances. For ex-ante, the calculation is based on results from the EU Reference Scenario 2020 modelled using PRIMES.</i>',
+    type: 'help'
   },
-  'HeatGeneration': {
-    'title': 'Heat Generation',
-    'text': 'This specifies the average amounts of the different primary energy carriers to generate one unit of heat. Given transformation losses in heat generation, the sum of final energy carriers\' factors can surpass 1.  The sum of the given values across all energy carriers is therefore equal to the average primary energy factor for the heat generation. How this impacts assumed energy mixes is described in more detail <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html" target="_blank">here</a>.<br /><br /><i>For ex-post measures, these values are calculated from Eurostat\'s Complete Energy Balances. For ex-ante, the calculation is based on results from the EU Reference Scenario 2020 modelled using PRIMES.</i>',
-    'type': 'help'
+  HeatGeneration: {
+    title: 'Heat Generation',
+    text: 'This specifies the average amounts of the different primary energy carriers to generate one unit of heat. Given transformation losses in heat generation, the sum of final energy carriers\' factors can surpass 1.  The sum of the given values across all energy carriers is therefore equal to the average primary energy factor for the heat generation. How this impacts assumed energy mixes is described in more detail <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html" target="_blank">here</a>.<br /><br /><i>For ex-post measures, these values are calculated from Eurostat\'s Complete Energy Balances. For ex-ante, the calculation is based on results from the EU Reference Scenario 2020 modelled using PRIMES.</i>',
+    type: 'help'
   },
-  'MonetisationFactors': {
-    'title': 'Monetisation Factors',
-    'text': 'These parameters specify the monetary value used for the monetisation of impacts. Some of these values are year-dependent, while others are considered constant over time.',
-    'type': 'help'
+  MonetisationFactors: {
+    title: 'Monetisation Factors',
+    text: 'These parameters specify the monetary value used for the monetisation of impacts. Some of these values are year-dependent, while others are considered constant over time.',
+    type: 'help'
   },
-  'Valueofalifeyear': {
-    'title': 'Value of a Life Year',
-    'text': 'This factor is based on the <i>World Health Organization\'s (WHO)</i> publication of Value of a Life Year (VOLY) factors for European countries within their 2018 Carbon Reduction Benefits on Health Tool (CaRBonH). It describes the social costs of years of reduced lifetime.',
-    'type': 'help'
+  Valueofalifeyear: {
+    title: 'Value of a Life Year',
+    text: "This factor is based on the <i>World Health Organization's (WHO)</i> publication of Value of a Life Year (VOLY) factors for European countries within their 2018 Carbon Reduction Benefits on Health Tool (CaRBonH). It describes the social costs of years of reduced lifetime.",
+    type: 'help'
   },
-  'Valueofastatisitcallife': {
-    'title': 'Value of Statistical Life',
-    'text': 'This factor is based on the <i>World Health Organization\'s (WHO)</i> publication of Value of Statistical Life (VSL) factors for European countries within their 2018 Carbon Reduction Benefits on Health Tool (CaRBonH). It describes the social costs of premature deaths.',
-    'type': 'help'
+  Valueofastatisitcallife: {
+    title: 'Value of Statistical Life',
+    text: "This factor is based on the <i>World Health Organization's (WHO)</i> publication of Value of Statistical Life (VSL) factors for European countries within their 2018 Carbon Reduction Benefits on Health Tool (CaRBonH). It describes the social costs of premature deaths.",
+    type: 'help'
   },
-  'Valueofalostworkday': {
-    'title': 'Value of a lost work day',
-    'text': 'This factor is based on the <i>World Health Organization\'s (WHO)</i> publication of Value of work loss days factors for European countries within their 2018 Carbon Reduction Benefits on Health Tool (CaRBonH). It describes the social costs of absences from work, for instance due to illness.',
-    'type': 'help'
+  Valueofalostworkday: {
+    title: 'Value of a lost work day',
+    text: "This factor is based on the <i>World Health Organization's (WHO)</i> publication of Value of work loss days factors for European countries within their 2018 Carbon Reduction Benefits on Health Tool (CaRBonH). It describes the social costs of absences from work, for instance due to illness.",
+    type: 'help'
   },
-  'Hospitalisationmonetisation': {
-    'title': 'Hospitalisation Monetisation',
-    'text': 'This factor is based on the <i>World Health Organization\'s (WHO)</i> publication of Hospital Admission cost factors for European countries within their 2018 Carbon Reduction Benefits on Health Tool (CaRBonH). It describes the social costs of additional hospital admissions.',
-    'type': 'help'
+  Hospitalisationmonetisation: {
+    title: 'Hospitalisation Monetisation',
+    text: "This factor is based on the <i>World Health Organization's (WHO)</i> publication of Hospital Admission cost factors for European countries within their 2018 Carbon Reduction Benefits on Health Tool (CaRBonH). It describes the social costs of additional hospital admissions.",
+    type: 'help'
   },
-  'CostpertonofemittedCO2': {
-    'title': 'Cost of CO2-emissions',
-    'text': 'The valuation of the cost of CO2 emissions is based on societal costs of carbon emissions, including all costs to alleviate their consequences. However, no discounting of the opportunity to emit CO2 for future generations is included in the provided default figure. The latter as well as a figure including generational discounting are calculated by the <i><a class="font-bold" href="https://www.umweltbundesamt.de/daten/umwelt-wirtschaft/gesellschaftliche-kosten-von-umweltbelastungen#klimakosten-von-treibhausgas-emissionen" target="_blank">German Federal Environmental Agency (UBA)</a></i>.<br /><br />Alternatively, one could also use the market price of emission rights traded within the EU Emission Trading Scheme, the European Union\'s cap and trade scheme for carbon dioxide emissions. However, these costs would not constitute the cost of eliminating all societal damages of carbon emissions. Inter alia, current emission allowance prices can be found on the <a class="font-bold" href="https://www.eex.com/en/market-data/environmentals/spot" target="_blank">European Energy Exchange\'s (EEX) website</a>.',
-    'type': 'help'
+  CostpertonofemittedCO2: {
+    title: 'Cost of CO2-emissions',
+    text: 'The valuation of the cost of CO2 emissions is based on societal costs of carbon emissions, including all costs to alleviate their consequences. However, no discounting of the opportunity to emit CO2 for future generations is included in the provided default figure. The latter as well as a figure including generational discounting are calculated by the <i><a class="font-bold" href="https://www.umweltbundesamt.de/daten/umwelt-wirtschaft/gesellschaftliche-kosten-von-umweltbelastungen#klimakosten-von-treibhausgas-emissionen" target="_blank">German Federal Environmental Agency (UBA)</a></i>.<br /><br />Alternatively, one could also use the market price of emission rights traded within the EU Emission Trading Scheme, the European Union\'s cap and trade scheme for carbon dioxide emissions. However, these costs would not constitute the cost of eliminating all societal damages of carbon emissions. Inter alia, current emission allowance prices can be found on the <a class="font-bold" href="https://www.eex.com/en/market-data/environmentals/spot" target="_blank">European Energy Exchange\'s (EEX) website</a>.',
+    type: 'help'
   },
-  'CostofstatisticaltransferofRES': {
-    'title': 'Cost of statistical transfer of RES',
-    'text': 'The monetisation of energy efficiency\'s contribution to Renewable Energy Source (RES) targets as defined in the Renewable Energy Directive (RED) is done via statistical transfer costs. A statistical transfer is the administrative on paper purchase of a quantity of renewable energy by an underachieving European Member State from another Member State that has overachieved its target. As such, no physical energy is transferred, merely the right to account the renewable energy production and consumption is transferred between Member States.<br /><br />The provided default cost is calculated as average of negotiated and published statistical transfer of RES deals between Member States, as shown in the <i><a class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf" target="_blank">corresponding fact sheet</a>.',
-    'type': 'help'
+  CostofstatisticaltransferofRES: {
+    title: 'Cost of statistical transfer of RES',
+    text: 'The monetisation of energy efficiency\'s contribution to Renewable Energy Source (RES) targets as defined in the Renewable Energy Directive (RED) is done via statistical transfer costs. A statistical transfer is the administrative on paper purchase of a quantity of renewable energy by an underachieving European Member State from another Member State that has overachieved its target. As such, no physical energy is transferred, merely the right to account the renewable energy production and consumption is transferred between Member States.<br /><br />The provided default cost is calculated as average of negotiated and published statistical transfer of RES deals between Member States, as shown in the <i><a class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-impacts-on-RES-targets.pdf" target="_blank">corresponding fact sheet</a>.',
+    type: 'help'
   },
-  'InvestmentcostsofPV': {
-    'title': 'Investment costs of PV',
-    'text': 'Average investment costs for the installation of 1MW of photovoltaics.<br /><br /><i>The data is an average of values from a 2016 IRENA study and a study commissioned by the European Commission (Tsiropoulos I, Tarvydas, D, Zucker 2017).</i>',
-    'type': 'help'
+  InvestmentcostsofPV: {
+    title: 'Investment costs of PV',
+    text: 'Average investment costs for the installation of 1MW of photovoltaics.<br /><br /><i>The data is an average of values from a 2016 IRENA study and a study commissioned by the European Commission (Tsiropoulos I, Tarvydas, D, Zucker 2017).</i>',
+    type: 'help'
   },
-  'Investmentcostsofonshorewind': {
-    'title': 'Investment costs of onshore wind',
-    'text': 'Average investment costs for the installation of 1MW of onshore wind energy.<br /><br /><i>The data is an average of values from a 2016 IRENA study and a study commissioned by the European Commission (Tsiropoulos I, Tarvydas, D, Zucker 2017).</i>',
-    'type': 'help'
+  Investmentcostsofonshorewind: {
+    title: 'Investment costs of onshore wind',
+    text: 'Average investment costs for the installation of 1MW of onshore wind energy.<br /><br /><i>The data is an average of values from a 2016 IRENA study and a study commissioned by the European Commission (Tsiropoulos I, Tarvydas, D, Zucker 2017).</i>',
+    type: 'help'
   },
-  'Investmentcostsofoffshorewind': {
-    'title': 'Investment costs of offshore wind',
-    'text': 'Average investment costs for the installation of 1MW of offshore wind energy.<br /><br /><i>The data is an average of values from a 2016 IRENA study and a study commissioned by the European Commission (Tsiropoulos I, Tarvydas, D, Zucker 2017).</i>',
-    'type': 'help'
+  Investmentcostsofoffshorewind: {
+    title: 'Investment costs of offshore wind',
+    text: 'Average investment costs for the installation of 1MW of offshore wind energy.<br /><br /><i>The data is an average of values from a 2016 IRENA study and a study commissioned by the European Commission (Tsiropoulos I, Tarvydas, D, Zucker 2017).</i>',
+    type: 'help'
   },
   // Advanced parameters
   'advanced-parameters-40': {
-    'title': 'Investment costs',
-    'text': 'This figure specifies the triggered investments (which correspond to the total capital costs of the measure, rather than merely the subsidised or remaining costs) linked to the input energy savings. They should be input in total investments of the measure up to that point in time.<br /><br /><i>The default coefficients stem from analysis of past data and model runs carried out by e3m.</i>',
-    'type': 'help'
+    title: 'Investment costs',
+    text: 'This figure specifies the triggered investments (which correspond to the total capital costs of the measure, rather than merely the subsidised or remaining costs) linked to the input energy savings. They should be input in total investments of the measure up to that point in time.<br /><br /><i>The default coefficients stem from analysis of past data and model runs carried out by e3m.</i>',
+    type: 'help'
   },
   'advanced-parameters-35': {
-    'title': 'Average subsidy rate',
-    'text': 'This input specifies the average share of investment costs covered by subsidies.<br /><br /><i>The default coefficient is a general expert guess looking at typical funding programmes.</i>',
-    'type': 'help'
+    title: 'Average subsidy rate',
+    text: 'This input specifies the average share of investment costs covered by subsidies.<br /><br /><i>The default coefficient is a general expert guess looking at typical funding programmes.</i>',
+    type: 'help'
   },
   'advanced-parameters-36': {
-    'title': 'Average technology lifetime',
-    'text': 'This value specifies for how long the implemented improvement actions last.<br /><br /><i>Default values are deduced from standard data compiled by the European Committee for Standardization (CEN).</i>',
-    'type': 'help'
+    title: 'Average technology lifetime',
+    text: 'This value specifies for how long the implemented improvement actions last.<br /><br /><i>Default values are deduced from standard data compiled by the European Committee for Standardization (CEN).</i>',
+    type: 'help'
   },
   'advanced-parameters-16-1': {
-    'title': 'Share of electricity among affected',
-    'text': 'This value specifies the share of final energy carrier electricity among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
-    'type': 'help'
+    title: 'Share of electricity among affected',
+    text: 'This value specifies the share of final energy carrier electricity among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    type: 'help'
   },
   'advanced-parameters-16-2': {
-    'title': 'Share of oil among affected',
-    'text': 'This value specifies the share of final energy carrier oil among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
-    'type': 'help'
+    title: 'Share of oil among affected',
+    text: 'This value specifies the share of final energy carrier oil among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    type: 'help'
   },
   'advanced-parameters-16-3': {
-    'title': 'Share of coal among affected',
-    'text': 'This value specifies the share of final energy carrier coal among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
-    'type': 'help'
+    title: 'Share of coal among affected',
+    text: 'This value specifies the share of final energy carrier coal among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    type: 'help'
   },
   'advanced-parameters-16-4': {
-    'title': 'Share of gas among affected',
-    'text': 'This value specifies the share of final energy carrier gas among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
-    'type': 'help'
+    title: 'Share of gas among affected',
+    text: 'This value specifies the share of final energy carrier gas among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    type: 'help'
   },
   'advanced-parameters-16-5': {
-    'title': 'Share of biomass and waste among affected',
-    'text': 'This value specifies the share of final energy carrier biomass and waste among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
-    'type': 'help'
+    title: 'Share of biomass and waste among affected',
+    text: 'This value specifies the share of final energy carrier biomass and waste among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    type: 'help'
   },
   'advanced-parameters-16-6': {
-    'title': 'Share of heat among affected',
-    'text': 'This value specifies the share of final energy carrier heat among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
-    'type': 'help'
+    title: 'Share of heat among affected',
+    text: 'This value specifies the share of final energy carrier heat among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    type: 'help'
   },
   'advanced-parameters-16-7': {
-    'title': 'Share of H2 and e-fuels among affected',
-    'text': 'This value specifies the share of final energy carrier H2 and e-fuels among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
-    'type': 'help'
+    title: 'Share of H2 and e-fuels among affected',
+    text: 'This value specifies the share of final energy carrier H2 and e-fuels among all energy carriers saved by the implemented improvement action. Instead of %, the values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br />When provided, this overrides the default value, calculated following <a class="font-bold" href="https://doc.micatool.eu/energy_mix/energy_mix_description.html#calculation-of-final-energy-mix" target="_blank">this logic</a>. <i>The data feeding this calculation stem from Eurostat\'s Complete Energy Balances for ex-post and from PRIMES\' EU Reference Scenario 2020 for ex-ante, as well as a range of past model runs, to account for the specific improvement action and how its energy mix typically relates to the subsectoral energy mix</i>.',
+    type: 'help'
   },
   'advanced-parameters-17-1': {
-    'title': 'Share of electricity among removed',
-    'text': 'This input specifies the share of electricity among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of electricity saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of electricity among removed',
+    text: 'This input specifies the share of electricity among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of electricity saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-17-2': {
-    'title': 'Share of oil among removed',
-    'text': 'This input specifies the share of oil among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of oil saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of oil among removed',
+    text: 'This input specifies the share of oil among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of oil saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-17-3': {
-    'title': 'Share of coal among removed',
-    'text': 'This input specifies the share of coal among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of coal saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of coal among removed',
+    text: 'This input specifies the share of coal among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of coal saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-17-4': {
-    'title': 'Share of gas among removed',
-    'text': 'This input specifies the share of gas among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of gas saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of gas among removed',
+    text: 'This input specifies the share of gas among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of gas saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-17-5': {
-    'title': 'Share of biomass and waste among removed',
-    'text': 'This input specifies the share of biomass and waste among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of biomass and waste saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of biomass and waste among removed',
+    text: 'This input specifies the share of biomass and waste among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of biomass and waste saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-17-6': {
-    'title': 'Share of heat among removed',
-    'text': 'This input specifies the share of heat among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of heat saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of heat among removed',
+    text: 'This input specifies the share of heat among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of heat saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-17-7': {
-    'title': 'Share of H2 and e-fuels among removed',
-    'text': 'This input specifies the share of H2 and e-fuels among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of H2 and e-fuels saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of H2 and e-fuels among removed',
+    text: 'This input specifies the share of H2 and e-fuels among the removed energy carriers in the course of the fuel switch. The share refers to the quantity of H2 and e-fuels saved, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-18-1': {
-    'title': 'Share of electricity among installed',
-    'text': 'This input specifies the share of electricity among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of electricity that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of electricity among installed',
+    text: 'This input specifies the share of electricity among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of electricity that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-18-2': {
-    'title': 'Share of oil among installed',
-    'text': 'This input specifies the share of oil among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of oil that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of oil among installed',
+    text: 'This input specifies the share of oil among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of oil that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-18-3': {
-    'title': 'Share of coal among installed',
-    'text': 'This input specifies the share of coal among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of coal that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of coal among installed',
+    text: 'This input specifies the share of coal among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of coal that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-18-4': {
-    'title': 'Share of gas among installed',
-    'text': 'This input specifies the share of gas among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of gas that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of gas among installed',
+    text: 'This input specifies the share of gas among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of gas that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-18-5': {
-    'title': 'Share of biomass and waste among installed',
-    'text': 'This input specifies the share of biomass and waste among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of biomass and waste that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of biomass and waste among installed',
+    text: 'This input specifies the share of biomass and waste among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of biomass and waste that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-18-6': {
-    'title': 'Share of heat among installed',
-    'text': 'This input specifies the share of heat among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of heat that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of heat among installed',
+    text: 'This input specifies the share of heat among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of heat that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-18-7': {
-    'title': 'Share of H2 and e-fuels among installed',
-    'text': 'This input specifies the share of H2 and e-fuels among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of H2 and e-fuels that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
-    'type': 'help'
+    title: 'Share of H2 and e-fuels among installed',
+    text: 'This input specifies the share of H2 and e-fuels among the newly installed energy carriers in the course of the fuel switch. The share refers to the quantity of H2 and e-fuels that was installed, not the number of heaters or machines. Instead of %, values can also be entered as shares or absolute values if this is easier, as long as you remain consistent.<br /><br /><i>When provided, this overrides the default value, which is an expert guess based on the analysis of several typical measures</i>.',
+    type: 'help'
   },
   'advanced-parameters-14-1': {
-    'title': 'Efficiency of removed electricity',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using electricity. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of removed electricity',
+    text: 'This value specifies the assumed efficiency of the removed technologies using electricity. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-14-2': {
-    'title': 'Efficiency of removed oil',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using oil.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of removed oil',
+    text: 'This value specifies the assumed efficiency of the removed technologies using oil.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-14-3': {
-    'title': 'Efficiency of removed coal',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using coal.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of removed coal',
+    text: 'This value specifies the assumed efficiency of the removed technologies using coal.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-14-4': {
-    'title': 'Efficiency of removed gas',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using gas.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of removed gas',
+    text: 'This value specifies the assumed efficiency of the removed technologies using gas.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-14-5': {
-    'title': 'Efficiency of removed biomass and waste',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using biomass and waste.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of removed biomass and waste',
+    text: 'This value specifies the assumed efficiency of the removed technologies using biomass and waste.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-14-6': {
-    'title': 'Efficiency of removed heat',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using heat.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of removed heat',
+    text: 'This value specifies the assumed efficiency of the removed technologies using heat.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-14-7': {
-    'title': 'Efficiency of removed H2 and e-fuels',
-    'text': 'This value specifies the assumed efficiency of the removed technologies using H2 and e-fuels.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of removed H2 and e-fuels',
+    text: 'This value specifies the assumed efficiency of the removed technologies using H2 and e-fuels.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-15-1': {
-    'title': 'Efficiency of installed electricity',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using electricity. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of installed electricity',
+    text: 'This value specifies the assumed efficiency of the newly installed technologies using electricity. For heat pumps, the efficiency corresponds to the coefficient of performance (COP), since ambient heat is not considered an energy carrier in this methodology.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-15-2': {
-    'title': 'Efficiency of installed oil',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using oil.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of installed oil',
+    text: 'This value specifies the assumed efficiency of the newly installed technologies using oil.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-15-3': {
-    'title': 'Efficiency of installed coal',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using coal.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of installed coal',
+    text: 'This value specifies the assumed efficiency of the newly installed technologies using coal.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-15-4': {
-    'title': 'Efficiency of installed gas',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using gas.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of installed gas',
+    text: 'This value specifies the assumed efficiency of the newly installed technologies using gas.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-15-5': {
-    'title': 'Efficiency of installed biomass and waste',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using biomass and waste.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of installed biomass and waste',
+    text: 'This value specifies the assumed efficiency of the newly installed technologies using biomass and waste.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-15-6': {
-    'title': 'Efficiency of installed heat',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using heat.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of installed heat',
+    text: 'This value specifies the assumed efficiency of the newly installed technologies using heat.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-15-7': {
-    'title': 'Efficiency of installed H2 and e-fuels',
-    'text': 'This value specifies the assumed efficiency of the newly installed technologies using H2 and e-fuels.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
-    'type': 'help'
+    title: 'Efficiency of installed H2 and e-fuels',
+    text: 'This value specifies the assumed efficiency of the newly installed technologies using H2 and e-fuels.<br /><br /><i>The efficiency figures are expert guesses by Fraunhofer ISI based on the <a class="font-bold" href="https://ens.dk/en/our-services/technology-catalogues" target="_blank">Danish Energy Agency\'s Technology Catalogues</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-45': {
-    'title': 'Number of affected dwellings',
-    'text': 'This figure represents the number of different dwellings affected by the input measure.<br /><br /><i>By default, this figure is calculated from input energy savings, using coefficients drawn from analysis of past data by e3m.</i>',
-    'type': 'help'
+    title: 'Number of affected dwellings',
+    text: 'This figure represents the number of different dwellings affected by the input measure.<br /><br /><i>By default, this figure is calculated from input energy savings, using coefficients drawn from analysis of past data by e3m.</i>',
+    type: 'help'
   },
   'advanced-parameters-42': {
-    'title': 'Energy poverty target',
-    'text': 'This figure specifies the share of the generated energy savings achieved among energy poor households.<br /><br /><i>By default, the national energy poverty prevalence in terms of households unable to keep their home adequately warm as reported in the <a class="font-bold" href="https://ec.europa.eu/eurostat/web/microdata/european-union-statistics-on-income-and-living-conditions/" target="_blank">EU Statistics on Income and Living Conditions (EU-SILC)</a> is used.</i>',
-    'type': 'help'
+    title: 'Energy poverty target',
+    text: 'This figure specifies the share of the generated energy savings achieved among energy poor households.<br /><br /><i>By default, the national energy poverty prevalence in terms of households unable to keep their home adequately warm as reported in the <a class="font-bold" href="https://ec.europa.eu/eurostat/web/microdata/european-union-statistics-on-income-and-living-conditions/" target="_blank">EU Statistics on Income and Living Conditions (EU-SILC)</a> is used.</i>',
+    type: 'help'
   },
   'advanced-parameters-43': {
-    'title': 'Annual renovation rate',
-    'text': 'This value states which share of the dwelling stock is renovated annually. It represents an alternative input to the number of affected dwellings and is then multiplied with the national or local dwelling stock (depending on the selection of the geographical area).<br /<br /><i>The default value is based on PRIMES projections.</i>.',
-    'type': 'help'
+    title: 'Annual renovation rate',
+    text: 'This value states which share of the dwelling stock is renovated annually. It represents an alternative input to the number of affected dwellings and is then multiplied with the national or local dwelling stock (depending on the selection of the geographical area).<br /<br /><i>The default value is based on PRIMES projections.</i>.',
+    type: 'help'
   },
   'advanced-parameters-32': {
-    'title': 'Total dwelling stock',
-    'text': 'The total dwelling stock represents the number of dwellings in the investigated region. When you are a local level, the national dwelling stock is scaled down in line with population figures.<br /><br /><i>The dwelling stock have been collected by the Wuppertal Institute and stems from the <a class="font-bold" href="https://energy.ec.europa.eu/topics/energy-efficiency/energy-efficient-buildings/eu-building-stock-observatory_en" target="_blank">EU Building Stock Observatory</a>.</i>',
-    'type': 'help'
+    title: 'Total dwelling stock',
+    text: 'The total dwelling stock represents the number of dwellings in the investigated region. When you are a local level, the national dwelling stock is scaled down in line with population figures.<br /><br /><i>The dwelling stock have been collected by the Wuppertal Institute and stems from the <a class="font-bold" href="https://energy.ec.europa.eu/topics/energy-efficiency/energy-efficient-buildings/eu-building-stock-observatory_en" target="_blank">EU Building Stock Observatory</a>.</i>',
+    type: 'help'
   },
   'advanced-parameters-31': {
-    'title': 'Average number of households per building',
-    'text': 'This value specifies the average number of households per building.<br /><br /><i>By default, data provided by the <a class="font-bold" href="https://www.hotmaps-project.eu/" target="_blank">Hotmaps Project</a> is used.</i>',
-    'type': 'help'
+    title: 'Average number of households per building',
+    text: 'This value specifies the average number of households per building.<br /><br /><i>By default, data provided by the <a class="font-bold" href="https://www.hotmaps-project.eu/" target="_blank">Hotmaps Project</a> is used.</i>',
+    type: 'help'
   },
   'advanced-parameters-29': {
-    'title': 'Average rent of energy poor households',
-    'text': 'This figure specifies the average amount energy poor households spend on rent.<br /><br /><i>By default, national data from the <a class="font-bold" href="https://ec.europa.eu/eurostat/web/microdata/household-budget-survey" target="_blank">EU Household Budget Survey (HBS)</a> is used</i>.',
-    'type': 'help'
+    title: 'Average rent of energy poor households',
+    text: 'This figure specifies the average amount energy poor households spend on rent.<br /><br /><i>By default, national data from the <a class="font-bold" href="https://ec.europa.eu/eurostat/web/microdata/household-budget-survey" target="_blank">EU Household Budget Survey (HBS)</a> is used</i>.',
+    type: 'help'
   },
   'advanced-parameters-34': {
-    'title': 'Average renovation rent premium',
-    'text': 'This value determines the average rent increase (in percentage points of the current rent) for tenants following a major renovation.<br /><br /><i>The default value stems from a Wuppertal Institute analysis of past data, although data availability is quite scarce.</i>',
-    'type': 'help'
+    title: 'Average renovation rent premium',
+    text: 'This value determines the average rent increase (in percentage points of the current rent) for tenants following a major renovation.<br /><br /><i>The default value stems from a Wuppertal Institute analysis of past data, although data availability is quite scarce.</i>',
+    type: 'help'
   },
   // MURE
   'mure-sector': {
-    'title': 'Sector',
-    'text': 'Please select the sector in which the predefined use case has been implemented. Since the MICATool is using the disaggregation used in the ODYSSEE-MURE project, only the four main sectors are available for selection, with agriculture considered a part of the industrial sector.',
-    'type': 'help'
+    title: 'Sector',
+    text: 'Please select the sector in which the predefined use case has been implemented. Since the MICATool is using the disaggregation used in the ODYSSEE-MURE project, only the four main sectors are available for selection, with agriculture considered a part of the industrial sector.',
+    type: 'help'
   },
   'mure-country': {
-    'title': 'Country',
-    'text': 'Please select the country in which you want to assess a policy or measure. Since no EU27 policies and measures are assessed across the continent (often the national parts are assessed separately), EU27 is not selectable. Moreover, since major regional measures are listed on the national level, no scaling is possible for predefined use cases.',
-    'type': 'help'
+    title: 'Country',
+    text: 'Please select the country in which you want to assess a policy or measure. Since no EU27 policies and measures are assessed across the continent (often the national parts are assessed separately), EU27 is not selectable. Moreover, since major regional measures are listed on the national level, no scaling is possible for predefined use cases.',
+    type: 'help'
   },
   'mure-starting-year': {
-    'title': 'Starting year',
-    'text': 'This defines the first year from the database that is included.',
-    'type': 'help'
+    title: 'Starting year',
+    text: 'This defines the first year from the database that is included.',
+    type: 'help'
   },
   'mure-starting-date': {
-    'title': 'Starting date',
-    'text': 'Using this optional prompt allows you to filter all policies and measures corresponding to your selected sector and country by its starting date. Thus, it merely simplifies the selection of the desired policy.',
-    'type': 'help'
+    title: 'Starting date',
+    text: 'Using this optional prompt allows you to filter all policies and measures corresponding to your selected sector and country by its starting date. Thus, it merely simplifies the selection of the desired policy.',
+    type: 'help'
   },
   'mure-end-year': {
-    'title': 'End year',
-    'text': 'This defines the last year from the database that is included.',
-    'type': 'help'
+    title: 'End year',
+    text: 'This defines the last year from the database that is included.',
+    type: 'help'
   },
   'mure-measure': {
-    'title': 'End year',
-    'text': 'This list comprises all policies and measures corresponding to your selected search criteria. Note: for now, cross-sectoral use cases are not yet selectable and are therefore not included in this list.',
-    'type': 'help'
+    title: 'End year',
+    text: 'This list comprises all policies and measures corresponding to your selected search criteria. Note: for now, cross-sectoral use cases are not yet selectable and are therefore not included in this list.',
+    type: 'help'
   },
   // CBA
   'cba-info': {
-    'title': 'Cost-benefit analysis',
-    'text': 'This tab combines the monetised indicators selected on the left into a single cost-benefit analysis (CBA) per program. Investment costs and the impact on gross domestic product are treated as one-time impacts and discounted using the capital recovery factor; all other selected indicators are treated as annually recurring benefits, scaled to the new energy savings of each year. The three parameters on the right let you test the sensitivity of the results: energy price sensitivity scales the reduction of energy costs, investments sensitivity scales investment costs, and the discount rate determines how future one-time impacts (investments and GDP) are annuitised. The resulting weighted annuity, net present value, levelised costs, and cost-benefit/benefit-cost ratios are shown below for each program. More details can be found in the <a class="font-bold" href="https://doc.micatool.eu/cba/cba.html" target="_blank">documentation</a>.',
-    'type': 'help'
+    title: 'Cost-benefit analysis',
+    text: 'This tab combines the monetised indicators selected on the left into a single cost-benefit analysis (CBA) per program. Investment costs and the impact on gross domestic product are treated as one-time impacts and discounted using the capital recovery factor; all other selected indicators are treated as annually recurring benefits, scaled to the new energy savings of each year. The three parameters on the right let you test the sensitivity of the results: energy price sensitivity scales the reduction of energy costs, investments sensitivity scales investment costs, and the discount rate determines how future one-time impacts (investments and GDP) are annuitised. The resulting weighted annuity, net present value, levelised costs, and cost-benefit/benefit-cost ratios are shown below for each program. More details can be found in the <a class="font-bold" href="https://doc.micatool.eu/cba/cba.html" target="_blank">documentation</a>.',
+    type: 'help'
   },
   'cba-netPresentValue': {
-    'title': 'Net present value (NPV)',
-    'text': 'The NPV calculates the difference between the present value of cash inflows and outflows over a project\'s lifetime. It accounts for the time value of money, helping to assess whether a project will generate more value than its cost. A positive NPV indicates that the projected earnings exceed the anticipated costs, while a negative NPV indicates that the costs outweigh the earnings. This metric is crucial for decision-making, as it provides a clear indication of the financial viability of a project.  The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
-    'type': 'help'
+    title: 'Net present value (NPV)',
+    text: "The NPV calculates the difference between the present value of cash inflows and outflows over a project's lifetime. It accounts for the time value of money, helping to assess whether a project will generate more value than its cost. A positive NPV indicates that the projected earnings exceed the anticipated costs, while a negative NPV indicates that the costs outweigh the earnings. This metric is crucial for decision-making, as it provides a clear indication of the financial viability of a project.  The displayed value is an average across the programme duration, weighting values according to the respective year's new annual savings.",
+    type: 'help'
   },
   'cba-LCOE': {
-    'title': 'Levelised costs of energy savings (LCOE)',
-    'text': 'LCOE expresses the average cost per unit of energy produced or saved over the lifetime of a project. In practice, this means dividing the annuity of a project by the discounted total energy output or savings. The outcome is a single figure in cost per kilowatt-hour that allows direct comparison across technologies. For example, LCOE enables policymakers and investors to weigh the economic efficiency of solar power against wind energy or energy efficiency measures. A lower LCOE indicates that a project delivers energy at a more competitive cost, making it a powerful benchmark for technology selection. In contrast to the general application for electricity generation, LCOE in the MICATool not only include costs (i.e. investments) but also energy savings and renewably generated energy, as well as multiple impacts. These benefits can outweigh the costs per energy unit, resulting in negative LCOE values. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
-    'type': 'help'
+    title: 'Levelised costs of energy savings (LCOE)',
+    text: "LCOE expresses the average cost per unit of energy produced or saved over the lifetime of a project. In practice, this means dividing the annuity of a project by the discounted total energy output or savings. The outcome is a single figure in cost per kilowatt-hour that allows direct comparison across technologies. For example, LCOE enables policymakers and investors to weigh the economic efficiency of solar power against wind energy or energy efficiency measures. A lower LCOE indicates that a project delivers energy at a more competitive cost, making it a powerful benchmark for technology selection. In contrast to the general application for electricity generation, LCOE in the MICATool not only include costs (i.e. investments) but also energy savings and renewably generated energy, as well as multiple impacts. These benefits can outweigh the costs per energy unit, resulting in negative LCOE values. The displayed value is an average across the programme duration, weighting values according to the respective year's new annual savings.",
+    type: 'help'
   },
   'cba-LCOCO2': {
-    'title': 'Levelised costs of carbon dioxide (LCOCO2)',
-    'text': 'LCOCO2 represents the average cost per tonne of CO2 emissions avoided over the lifetime of a project. It is calculated by dividing the annuity of a project by the total discounted CO2 emissions reductions achieved. This metric allows for direct comparison of the cost-effectiveness of different projects or technologies in reducing carbon emissions. A lower LCOCO2 indicates that a project achieves CO2 reductions at a more competitive cost, making it a valuable tool for policymakers and investors focused on climate change mitigation. In the MICATool, LCOCO2 takes into account not only costs but also multiple impacts, which can lead to negative values when the benefits outweigh the costs. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
-    'type': 'help'
+    title: 'Levelised costs of carbon dioxide (LCOCO2)',
+    text: "LCOCO2 represents the average cost per tonne of CO2 emissions avoided over the lifetime of a project. It is calculated by dividing the annuity of a project by the total discounted CO2 emissions reductions achieved. This metric allows for direct comparison of the cost-effectiveness of different projects or technologies in reducing carbon emissions. A lower LCOCO2 indicates that a project achieves CO2 reductions at a more competitive cost, making it a valuable tool for policymakers and investors focused on climate change mitigation. In the MICATool, LCOCO2 takes into account not only costs but also multiple impacts, which can lead to negative values when the benefits outweigh the costs. The displayed value is an average across the programme duration, weighting values according to the respective year's new annual savings.",
+    type: 'help'
   },
   'cba-CBR': {
-    'title': 'Cost-benefit ratio (CBR)',
-    'text': 'The CBR offers a straightforward way to evaluate the economic efficiency of a project by comparing the annuitised costs to the annuitised benefits. A CBR less than one indicates that the benefits exceed the costs, suggesting that the project is economically advantageous. Conversely, a CBR greater than one implies that the costs outweigh the benefits, indicating that the project may not be financially viable. This ratio serves as a quick reference for decision-makers to assess the overall value of an investment or policy intervention. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
-    'type': 'help'
+    title: 'Cost-benefit ratio (CBR)',
+    text: "The CBR offers a straightforward way to evaluate the economic efficiency of a project by comparing the annuitised costs to the annuitised benefits. A CBR less than one indicates that the benefits exceed the costs, suggesting that the project is economically advantageous. Conversely, a CBR greater than one implies that the costs outweigh the benefits, indicating that the project may not be financially viable. This ratio serves as a quick reference for decision-makers to assess the overall value of an investment or policy intervention. The displayed value is an average across the programme duration, weighting values according to the respective year's new annual savings.",
+    type: 'help'
   },
   'cba-BCR': {
-    'title': 'Benefit-cost ratio (BCR)',
-    'text': 'The BCR provides yet another perspective by comparing the annuitised value of benefits to the annuitised costs, constituting the inverse of the CBR. A BCR greater than one indicates that the benefits outweigh the costs, signalling that the project is economically viable. Conversely, a BCR below one suggests that the project is not cost-effective. This ratio offers a clear decision-making criterion, making it particularly useful for policy evaluation and investment prioritisation. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
-    'type': 'help'
+    title: 'Benefit-cost ratio (BCR)',
+    text: "The BCR provides yet another perspective by comparing the annuitised value of benefits to the annuitised costs, constituting the inverse of the CBR. A BCR greater than one indicates that the benefits outweigh the costs, signalling that the project is economically viable. Conversely, a BCR below one suggests that the project is not cost-effective. This ratio offers a clear decision-making criterion, making it particularly useful for policy evaluation and investment prioritisation. The displayed value is an average across the programme duration, weighting values according to the respective year's new annual savings.",
+    type: 'help'
   },
   'cba-weightedAnnuity': {
-    'title': 'Annuity',
-    'text': ' The  annuity represents the annualised value of costs and benefits associated with a project. Thereby, it represents an annuitised version of the NPV, representing the annual payments to finance a project. This metric provides a comprehensive view of the financial performance of a project by considering both the costs incurred and the benefits realised over its lifetime. By weighting these components, the weighted annuity offers a nuanced understanding of the project\'s economic viability, facilitating more informed decision-making for policymakers and investors. A negative weighted annuity indicates that the benefits exceed the costs on an annual basis, suggesting that the project is financially advantageous. Conversely, a positive weighted annuity implies that the costs outweigh the benefits, indicating potential financial challenges. The displayed value is an average across the programme duration, weighting values according to the respective year\'s new annual savings.',
-    'type': 'help'
+    title: 'Annuity',
+    text: " The  annuity represents the annualised value of costs and benefits associated with a project. Thereby, it represents an annuitised version of the NPV, representing the annual payments to finance a project. This metric provides a comprehensive view of the financial performance of a project by considering both the costs incurred and the benefits realised over its lifetime. By weighting these components, the weighted annuity offers a nuanced understanding of the project's economic viability, facilitating more informed decision-making for policymakers and investors. A negative weighted annuity indicates that the benefits exceed the costs on an annual basis, suggesting that the project is financially advantageous. Conversely, a positive weighted annuity implies that the costs outweigh the benefits, indicating potential financial challenges. The displayed value is an average across the programme duration, weighting values according to the respective year's new annual savings.",
+    type: 'help'
   }
 };
 
@@ -514,7 +515,7 @@ provide('modal', {
   modalType,
   openModal,
   closeModal
-})
+});
 </script>
 
 <template>
@@ -543,18 +544,40 @@ provide('modal', {
             </button>
           </div>
           <div class="w-full md:w-auto">
-            <ul class="flex flex-col p-4 mt-4 font-medium rounded-lg md:p-0 bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-blue-900 md:dark:bg-blue-950">
+            <ul
+              class="flex flex-col p-4 mt-4 font-medium rounded-lg md:p-0 bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-blue-900 md:dark:bg-blue-950"
+            >
               <li>
-                <a href="https://micatool.eu/" target="_blank" class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent">Project</a>
+                <a
+                  href="https://micatool.eu/"
+                  target="_blank"
+                  class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  >Project</a
+                >
               </li>
               <li>
-                <a href="https://doc.micatool.eu/" target="_blank" class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent">Documentation</a>
+                <a
+                  href="https://doc.micatool.eu/"
+                  target="_blank"
+                  class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  >Documentation</a
+                >
               </li>
               <li>
-                <a href="https://micatool.eu/micat-project-en/data-protection/" target="_blank" class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent">Data protection</a>
+                <a
+                  href="https://micatool.eu/micat-project-en/data-protection/"
+                  target="_blank"
+                  class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  >Data protection</a
+                >
               </li>
               <li>
-                <a href="https://micatool.eu/micat-project-en/publishing-notes/" target="_blank" class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent">Publishing notes</a>
+                <a
+                  href="https://micatool.eu/micat-project-en/publishing-notes/"
+                  target="_blank"
+                  class="block py-2 pl-3 pr-4 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-sky-700 md:p-0 dark:text-white md:dark:hover:text-sky-500 dark:hover:bg-blue-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  >Publishing notes</a
+                >
               </li>
             </ul>
           </div>
@@ -568,10 +591,14 @@ provide('modal', {
   </div>
   <div class="p-2 text-xs text-blue-400 bg-blue-800">
     <div class="flex items-center justify-between max-w-screen-xl mx-auto">
-      <div>© 2023 Fraunhofer-Gesellschaft e.V., München &middot; SPDX-License-Identifier: AGPL-3.0-or-later</div>
+      <div>
+        © 2023 Fraunhofer-Gesellschaft e.V., München &middot; SPDX-License-Identifier:
+        AGPL-3.0-or-later
+      </div>
       <div class="flex max-w-[450px] items-center">
         <img src="@/assets/Flag_of_Europe.svg" class="h-8 mr-3" alt="Flag of Europe" />
-        This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No. 101000132.
+        This project has received funding from the European Union’s Horizon 2020 research and
+        innovation programme under grant agreement No. 101000132.
       </div>
     </div>
   </div>

@@ -6,25 +6,25 @@
 // TODO: This file has been taken from the old frontend and should be revised.
 class CostBenefitAnalysisTools {
   static findObjectById(dataArray, objectId) {
-    const result = dataArray.find(object => {
+    const result = dataArray.find((object) => {
       return object.id === objectId;
     });
     return result;
   }
 
   static emptyParameters(parameters) {
-    if(Array.isArray(parameters)) {
+    if (Array.isArray(parameters)) {
       for (const parameter of parameters) {
         const emptyParameter = CostBenefitAnalysisTools._emptyParameter(parameter);
-        if(emptyParameter){
+        if (emptyParameter) {
           return true;
         }
       }
     } else {
-      for(const parameterName of Object.keys(parameters)) {
+      for (const parameterName of Object.keys(parameters)) {
         const parameter = parameters[parameterName];
         const emptyParameter = CostBenefitAnalysisTools._emptyParameter(parameter);
-        if(emptyParameter){
+        if (emptyParameter) {
           return true;
         }
       }
@@ -33,7 +33,7 @@ class CostBenefitAnalysisTools {
   }
 
   static _emptyParameter(parameter) {
-    if(parameter === 0) {
+    if (parameter === 0) {
       return false;
     } else if (!parameter) {
       return true;
@@ -52,7 +52,7 @@ const _arrayOfArraysToJson = (data, header) => {
     header = data[0];
     startSliceIndex = 1;
   }
-  const resultDataset = data.slice(startSliceIndex).map(item =>
+  const resultDataset = data.slice(startSliceIndex).map((item) =>
     // eslint-disable-next-line unicorn/no-array-reduce
     item.reduce((object_, value, index) => {
       object_[header[index]] = value;
@@ -60,7 +60,7 @@ const _arrayOfArraysToJson = (data, header) => {
     }, {})
   );
   return resultDataset;
-}
+};
 const _convertLifetimeParameters = (lifetimeParameters) => {
   const convertedLifetimeParameters = [];
   for (const lifetimeParameter of lifetimeParameters) {
@@ -70,23 +70,21 @@ const _convertLifetimeParameters = (lifetimeParameters) => {
     });
   }
   return convertedLifetimeParameters;
-}
+};
 
 const _aggregateIdMeasure = (rows, years) => {
-  let legendEntries = rows.map(row => row.legendEntry);
+  let legendEntries = rows.map((row) => row.legendEntry);
   if (legendEntries[0] === undefined) {
     legendEntries = ['#default#'];
   }
 
   const aggregations = {};
   for (const legendEntry of legendEntries) {
-    let rowsForLegendEntry = rows.filter(
-      row => row.legendEntry === legendEntry
-    );
+    let rowsForLegendEntry = rows.filter((row) => row.legendEntry === legendEntry);
     if (legendEntry === '#default#') {
       rowsForLegendEntry = rows;
     }
-    const dataArray = rowsForLegendEntry.map(row => row.data);
+    const dataArray = rowsForLegendEntry.map((row) => row.data);
     const sumOfDataArray = _elementwiseSum(dataArray);
     const aggregation = {};
     for (const [index, year] of years.entries()) {
@@ -95,17 +93,20 @@ const _aggregateIdMeasure = (rows, years) => {
     aggregations[legendEntry] = aggregation;
   }
   return aggregations;
-}
+};
 
 const _elementwiseSum = (arrayOfArrays) => {
   // eslint-disable-next-line unicorn/no-array-reduce
   return arrayOfArrays.reduce((accumulator, array) => {
-    return accumulator.map((sum, index) => {
-      return sum + array[index];
-      // eslint-disable-next-line unicorn/no-array-method-this-argument
-    }, Array.from({ length: arrayOfArrays[0].length }).fill(0));
+    return accumulator.map(
+      (sum, index) => {
+        return sum + array[index];
+        // eslint-disable-next-line unicorn/no-array-method-this-argument
+      },
+      Array.from({ length: arrayOfArrays[0].length }).fill(0)
+    );
   });
-}
+};
 
 const _indicatorResult = (aggregations, years) => {
   const legend = Object.keys(aggregations);
@@ -125,17 +126,15 @@ const _indicatorResult = (aggregations, years) => {
     legend,
     rows
   };
-}
+};
 const _toJson = (indicatorData) => {
   const idColumnNames = indicatorData.idColumnNames;
   const hasIdMeasure = idColumnNames.includes('id_measure');
-  const hasLegend = hasIdMeasure
-    ? idColumnNames.length > 1
-    : idColumnNames.length > 0;
+  const hasLegend = hasIdMeasure ? idColumnNames.length > 1 : idColumnNames.length > 0;
 
   const rows = indicatorData.rows;
 
-  const rowObjects = rows.map(row => {
+  const rowObjects = rows.map((row) => {
     let idMeasure;
     if (hasIdMeasure) {
       idMeasure = row.splice(0, 1)[0];
@@ -154,23 +153,21 @@ const _toJson = (indicatorData) => {
     };
   });
   return rowObjects;
-}
+};
 const _convertCostBenefitAnalysisData = (data) => {
   const resultDataset = {};
   for (const indicatorName of Object.keys(data)) {
     const indicatorData = data[indicatorName];
-    const yearColumnNames = indicatorName === 'lifetime' ? ['value'] : indicatorData.yearColumnNames;
-    const header = [
-      ...indicatorData.idColumnNames,
-      ...yearColumnNames
-    ];
+    const yearColumnNames =
+      indicatorName === 'lifetime' ? ['value'] : indicatorData.yearColumnNames;
+    const header = [...indicatorData.idColumnNames, ...yearColumnNames];
     const table = _arrayOfArraysToJson(indicatorData.rows, header);
     resultDataset[indicatorName] = table;
   }
   return resultDataset;
-}
+};
 export const convert = (data) => {
-  const dataset = JSON.parse(JSON.stringify((data)));
+  const dataset = JSON.parse(JSON.stringify(data));
   const resultDataset = {};
   for (const indicatorName of Object.keys(dataset)) {
     const indicatorData = dataset[indicatorName];
@@ -185,13 +182,10 @@ export const convert = (data) => {
   }
   resultDataset.costBenefitAnalysisData = _convertCostBenefitAnalysisData(data);
   return resultDataset;
-}
+};
 class ArrayTools {
   static emptyArray(arrayLength, fillValue) {
-    const array = Array.apply(
-      undefined,
-      Array.from({ length: arrayLength })
-    ).map(() => fillValue);
+    const array = Array.apply(undefined, Array.from({ length: arrayLength })).map(() => fillValue);
     return array;
   }
 
@@ -260,13 +254,9 @@ export class Interpolation {
           previousIndex = previousIndex + 1;
         }
         const nextValidValue = values[previousIndex];
-        const step =
-          Math.abs(nextValidValue - previousValidValue) /
-          (previousIndex - index + 1);
+        const step = Math.abs(nextValidValue - previousValidValue) / (previousIndex - index + 1);
         values[index] =
-          nextValidValue > previousValidValue
-            ? values[index - 1] + step
-            : values[index - 1] - step;
+          nextValidValue > previousValidValue ? values[index - 1] + step : values[index - 1] - step;
       }
       index = index + 1;
     }
@@ -275,32 +265,21 @@ export class Interpolation {
     return values;
   }
 
-  static annualLinearInterpolation(
-    objectWithAnnualData,
-    returnOnlyAnnualData = false
-  ) {
+  static annualLinearInterpolation(objectWithAnnualData, returnOnlyAnnualData = false) {
     const annualData = ObjectTools.annualKeysAndValues(objectWithAnnualData);
-    const years = Object.keys(annualData).map(year => Number.parseInt(year));
+    const years = Object.keys(annualData).map((year) => Number.parseInt(year));
     const values = Object.values(annualData);
-    const interpolatedYears = ArrayTools.yearRange(
-      years[0],
-      years.at(-1)
-    );
+    const interpolatedYears = ArrayTools.yearRange(years[0], years.at(-1));
     let interpolatedValues = ArrayTools.emptyArray(interpolatedYears.length);
     for (const year of years) {
       const yearIndex = years.indexOf(year);
       const yearIndexInterpolation = interpolatedYears.indexOf(year);
       interpolatedValues[yearIndexInterpolation] = values[yearIndex];
     }
-    interpolatedValues =
-      Interpolation._linearInterpolateFilledValues(interpolatedValues);
+    interpolatedValues = Interpolation._linearInterpolateFilledValues(interpolatedValues);
     const interpolatedData = returnOnlyAnnualData
       ? ArrayTools.zip(interpolatedYears, interpolatedValues, {})
-      : ArrayTools.zip(
-        interpolatedYears,
-        interpolatedValues,
-        objectWithAnnualData
-      );
+      : ArrayTools.zip(interpolatedYears, interpolatedValues, objectWithAnnualData);
     return interpolatedData;
   }
 }
@@ -343,32 +322,23 @@ export class DataStructures {
   static prepareMeasureSpecificResultsDataStructure(measureId) {
     const dataStructure = {
       costBenefitAnalysisFacility: {
-        newEnergySavings:
-          DataStructures._prepareCalculationResultDataStructure(measureId),
-        newInvestments:
-          DataStructures._prepareCalculationResultDataStructure(measureId)
+        newEnergySavings: DataStructures._prepareCalculationResultDataStructure(measureId),
+        newInvestments: DataStructures._prepareCalculationResultDataStructure(measureId)
       },
       netPresentValue: {
-        annuatisedEnergyCosts:
-          DataStructures._prepareCalculationResultDataStructure(measureId),
-        annuatisedMultipleImpacts:
-          DataStructures._prepareCalculationResultDataStructure(measureId),
-        netPresentValues:
-          DataStructures._prepareCalculationResultDataStructure(measureId)
+        annuatisedEnergyCosts: DataStructures._prepareCalculationResultDataStructure(measureId),
+        annuatisedMultipleImpacts: DataStructures._prepareCalculationResultDataStructure(measureId),
+        netPresentValues: DataStructures._prepareCalculationResultDataStructure(measureId)
       },
       costBenefitRatio: {
-        costBenefitRatios:
-          DataStructures._prepareCalculationResultDataStructure(measureId),
-        benefitCostRatios:
-          DataStructures._prepareCalculationResultDataStructure(measureId)
+        costBenefitRatios: DataStructures._prepareCalculationResultDataStructure(measureId),
+        benefitCostRatios: DataStructures._prepareCalculationResultDataStructure(measureId)
       },
       levelisedCosts: {
         levelisedCostsOfSavedEnergies:
           DataStructures._prepareCalculationResultDataStructure(measureId),
-        levelisedCostsOfSavedCo2:
-          DataStructures._prepareCalculationResultDataStructure(measureId),
-        annuatisedCo2Emissions:
-          DataStructures._prepareCalculationResultDataStructure(measureId)
+        levelisedCostsOfSavedCo2: DataStructures._prepareCalculationResultDataStructure(measureId),
+        annuatisedCo2Emissions: DataStructures._prepareCalculationResultDataStructure(measureId)
       },
       marginalCostCurves: {
         marginalEnergySavingsCostCurves:
@@ -443,7 +413,7 @@ export class DataStructures {
 export class ObjectTools {
   static annualKeysAndValues(objectWithAnnualData) {
     const annualData = Object.keys(objectWithAnnualData)
-      .filter(key => {
+      .filter((key) => {
         return Number.isInteger(Number.parseInt(key));
       })
       .sort()
@@ -466,7 +436,7 @@ export class ObjectTools {
 
   static hasAllKeys(listOfKeys, object_) {
     // eslint-disable-next-line no-prototype-builtins
-    const keysContained = listOfKeys.every(item => object_.hasOwnProperty(item));
+    const keysContained = listOfKeys.every((item) => object_.hasOwnProperty(item));
     return keysContained;
   }
 }
@@ -474,10 +444,7 @@ export class ObjectTools {
 export class Parameters {
   static measureSpecificParameters(measure, indicatorData, userOptions) {
     const lifetimeParameters = indicatorData.costBenefitAnalysisData.lifetime;
-    const lifetime = Parameters.lifetimeForMeasure(
-      lifetimeParameters,
-      measure.id
-    );
+    const lifetime = Parameters.lifetimeForMeasure(lifetimeParameters, measure.id);
 
     let subsidyRate = indicatorData.costBenefitAnalysisData.subsidyRate[0];
     subsidyRate = ObjectTools.annualKeysAndValues(subsidyRate);
@@ -492,36 +459,29 @@ export class Parameters {
       'reductionOfEnergyCost'
     );
 
-    const reductionOfMortalityMorbidityMonetization =
-      Parameters._aggregateAndInterpolateParameters(
-        indicatorData.costBenefitAnalysisData
-          .reductionOfMortalityMorbidityMonetization,
-        'reductionOfMortalityMorbidityMonetization'
-      );
-    const reductionOfMortalityMorbidityMonetizationForMeasure =
-      Parameters.annualValuesForMeasure(
-        reductionOfMortalityMorbidityMonetization,
-        measure.id,
-        'reductionOfMortalityMorbidityMonetization'
-      );
+    const reductionOfMortalityMorbidityMonetization = Parameters._aggregateAndInterpolateParameters(
+      indicatorData.costBenefitAnalysisData.reductionOfMortalityMorbidityMonetization,
+      'reductionOfMortalityMorbidityMonetization'
+    );
+    const reductionOfMortalityMorbidityMonetizationForMeasure = Parameters.annualValuesForMeasure(
+      reductionOfMortalityMorbidityMonetization,
+      measure.id,
+      'reductionOfMortalityMorbidityMonetization'
+    );
 
-    const reductionOfLostWorkDaysMonetization =
-      Parameters._aggregateAndInterpolateParameters(
-        indicatorData.costBenefitAnalysisData
-          .reductionOfLostWorkDaysMonetization,
-        'reductionOfLostWorkDaysMonetization'
-      );
-    const reductionOfLostWorkDaysMonetizationForMeasure =
-      Parameters.annualValuesForMeasure(
-        reductionOfLostWorkDaysMonetization,
-        measure.id,
-        'reductionOfLostWorkDaysMonetization'
-      );
+    const reductionOfLostWorkDaysMonetization = Parameters._aggregateAndInterpolateParameters(
+      indicatorData.costBenefitAnalysisData.reductionOfLostWorkDaysMonetization,
+      'reductionOfLostWorkDaysMonetization'
+    );
+    const reductionOfLostWorkDaysMonetizationForMeasure = Parameters.annualValuesForMeasure(
+      reductionOfLostWorkDaysMonetization,
+      measure.id,
+      'reductionOfLostWorkDaysMonetization'
+    );
 
     const reductionOfGreenHouseGasEmissionMonetization =
       Parameters._aggregateAndInterpolateParameters(
-        indicatorData.costBenefitAnalysisData
-          .reductionOfGreenHouseGasEmissionMonetization,
+        indicatorData.costBenefitAnalysisData.reductionOfGreenHouseGasEmissionMonetization,
         'reductionOfGreenHouseGasEmissionMonetization'
       );
     const reductionOfGreenHouseGasEmissionMonetizationForMeasure =
@@ -532,23 +492,20 @@ export class Parameters {
       );
 
     // eslint-disable-next-line unicorn/prevent-abbreviations
-    const impactOnResTargetsMonetization =
-      Parameters._aggregateAndInterpolateParameters(
-        indicatorData.costBenefitAnalysisData.impactOnResTargetsMonetization,
-        'impactOnResTargetsMonetization'
-      );
+    const impactOnResTargetsMonetization = Parameters._aggregateAndInterpolateParameters(
+      indicatorData.costBenefitAnalysisData.impactOnResTargetsMonetization,
+      'impactOnResTargetsMonetization'
+    );
     // eslint-disable-next-line unicorn/prevent-abbreviations
-    const impactOnResTargetsMonetizationForMeasure =
-      Parameters.annualValuesForMeasure(
-        impactOnResTargetsMonetization,
-        measure.id,
-        'impactOnResTargetsMonetization'
-      );
+    const impactOnResTargetsMonetizationForMeasure = Parameters.annualValuesForMeasure(
+      impactOnResTargetsMonetization,
+      measure.id,
+      'impactOnResTargetsMonetization'
+    );
 
     const reductionOfAdditionalCapacitiesInGridMonetization =
       Parameters._aggregateAndInterpolateParameters(
-        indicatorData.costBenefitAnalysisData
-          .reductionOfAdditionalCapacitiesInGridMonetization,
+        indicatorData.costBenefitAnalysisData.reductionOfAdditionalCapacitiesInGridMonetization,
         'reductionOfAdditionalCapacitiesInGridMonetization'
       );
     const reductionOfAdditionalCapacitiesInGridMonetizationForMeasure =
@@ -558,11 +515,10 @@ export class Parameters {
         'reductionOfAdditionalCapacitiesInGridMonetization'
       );
 
-    const reductionOfAirPollution =
-      Parameters._aggregateAndInterpolateParameters(
-        indicatorData.costBenefitAnalysisData.reductionOfAirPollution,
-        'reductionOfAirPollution'
-      );
+    const reductionOfAirPollution = Parameters._aggregateAndInterpolateParameters(
+      indicatorData.costBenefitAnalysisData.reductionOfAirPollution,
+      'reductionOfAirPollution'
+    );
     const reductionOfAirPollutionForMeasure = Parameters.annualValuesForMeasure(
       reductionOfAirPollution,
       measure.id,
@@ -574,43 +530,43 @@ export class Parameters {
         indicatorData.costBenefitAnalysisData.reductionInDisabilityAdjustedLifeYearsMonetization,
         'reductionInDisabilityAdjustedLifeYearsMonetization'
       );
-    const reductionInDisabilityAdjustedLifeYearsMonetizationForMeasure = Parameters.annualValuesForMeasure(
-      reductionInDisabilityAdjustedLifeYearsMonetization,
-      measure.id,
-      'reductionInDisabilityAdjustedLifeYearsMonetization'
-    );
+    const reductionInDisabilityAdjustedLifeYearsMonetizationForMeasure =
+      Parameters.annualValuesForMeasure(
+        reductionInDisabilityAdjustedLifeYearsMonetization,
+        measure.id,
+        'reductionInDisabilityAdjustedLifeYearsMonetization'
+      );
 
     const avoidedExcessColdWeatherMortalityMonetization =
       Parameters._aggregateAndInterpolateParameters(
         indicatorData.costBenefitAnalysisData.avoidedExcessColdWeatherMortalityMonetization,
         'avoidedExcessColdWeatherMortalityMonetization'
       );
-    const avoidedExcessColdWeatherMortalityMonetizationForMeasure = Parameters.annualValuesForMeasure(
-      avoidedExcessColdWeatherMortalityMonetization,
-      measure.id,
-      'avoidedExcessColdWeatherMortalityMonetization'
-    );
+    const avoidedExcessColdWeatherMortalityMonetizationForMeasure =
+      Parameters.annualValuesForMeasure(
+        avoidedExcessColdWeatherMortalityMonetization,
+        measure.id,
+        'avoidedExcessColdWeatherMortalityMonetization'
+      );
 
     const monetisedMultipleImpacts = {
       reductionOfEnergyCost: reductionOfEnergyCostForMeasure,
       reductionOfMortalityMorbidityMonetization:
         reductionOfMortalityMorbidityMonetizationForMeasure,
-      reductionOfLostWorkDaysMonetization:
-        reductionOfLostWorkDaysMonetizationForMeasure,
+      reductionOfLostWorkDaysMonetization: reductionOfLostWorkDaysMonetizationForMeasure,
       reductionOfGreenHouseGasEmissionMonetization:
         reductionOfGreenHouseGasEmissionMonetizationForMeasure,
       impactOnResTargetsMonetization: impactOnResTargetsMonetizationForMeasure,
       reductionOfAdditionalCapacitiesInGridMonetization:
         reductionOfAdditionalCapacitiesInGridMonetizationForMeasure,
       reductionOfAirPollution: reductionOfAirPollutionForMeasure,
-      reductionInDisabilityAdjustedLifeYearsMonetization: reductionInDisabilityAdjustedLifeYearsMonetizationForMeasure,
-      avoidedExcessColdWeatherMortalityMonetization: avoidedExcessColdWeatherMortalityMonetizationForMeasure,
+      reductionInDisabilityAdjustedLifeYearsMonetization:
+        reductionInDisabilityAdjustedLifeYearsMonetizationForMeasure,
+      avoidedExcessColdWeatherMortalityMonetization:
+        avoidedExcessColdWeatherMortalityMonetizationForMeasure
     };
     Parameters._checkIfParametersAreEmpty(monetisedMultipleImpacts);
-    Parameters._checkIfSelectableIndicatorsArePresent(
-      monetisedMultipleImpacts,
-      userOptions
-    );
+    Parameters._checkIfSelectableIndicatorsArePresent(monetisedMultipleImpacts, userOptions);
     const monetisedAnnualReturnsOfMultipleImpacts =
       Parameters._calculateMonetisedAnnualReturnsOfMultipleImpacts(
         measure,
@@ -655,24 +611,19 @@ export class Parameters {
       annualData,
       aggregationName
     );
-    const interpolatedAnnualValues =
-      IndicatorInterpolation.annualIndicatorInterpolation(
-        aggregatedAnnualValues,
-        aggregationName
-      );
+    const interpolatedAnnualValues = IndicatorInterpolation.annualIndicatorInterpolation(
+      aggregatedAnnualValues,
+      aggregationName
+    );
     return interpolatedAnnualValues;
   }
 
   static _aggregateAnnualValuesPerMeasure(annualData, aggregationName) {
     const aggregatedAnnualData = [];
-    const measureIds = new Set(annualData.map(row => row.id_measure));
+    const measureIds = new Set(annualData.map((row) => row.id_measure));
     for (const measureId of measureIds) {
-      let dataForMeasure = annualData.filter(
-        row => row.id_measure === measureId
-      );
-      dataForMeasure = dataForMeasure.map(row =>
-        ObjectTools.annualKeysAndValues(row)
-      );
+      let dataForMeasure = annualData.filter((row) => row.id_measure === measureId);
+      dataForMeasure = dataForMeasure.map((row) => ObjectTools.annualKeysAndValues(row));
       const annualAggregations = {};
       for (const year of Object.keys(dataForMeasure[0])) {
         let sum = 0;
@@ -695,19 +646,15 @@ export class Parameters {
   }
 
   static lifetimeForMeasure(lifetimeParameters, idMeasure) {
-    const lifetime = lifetimeParameters.find(lifetime => {
+    const lifetime = lifetimeParameters.find((lifetime) => {
       return lifetime.id_measure === idMeasure;
     });
     return lifetime.value;
   }
 
-  static annualValuesForMeasure(
-    annualValuesPerMeasure,
-    idMeasure,
-    parameterName
-  ) {
+  static annualValuesForMeasure(annualValuesPerMeasure, idMeasure, parameterName) {
     let annualValues;
-    const filteredParameter = annualValuesPerMeasure.find(annualParameters => {
+    const filteredParameter = annualValuesPerMeasure.find((annualParameters) => {
       return annualParameters.id_measure === idMeasure;
     });
     if (filteredParameter) {
@@ -736,10 +683,7 @@ export class Parameters {
 
   static _checkIfSelectableIndicatorsArePresent(measureSpecificParameters, userOptions) {
     const indicatorNamesUserOptions = Object.keys(userOptions.indicators);
-    const hasAllKeys = ObjectTools.hasAllKeys(
-      indicatorNamesUserOptions,
-      measureSpecificParameters
-    );
+    const hasAllKeys = ObjectTools.hasAllKeys(indicatorNamesUserOptions, measureSpecificParameters);
     if (!hasAllKeys) {
       throw new Error(
         'The selectable indicators of the cost-benefit-analysis do not correspond to the monetized indicators.'
@@ -758,10 +702,7 @@ export class SavingsInterpolation {
   }
 
   static _interpolateMeasureSavings(measure) {
-    const interpolatedSavings = Interpolation.annualLinearInterpolation(
-      measure.savings,
-      true
-    );
+    const interpolatedSavings = Interpolation.annualLinearInterpolation(measure.savings, true);
     measure.savings = interpolatedSavings;
   }
 }
@@ -773,19 +714,15 @@ export class IndicatorInterpolation {
     }
     const interpolatedIndicatorData = structuredClone(indicatorData);
     for (const measureData of interpolatedIndicatorData) {
-      measureData[indicatorName] =
-        IndicatorInterpolation._interpolateIndicator(
-          measureData[indicatorName]
-        );
+      measureData[indicatorName] = IndicatorInterpolation._interpolateIndicator(
+        measureData[indicatorName]
+      );
     }
     return interpolatedIndicatorData;
   }
 
   static _interpolateIndicator(indicator) {
-    const interpolatedIndicator = Interpolation.annualLinearInterpolation(
-      indicator,
-      true
-    );
+    const interpolatedIndicator = Interpolation.annualLinearInterpolation(indicator, true);
     return interpolatedIndicator;
   }
 }
@@ -798,17 +735,13 @@ export class CostBenefitAnalysisFacility {
     userOptions
   ) {
     const totalEnergySavingsYear =
-      measureSpecificParameters.measure.savings[
-        annualMeasureSpecificParameters.year
-      ];
-    const newEnergySaving =
-      CostBenefitAnalysisFacility._calculateNewEnergySaving(
-        annualMeasureSpecificParameters.year,
-        totalEnergySavingsYear,
-        measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings
-          .data,
-        measureSpecificParameters.lifetime
-      );
+      measureSpecificParameters.measure.savings[annualMeasureSpecificParameters.year];
+    const newEnergySaving = CostBenefitAnalysisFacility._calculateNewEnergySaving(
+      annualMeasureSpecificParameters.year,
+      totalEnergySavingsYear,
+      measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings.data,
+      measureSpecificParameters.lifetime
+    );
     measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings.data[
       annualMeasureSpecificParameters.year
     ] = newEnergySaving;
@@ -825,26 +758,20 @@ export class CostBenefitAnalysisFacility {
   static _calculateNewInvestment(year, savings) {
     const totalEnergySavingYear = savings[year];
     const totalEnergySavingsPreviousYear = savings[year - 1] || 0;
-    const newInvestment =
-      totalEnergySavingYear - totalEnergySavingsPreviousYear;
+    const newInvestment = totalEnergySavingYear - totalEnergySavingsPreviousYear;
     return newInvestment;
   }
 
-  static _calculateNewEnergySaving(
-    year,
-    totalEnergySavingsYear,
-    newEnergySavings,
-    lifetime
-  ) {
+  static _calculateNewEnergySaving(year, totalEnergySavingsYear, newEnergySavings, lifetime) {
     const sumOfPriorTotalAnnualEnergySavings =
       CostBenefitAnalysisFacility._sumOfPriorTotalAnnualEnergySavings(
         newEnergySavings,
         lifetime,
         year
       );
-    const newEnergySaving = +(
-      totalEnergySavingsYear - sumOfPriorTotalAnnualEnergySavings
-    ).toFixed(2);
+    const newEnergySaving = +(totalEnergySavingsYear - sumOfPriorTotalAnnualEnergySavings).toFixed(
+      2
+    );
     return newEnergySaving;
   }
 
@@ -871,8 +798,9 @@ export class NetPresentValue {
         measureSpecificParameters.lifetime,
         measureSpecificParameters.reductionOfEnergyCost,
         measureSpecificParameters.measure.savings,
-        measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings
-          .data[annualMeasureSpecificParameters.year],
+        measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings.data[
+          annualMeasureSpecificParameters.year
+        ],
         annualMeasureSpecificParameters.year,
         userOptions.parameters.energyPriceSensivity,
         userOptions.parameters.investmentsSensivity
@@ -888,8 +816,9 @@ export class NetPresentValue {
         measureSpecificParameters.lifetime,
         monetisedAnnualReturnsOfMultipleImpacts,
         measureSpecificParameters.measure.savings,
-        measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings
-          .data[annualMeasureSpecificParameters.year],
+        measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings.data[
+          annualMeasureSpecificParameters.year
+        ],
         annualMeasureSpecificParameters.year,
         userOptions.parameters.energyPriceSensivity,
         userOptions.parameters.investmentsSensivity
@@ -914,8 +843,7 @@ export class NetPresentValue {
     annuatisedEnergyCosts,
     annuatisedMultipleImpacts
   ) {
-    const netPresentValue =
-      -newInvestment + annuatisedEnergyCosts + annuatisedMultipleImpacts;
+    const netPresentValue = -newInvestment + annuatisedEnergyCosts + annuatisedMultipleImpacts;
     return netPresentValue;
   }
 
@@ -930,11 +858,7 @@ export class NetPresentValue {
     investmentsSensivity
   ) {
     let annuatisedEnergyCostsOrMultipleImpacts = 0;
-    for (
-      let runningLifetime = 0;
-      runningLifetime < lifetime;
-      runningLifetime++
-    ) {
+    for (let runningLifetime = 0; runningLifetime < lifetime; runningLifetime++) {
       const futureYear = Number.parseInt(currentYear) + runningLifetime;
       let totalEnergySaving;
       let energyCostReductionOrMonetisedAnnualReturn;
@@ -942,16 +866,12 @@ export class NetPresentValue {
       if (years.includes(futureYear.toString())) {
         totalEnergySaving = energySavings[futureYear];
         energyCostReductionOrMonetisedAnnualReturn =
-          energyCostReductionsOrMonetisedAnnualReturnsOfMultipleImpacts[
-            futureYear
-          ];
+          energyCostReductionsOrMonetisedAnnualReturnsOfMultipleImpacts[futureYear];
       } else {
         const lastValidYear = years.at(-1);
         totalEnergySaving = energySavings[lastValidYear];
         energyCostReductionOrMonetisedAnnualReturn =
-          energyCostReductionsOrMonetisedAnnualReturnsOfMultipleImpacts[
-            lastValidYear
-          ];
+          energyCostReductionsOrMonetisedAnnualReturnsOfMultipleImpacts[lastValidYear];
       }
       if (energyPriceSensivity) {
         energyCostReductionOrMonetisedAnnualReturn =
@@ -998,13 +918,8 @@ export class CostBenefitRatio {
     ] = benefitCostRatio;
   }
 
-  static _calculateCostBenefitRatio(
-    newInvestment,
-    annuatisedEnergyCost,
-    annuatisedMultipleImpact
-  ) {
-    const costBenefitRatio =
-      newInvestment / (annuatisedEnergyCost + annuatisedMultipleImpact);
+  static _calculateCostBenefitRatio(newInvestment, annuatisedEnergyCost, annuatisedMultipleImpact) {
+    const costBenefitRatio = newInvestment / (annuatisedEnergyCost + annuatisedMultipleImpact);
     return costBenefitRatio;
   }
 }
@@ -1022,7 +937,8 @@ export class LevelisedCosts {
       measureSpecificResults.netPresentValue.netPresentValues.data[year],
       measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings.data[year]
     );
-    measureSpecificResults.levelisedCosts.levelisedCostsOfSavedEnergies.data[year] = levelisedCostsOfSavedEnergy;
+    measureSpecificResults.levelisedCosts.levelisedCostsOfSavedEnergies.data[year] =
+      levelisedCostsOfSavedEnergy;
 
     const levelisedCostsOfSavedCo2Results = LevelisedCosts._calculateLevelisedCostsOfSavedCo2(
       measureSpecificParameters.lifetime,
@@ -1036,8 +952,10 @@ export class LevelisedCosts {
     );
     const levelisedCostsOfSavedCo2 = levelisedCostsOfSavedCo2Results.levelisedCostsOfCo2Savings;
     const annuatisedCo2Emissions = levelisedCostsOfSavedCo2Results.annuatisedCo2Emissions;
-    measureSpecificResults.levelisedCosts.levelisedCostsOfSavedCo2.data[year] = levelisedCostsOfSavedCo2;
-    measureSpecificResults.levelisedCosts.annuatisedCo2Emissions.data[year] = annuatisedCo2Emissions;
+    measureSpecificResults.levelisedCosts.levelisedCostsOfSavedCo2.data[year] =
+      levelisedCostsOfSavedCo2;
+    measureSpecificResults.levelisedCosts.annuatisedCo2Emissions.data[year] =
+      annuatisedCo2Emissions;
   }
 
   static _calculateLevelisedCostsOfSavedEnergy(lifetime, netPresentValue, newEnergySaving) {
@@ -1069,17 +987,17 @@ export class LevelisedCosts {
         totalEnergySaving = energySavings[lastValidYear];
         co2Saving = co2Savings[lastValidYear];
       }
-      if(energyPriceSensivity) {
+      if (energyPriceSensivity) {
         co2Saving = co2Saving * energyPriceSensivity;
       }
-      if(investmentsSensivity) {
+      if (investmentsSensivity) {
         co2Saving = co2Saving * investmentsSensivity;
       }
-      const annuatisedCo2Emission = newEnergySaving / totalEnergySaving * co2Saving;
+      const annuatisedCo2Emission = (newEnergySaving / totalEnergySaving) * co2Saving;
       annuatisedCo2Emissions += annuatisedCo2Emission;
     }
     let levelisedCostsOfCo2Savings = 0;
-    if(annuatisedCo2Emissions !== 0) {
+    if (annuatisedCo2Emissions !== 0) {
       levelisedCostsOfCo2Savings = -netPresentValue / annuatisedCo2Emissions;
     }
     return {
@@ -1100,29 +1018,20 @@ export class FundingEfficiency {
     const fundingEfficiencyOfEnergySavings =
       FundingEfficiency._calculateFundingEfficiencyOfEnergySavings(
         measureSpecificParameters.lifetime,
-        measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings
-          .data[year],
-        measureSpecificResults.costBenefitAnalysisFacility.newInvestments.data[
-          year
-        ],
+        measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings.data[year],
+        measureSpecificResults.costBenefitAnalysisFacility.newInvestments.data[year],
         measureSpecificParameters.subsidyRate[year]
       );
-    measureSpecificResults.fundingEfficiency.fundingEfficiencyOfEnergySavings.data[
-      year
-    ] = fundingEfficiencyOfEnergySavings;
+    measureSpecificResults.fundingEfficiency.fundingEfficiencyOfEnergySavings.data[year] =
+      fundingEfficiencyOfEnergySavings;
     const fundingEfficiencyOfCo2Reductions =
       FundingEfficiency._calculateFundingEfficiencyOfCo2Reductions(
-        measureSpecificResults.levelisedCosts.levelisedCostsOfSavedCo2.data[
-          year
-        ],
-        measureSpecificResults.costBenefitAnalysisFacility.newInvestments.data[
-          year
-        ],
+        measureSpecificResults.levelisedCosts.levelisedCostsOfSavedCo2.data[year],
+        measureSpecificResults.costBenefitAnalysisFacility.newInvestments.data[year],
         measureSpecificParameters.subsidyRate[year]
       );
-    measureSpecificResults.fundingEfficiency.fundingEfficiencyOfCo2Reductions.data[
-      year
-    ] = fundingEfficiencyOfCo2Reductions;
+    measureSpecificResults.fundingEfficiency.fundingEfficiencyOfCo2Reductions.data[year] =
+      fundingEfficiencyOfCo2Reductions;
   }
 
   static _calculateFundingEfficiencyOfEnergySavings(
@@ -1136,13 +1045,8 @@ export class FundingEfficiency {
     return fundingEfficiencyOfEnergySavings;
   }
 
-  static _calculateFundingEfficiencyOfCo2Reductions(
-    co2Emission,
-    newInvestment,
-    subsidyRate
-  ) {
-    const fundingEfficiencyOfCo2Reductions =
-      co2Emission / (subsidyRate * newInvestment);
+  static _calculateFundingEfficiencyOfCo2Reductions(co2Emission, newInvestment, subsidyRate) {
+    const fundingEfficiencyOfCo2Reductions = co2Emission / (subsidyRate * newInvestment);
     return fundingEfficiencyOfCo2Reductions;
   }
 }
@@ -1154,15 +1058,16 @@ export class MarginalCostCurves {
     measureSpecificResults,
     _userOptions
   ) {
-    const marginalEnergySavingsCostCurve = MarginalCostCurves._calculateMarginalEnergySavingsCostCurve(
-      measureSpecificResults.levelisedCosts.levelisedCostsOfSavedEnergies.data[
-        annualMeasureSpecificParameters.year
-      ],
-      measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings.data[
-        annualMeasureSpecificParameters.year
-      ],
-      measureSpecificParameters.lifetime
-    );
+    const marginalEnergySavingsCostCurve =
+      MarginalCostCurves._calculateMarginalEnergySavingsCostCurve(
+        measureSpecificResults.levelisedCosts.levelisedCostsOfSavedEnergies.data[
+          annualMeasureSpecificParameters.year
+        ],
+        measureSpecificResults.costBenefitAnalysisFacility.newEnergySavings.data[
+          annualMeasureSpecificParameters.year
+        ],
+        measureSpecificParameters.lifetime
+      );
     measureSpecificResults.marginalCostCurves.marginalEnergySavingsCostCurves.data[
       annualMeasureSpecificParameters.year
     ] = marginalEnergySavingsCostCurve;
@@ -1191,10 +1096,7 @@ export class MarginalCostCurves {
     return marginalEnergySavingsCostCurve;
   }
 
-  static _calculateCo2SavingsCostCurve(
-    levelisedCostsOfSavedEnergy,
-    annuatisedCo2Emission
-  ) {
+  static _calculateCo2SavingsCostCurve(levelisedCostsOfSavedEnergy, annuatisedCo2Emission) {
     const co2SavingsCostCurve = {
       x: annuatisedCo2Emission,
       y: levelisedCostsOfSavedEnergy

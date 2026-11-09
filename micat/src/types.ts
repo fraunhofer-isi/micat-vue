@@ -3,369 +3,369 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 export interface HelpTextInterface {
-    [key: string]: {
-        title: string;
-        text: string;
-        type: string;
-    }
+  [key: string]: {
+    title: string;
+    text: string;
+    type: string;
+  };
 }
 export interface ModalInjectInterface {
-    showModal: boolean;
-    modalTitle: string;
-    modalText: string;
-    modalType: string;
-    openModal(key: string): any;
-    closeModal(): any;
+  showModal: boolean;
+  modalTitle: string;
+  modalText: string;
+  modalType: string;
+  openModal(key: string): any;
+  closeModal(): any;
 }
 
 export interface SelectedImprovementInterface {
-    internalId: number;
-    name?: string;
-    program?: string;
-    subsector?: string;
-    subsectorId?: number;
-    startingYear?: number;
-    data?: ImprovementInterface;
-    unit: number;
-    showParameterWarning?: boolean;
+  internalId: number;
+  name?: string;
+  program?: string;
+  subsector?: string;
+  subsectorId?: number;
+  startingYear?: number;
+  data?: ImprovementInterface;
+  unit: number;
+  showParameterWarning?: boolean;
 }
 
 export interface ImprovementValueInterface {
-    [key: string]: number;
+  [key: string]: number;
 }
 export interface ImprovementInterface {
-    id?: number;
-    internalId?: number;
-    name?: string;
-    label?: string;
-    values: ImprovementValueInterface;
-    percentage?: number;
-    showParameterWarning?: boolean;
+  id?: number;
+  internalId?: number;
+  name?: string;
+  label?: string;
+  values: ImprovementValueInterface;
+  percentage?: number;
+  showParameterWarning?: boolean;
 }
 
 export interface UnitInterface {
-    name: string;
-    symbol: string;
-    factor: number;
+  name: string;
+  symbol: string;
+  factor: number;
 }
 export interface UnitsInterface {
-    [key: number]: UnitInterface
+  [key: number]: UnitInterface;
 }
 
 export interface ProgramInterface {
-    name: string;
-    type: string;
-    unit: number;
-    unitName?: string;
-    startingYear?: number;
-    subsector: number;
-    subsectorName: string;
-    showSubsectorMenu: boolean;
-    improvements: Array<ImprovementInterface>;
-    mureTotal?: {
-        [key: string]: number;
-    };
+  name: string;
+  type: string;
+  unit: number;
+  unitName?: string;
+  startingYear?: number;
+  subsector: number;
+  subsectorName: string;
+  showSubsectorMenu: boolean;
+  improvements: Array<ImprovementInterface>;
+  mureTotal?: {
+    [key: string]: number;
+  };
 }
 
 export interface SubsectorInterface {
-    name: string;
-    id: number | string;
-    renewable: boolean;
-    improvements: Array<ImprovementInterface>;
+  name: string;
+  id: number | string;
+  renewable: boolean;
+  improvements: Array<ImprovementInterface>;
 }
 
 export interface PayloadParameterEntryInterface {
-    [key: string]: number | string | undefined;
-    id_subsector?: number;
-    Subsector?: string;
-    index?: number;
-    "Monetisation factor"?: string;
-    Value?: number;
-    id_final_energy_carrier?: number;
-    id_primary_energy_carrier?: number;
-    "Final energy carrier"?: string;
-    "Primary energy carrier"?: string;
+  [key: string]: number | string | undefined;
+  id_subsector?: number;
+  Subsector?: string;
+  index?: number;
+  'Monetisation factor'?: string;
+  Value?: number;
+  id_final_energy_carrier?: number;
+  id_primary_energy_carrier?: number;
+  'Final energy carrier'?: string;
+  'Primary energy carrier'?: string;
 }
 export interface PayloadParameterInterface {
-    [key: string]: Array<PayloadParameterEntryInterface>;
+  [key: string]: Array<PayloadParameterEntryInterface>;
 }
 export interface PayloadSavingParameterInterface {
-    [key: string]: number;
+  [key: string]: number;
 }
 export interface PayloadSavingDetailsInterface {
-    [key: string]: Array<PayloadSavingParameterInterface>;
+  [key: string]: Array<PayloadSavingParameterInterface>;
 }
 export interface PayloadSavingsInterface {
-    [key: string]: number | PayloadSavingDetailsInterface;
+  [key: string]: number | PayloadSavingDetailsInterface;
 }
 export interface PayloadMeasureInterface {
-    id: number;
-    savings: PayloadSavingsInterface;
+  id: number;
+  savings: PayloadSavingsInterface;
 }
 export interface PayloadInterface {
-    starting_year?: number;
-    measures: Array<PayloadMeasureInterface>;
-    parameters: PayloadParameterInterface;
-    population?: number;
-    name: string;
+  starting_year?: number;
+  measures: Array<PayloadMeasureInterface>;
+  parameters: PayloadParameterInterface;
+  population?: number;
+  name: string;
 }
 export interface ResultInterface {
-    title?: string;
-    description?: string;
-    idColumnNames: Array<string>;
-    rows: Array<Array<any>>;
-    yearColumnNames: Array<string>;
+  title?: string;
+  description?: string;
+  idColumnNames: Array<string>;
+  rows: Array<Array<any>>;
+  yearColumnNames: Array<string>;
 }
 export interface ResultsInterface {
-    name: string;
-    data: {
-        [key: string]: ResultInterface
-    }
+  name: string;
+  data: {
+    [key: string]: ResultInterface;
+  };
 }
 export interface MeasurementInterface {
-    [key: string]: string;
+  [key: string]: string;
 }
 export interface CategoryInterface {
-    icon: string;
-    title: string;
-    subtitle: string;
-    measurements: Array<MeasurementInterface>;
-    subcategories: Array<string>;
+  icon: string;
+  title: string;
+  subtitle: string;
+  measurements: Array<MeasurementInterface>;
+  subcategories: Array<string>;
 }
 export interface CategoriesInterface {
-    [key: string]: CategoryInterface
+  [key: string]: CategoryInterface;
 }
 export interface DataInterface {
-    [key: string]: any
+  [key: string]: any;
 }
 export interface DatasetInterface {
-    label: string;
-    data: DataInterface,
-    borderColor: string | string[];
-    backgroundColor: string | string[];
-    stack?: string;
-    hidden?: boolean;
+  label: string;
+  data: DataInterface;
+  borderColor: string | string[];
+  backgroundColor: string | string[];
+  stack?: string;
+  hidden?: boolean;
 }
 
 export interface CarrierMapping {
-    [key: string]: {
-        [key: number]: string
-    }
+  [key: string]: {
+    [key: number]: string;
+  };
 }
 
 export interface MureTokenInterface {
-    token: string;
-    expires: number;
+  token: string;
+  expires: number;
 }
 
 export interface MureCategoryInterface {
-    id: number;
-    label: string;
+  id: number;
+  label: string;
 }
 
 export interface ISessionState {
-    currentYear: number;
-    stage: number;
-    mure: boolean;
-    odyssee: boolean;
-    gapFilling: boolean;
-    mureToken: MureTokenInterface;
-    mureCategory: number;
-    mureCountry: number;
-    mureMeasurement: number;
-    gapFillingCountry: number;
-    odysseeStartYear: number;
-    odysseeEndYear: number;
-    region: number;
-    municipality: boolean;
-    inhabitants: number;
-    years: Array<number>;
-    programs: Array<ProgramInterface>;
-    payload: PayloadInterface;
-    resetted: boolean;
-    results: ResultsInterface[];
-    globalParameters: GlobalParameters;
-    subsectorMapping: { [key: number]: string };
-    carrierMapping: CarrierMapping;
-    monetisationFactorMapping: { [key: number]: string };
-    parameters: Parameters;
-    useRenovationRate: boolean;
-    seedInfo: boolean;
-    tourRequested: boolean;
+  currentYear: number;
+  stage: number;
+  mure: boolean;
+  odyssee: boolean;
+  gapFilling: boolean;
+  mureToken: MureTokenInterface;
+  mureCategory: number;
+  mureCountry: number;
+  mureMeasurement: number;
+  gapFillingCountry: number;
+  odysseeStartYear: number;
+  odysseeEndYear: number;
+  region: number;
+  municipality: boolean;
+  inhabitants: number;
+  years: Array<number>;
+  programs: Array<ProgramInterface>;
+  payload: PayloadInterface;
+  resetted: boolean;
+  results: ResultsInterface[];
+  globalParameters: GlobalParameters;
+  subsectorMapping: { [key: number]: string };
+  carrierMapping: CarrierMapping;
+  monetisationFactorMapping: { [key: number]: string };
+  parameters: Parameters;
+  useRenovationRate: boolean;
+  seedInfo: boolean;
+  tourRequested: boolean;
 }
 export interface ISessionStateFunctions {
-    updateStage: (stage: number) => void;
-    updateRegion: (region: number) => void;
-    updateMunicipality: (municipality: boolean) => void;
-    updateInhabitants: (inhabitants: number) => void;
-    updateUnit: (unit: number) => void;
-    updateYears: (years: Array<number>) => void;
-    updatePrograms: (programs: Array<ProgramInterface>) => void;
+  updateStage: (stage: number) => void;
+  updateRegion: (region: number) => void;
+  updateMunicipality: (municipality: boolean) => void;
+  updateInhabitants: (inhabitants: number) => void;
+  updateUnit: (unit: number) => void;
+  updateYears: (years: Array<number>) => void;
+  updatePrograms: (programs: Array<ProgramInterface>) => void;
 }
 export interface CbaResultInterface {
-    title: string;
-    slug: "weightedAnnuity" | "netPresentValue" | "LCOE" | "LCOCO2" | "CBR" | "BCR";
+  title: string;
+  slug: 'weightedAnnuity' | 'netPresentValue' | 'LCOE' | 'LCOCO2' | 'CBR' | 'BCR';
 }
 export interface CbaData {
-    name: string;
-    weightedAnnuity: number;
-    netPresentValue: number;
-    CBR: number;
-    BCR: number;
-    LCOE: number;
-    LCOCO2: number;
-    years: Array<string>;
-    parameters: {
-        discountRate: number;
-        energyPriceSensitivity: number;
-        investmentsSensitivity: number;
-    };
-    indicatorAnnuities?: { [key: string]: number };
-    investmentAnnuity?: number;
-    gdpAnnuity?: number;
+  name: string;
+  weightedAnnuity: number;
+  netPresentValue: number;
+  CBR: number;
+  BCR: number;
+  LCOE: number;
+  LCOCO2: number;
+  years: Array<string>;
+  parameters: {
+    discountRate: number;
+    energyPriceSensitivity: number;
+    investmentsSensitivity: number;
+  };
+  indicatorAnnuities?: { [key: string]: number };
+  investmentAnnuity?: number;
+  gdpAnnuity?: number;
 }
 export interface CbaDataOld {
-    years: string[];
-    supportingYears: number[];
-    costBenefitAnalysisFacility: CostBenefitAnalysisFacility;
-    netPresentValue: NetPresentValue;
-    costBenefitRatio: CostBenefitRatio;
-    levelisedCosts: LevelisedCosts;
-    marginalCostCurves: MarginalCostCurves;
-    fundingEfficiency: FundingEfficiency;
+  years: string[];
+  supportingYears: number[];
+  costBenefitAnalysisFacility: CostBenefitAnalysisFacility;
+  netPresentValue: NetPresentValue;
+  costBenefitRatio: CostBenefitRatio;
+  levelisedCosts: LevelisedCosts;
+  marginalCostCurves: MarginalCostCurves;
+  fundingEfficiency: FundingEfficiency;
 }
 
 export interface CostBenefitAnalysisFacility {
-    newEnergySavings: NewEnergySaving[];
-    newInvestments: NewEnergySaving[];
+  newEnergySavings: NewEnergySaving[];
+  newInvestments: NewEnergySaving[];
 }
 
 export interface NewEnergySaving {
-    id_measure: number;
-    data: { [key: string]: number };
+  id_measure: number;
+  data: { [key: string]: number };
 }
 
 export interface CostBenefitRatio {
-    costBenefitRatios: NewEnergySaving[];
-    benefitCostRatios: NewEnergySaving[];
+  costBenefitRatios: NewEnergySaving[];
+  benefitCostRatios: NewEnergySaving[];
 }
 
 export interface FundingEfficiency {
-    fundingEfficiencyOfEnergySavings: NewEnergySaving[];
-    fundingEfficiencyOfCo2Reductions: NewEnergySaving[];
+  fundingEfficiencyOfEnergySavings: NewEnergySaving[];
+  fundingEfficiencyOfCo2Reductions: NewEnergySaving[];
 }
 
 export interface LevelisedCosts {
-    levelisedCostsOfSavedEnergies: NewEnergySaving[];
-    levelisedCostsOfSavedCo2: NewEnergySaving[];
-    annuatisedCo2Emissions: NewEnergySaving[];
+  levelisedCostsOfSavedEnergies: NewEnergySaving[];
+  levelisedCostsOfSavedCo2: NewEnergySaving[];
+  annuatisedCo2Emissions: NewEnergySaving[];
 }
 
 export interface MarginalCostCurves {
-    marginalEnergySavingsCostCurves: MarginalSavingsCostCurve[];
-    marginalCo2SavingsCostCurves: MarginalSavingsCostCurve[];
+  marginalEnergySavingsCostCurves: MarginalSavingsCostCurve[];
+  marginalCo2SavingsCostCurves: MarginalSavingsCostCurve[];
 }
 
 export interface MarginalSavingsCostCurve {
-    id_measure: number;
-    data: { [key: string]: { [key: string]: number } };
+  id_measure: number;
+  data: { [key: string]: { [key: string]: number } };
 }
 
 export interface Datum {
-    x: number;
-    y: number;
+  x: number;
+  y: number;
 }
 
 export interface NetPresentValue {
-    annuatisedEnergyCosts: NewEnergySaving[];
-    annuatisedMultipleImpacts: NewEnergySaving[];
-    netPresentValues: NewEnergySaving[];
+  annuatisedEnergyCosts: NewEnergySaving[];
+  annuatisedMultipleImpacts: NewEnergySaving[];
+  netPresentValues: NewEnergySaving[];
 }
 export interface CbaDataInterface {
-    labels: Array<string>;
-    datasets: Array<DatasetInterface>;
+  labels: Array<string>;
+  datasets: Array<DatasetInterface>;
 }
 export interface CbaCategoryInterface {
-    title: string;
-    data: CbaDataInterface;
+  title: string;
+  data: CbaDataInterface;
 }
 export interface CbaCategoriesInterface {
-    [key: string]: Array<CbaCategoryInterface>;
+  [key: string]: Array<CbaCategoryInterface>;
 }
 export interface GlobalParameterValue {
-    key: number;
-    value: number | null;
-    carrierType?: string;
+  key: number;
+  value: number | null;
+  carrierType?: string;
 }
 export interface GlobalParameters {
-    // Categories
-    [key: string]: {
-        // Subsector IDs
-        [key: number]: {
-            // Years / factors
-            [key: string]: Array<GlobalParameterValue>;
-        }
-    }
+  // Categories
+  [key: string]: {
+    // Subsector IDs
+    [key: number]: {
+      // Years / factors
+      [key: string]: Array<GlobalParameterValue>;
+    };
+  };
 }
 export interface ParameterValue {
-    key: string;
-    value: number;
+  key: string;
+  value: number;
 }
 export interface ParameterEntry {
-    years: Array<ParameterValue>;
-    parameters: {
-        [key: string]: string | number;
-    };
-    identifier: string;
+  years: Array<ParameterValue>;
+  parameters: {
+    [key: string]: string | number;
+  };
+  identifier: string;
 }
 export interface ParameterCategory {
-    [key: string]: Array<ParameterEntry>
+  [key: string]: Array<ParameterEntry>;
 }
 export interface Parameters {
-    [key: number]: ParameterCategory
+  [key: number]: ParameterCategory;
 }
 
 export interface MureCountryInterface {
-    id: number;
-    name: string;
+  id: number;
+  name: string;
 }
 
 export interface MureMeasurementInterface {
-    id: number;
-    "@id": string;
-    title: string;
-    startingDate: string;
-    isSuccessfulMeasure?: boolean;
-    country?: { id: number; name: string };
+  id: number;
+  '@id': string;
+  title: string;
+  startingDate: string;
+  isSuccessfulMeasure?: boolean;
+  country?: { id: number; name: string };
 }
 
 export interface ReferenceConsumptionEntry {
-    id: number;
-    id_region: number;
-    id_sector: number;
-    "Final consumption 2021 in PJ": number;
+  id: number;
+  id_region: number;
+  id_sector: number;
+  'Final consumption 2021 in PJ': number;
 }
 
 interface MureSavingsInterface {
-    year: string;
-    calculatedPj: number;
-    calculatedKtCO2: number;
-    pj: number;
+  year: string;
+  calculatedPj: number;
+  calculatedKtCO2: number;
+  pj: number;
 }
 
 export interface MureMeasurementDataInterface {
-    "@id": string;
-    code: string;
-    title: string;
-    reference: string;
-    targetedEndUses: Array<{
-        evaluationMethod: string;
-        cumulativeAnnualSavings: Array<MureSavingsInterface>;
-    }>;
-    "generalDescription": string;
-    "interactionOfMeasures": string;
+  '@id': string;
+  code: string;
+  title: string;
+  reference: string;
+  targetedEndUses: Array<{
+    evaluationMethod: string;
+    cumulativeAnnualSavings: Array<MureSavingsInterface>;
+  }>;
+  generalDescription: string;
+  interactionOfMeasures: string;
 }
 
 export interface OdysseeDataInterface {
-    [key: string]: number;
+  [key: string]: number;
 }
