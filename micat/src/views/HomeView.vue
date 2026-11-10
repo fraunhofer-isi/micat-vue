@@ -39,13 +39,16 @@ import {
   defaultProgram,
   stages,
   units,
-  unitsRenewables
+  unitsRenewables,
+  scenarioSectorMapping
 } from '@/defaults';
 import { getGlobalParametersPayload } from '@/helpers';
 import { useSessionStore } from '@/stores/session';
 import GlobalParametersOverlay from '@/components/GlobalParametersOverlay.vue';
 import ParametersOverlay from '@/components/ParametersOverlay.vue';
 import MureSelection from '@/components/MureSelection.vue';
+import ScenarioSelection from '@/components/ScenarioSelection.vue';
+import type { ScenarioSelectionData } from '@/components/ScenarioSelection.vue';
 import OnboardingTour, { type OnboardingStepInterface } from '@/components/OnboardingTour.vue';
 
 const session = useSessionStore();
@@ -128,6 +131,8 @@ const showParametersOverlay = ref<boolean>(false);
 const selectedImprovement = ref<SelectedImprovementInterface>({ internalId: 0, unit: 1 });
 const error = ref<string>('');
 const fileUpload = ref<HTMLInputElement | null>(null);
+const scenarioData = ref<ScenarioSelectionData | null>(null);
+const scenarioHasSelection = ref<boolean>(false);
 
 // Watchers
 watch(programs, (programs) => {
@@ -155,6 +160,12 @@ watch(
   () => session.gapFilling,
   (gapFilling) => {
     session.updateGapFilling(gapFilling);
+  }
+);
+watch(
+  () => session.scenario,
+  (scenario) => {
+    session.updateScenario(scenario);
   }
 );
 watch(
@@ -723,9 +734,135 @@ const importInput = async (e: Event) => {
     session.parameters = data.parameters;
   }, 500);
 };
+const onScenarioUpdate = (data: ScenarioSelectionData) => {
+  scenarioData.value = data;
+  scenarioHasSelection.value =
+    data.eeRows.length > 0 || data.resRows.length > 0;
+};
+const loadScenarioPrograms = () => {
+  if (!scenarioData.value) return;
+  const data = scenarioData.value;
+
+  // Set years from scenario data
+  years.value = [...data.years];
+  session.updateYears(years.value);
+  session.years = years.value;
+
+  const newPrograms: ProgramInterface[] = [];
+  let internalIdCounter = 1;
+
+  // Create EE programs
+  for (const row of data.eeRows) {
+    const subsectorId = scenarioSectorMapping[row.sector];
+    if (!subsectorId) continue;
+
+    const subsector = subsectors.value.find((s) => s.id === subsectorId);
+    if (!subsector) continue;
+
+    const matchedImprovement = subsector.improvements.find(
+      (imp) => imp.label?.toLowerCase().trim() === row.name.toLowerCase().trim()
+    );
+
+    const values: { [key: string]: number } = {};
+    for (const [yearStr, val] of Object.entries(row.values)) {
+      values[yearStr] = val ?? 0;
+    }
+
+    newPrograms.push({
+      name: `${row.sector} - ${row.name}`,
+      type: 'energyEfficiency',
+      unit: 1,
+      unitName: 'ktoe (kilo tonne of oil equivalent)',
+      subsector: subsectorId,
+      subsectorName: subsector.name,
+      showSubsectorMenu: false,
+      improvements: [
+        {
+          id: matchedImprovement?.id ?? 0,
+          internalId: internalIdCounter++,
+          name: matchedImprovement?.name,
+          label: matchedImprovement?.label,
+          values,
+          percentage: 100,
+          showParameterWarning: false
+        }
+      ]
+    });
+  }
+
+  // Create RES programs
+  const resAliases: { [key: string]: { subsector: string[]; improvement?: string } } = {
+    'pv-rooftop': { subsector: ['solar pv', 'pv'], improvement: 'rooftop' },
+    'pv- utility scale': { subsector: ['solar pv', 'pv'], improvement: 'utility' },
+    'pv-utility scale': { subsector: ['solar pv', 'pv'], improvement: 'utility' },
+    'wind off-shore': { subsector: ['wind'], improvement: 'offshore' },
+    'wind offshore': { subsector: ['wind'], improvement: 'offshore' }
+  };
+  for (const row of data.resRows) {
+    const techLower = row.technology.toLowerCase().trim();
+    const techNorm = techLower.replace(/[\s\-_]+/g, '');
+    const alias = resAliases[techLower];
+    const subsector = subsectors.value.find((s) => {
+      if (!s.renewable) return false;
+      const nameNorm = s.name.toLowerCase().replace(/[\s\-_]+/g, '');
+      const nameLower = s.name.toLowerCase().trim();
+      return (
+        nameNorm === techNorm ||
+        nameNorm.includes(techNorm) ||
+        techNorm.includes(nameNorm) ||
+        (alias && alias.subsector.some((a) => nameLower.includes(a) || a.includes(nameLower)))
+      );
+    });
+
+    let matchedImprovement = subsector?.improvements?.[0];
+    if (subsector && alias?.improvement) {
+      const keyword = alias.improvement.toLowerCase();
+      const found = subsector.improvements.find(
+        (imp) => imp.label?.toLowerCase().includes(keyword) || imp.name?.toLowerCase().includes(keyword)
+      );
+      if (found) matchedImprovement = found;
+    }
+
+    const values: { [key: string]: number } = {};
+    for (const [yearStr, val] of Object.entries(row.values)) {
+      values[yearStr] = val ?? 0;
+    }
+
+    newPrograms.push({
+      name: row.technology,
+      type: 'renewable',
+      unit: 1,
+      unitName: 'MW',
+      subsector: subsector ? (subsector.id as number) : 0,
+      subsectorName: subsector?.name ?? '',
+      showSubsectorMenu: false,
+      improvements: [
+        {
+          id: matchedImprovement?.id ?? 0,
+          internalId: internalIdCounter++,
+          name: matchedImprovement?.name,
+          label: matchedImprovement?.label,
+          values,
+          percentage: 100,
+          showParameterWarning: false
+        }
+      ]
+    });
+  }
+
+  // Replace programs
+  programs.splice(0, programs.length, ...newPrograms);
+  session.updatePrograms(programs);
+
+  // Reset parameters since we loaded new data
+  session.updateGlobalParameters({});
+  session.updateParameters({});
+};
 const start = () => {
   stage.value = stages.full;
-  if (!session.mure) {
+  if (session.scenario) {
+    loadScenarioPrograms();
+  } else if (!session.mure) {
     years.value = [];
     resetYears();
   }
@@ -755,7 +892,9 @@ const start = () => {
       <div class="col col-span-4 pr-[7rem]" v-if="stage === stages.home">
         <h1 class="text-4xl font-bold leading-snug dark:text-white">
           {{
-            session.gapFilling
+            session.scenario
+              ? 'Try a predefined EU energy scenario'
+              : session.gapFilling
               ? 'Scale successful policies to other countries'
               : session.mure
               ? 'Assess the impacts of past energy savings or specific policies'
@@ -763,7 +902,12 @@ const start = () => {
           }}
         </h1>
         <p class="mt-6 text-lg font-light dark:text-white">
-          <span v-if="session.gapFilling"
+          <span v-if="session.scenario"
+            >Select measures from the SEED-MICAT Energy Outlook Scenario and analyse their
+            multiple impacts. The scenario data is based on the PRIMES model and available
+            National Energy and Climate Plans.</span
+          >
+          <span v-else-if="session.gapFilling"
             >Select a successful policy measure from the
             <a target="_blank" class="font-bold" href="https://www.measures.odyssee-mure.eu/"
               >MURE</a
@@ -845,6 +989,12 @@ const start = () => {
           :subsectors="subsectors"
           :regions="regions"
         ></MureSelection>
+        <ScenarioSelection
+          v-else-if="session.scenario"
+          :subsectors="subsectors"
+          :readonly="stage === stages.full"
+          @update="onScenarioUpdate"
+        ></ScenarioSelection>
         <div
           v-else
           class="relative px-8 py-8 mb-5 border border-gray-300 rounded-3xl dark:border-gray-400"
@@ -997,14 +1147,15 @@ const start = () => {
           @click="start()"
           v-if="stage === stages.home"
           :disabled="
-            session.mure &&
-            (session.gapFilling
-              ? session.mureCategory === 0 ||
-                session.mureMeasurement === 0 ||
-                session.gapFillingCountry === 0
-              : session.mureCategory === 0 ||
-                session.mureCountry === 0 ||
-                (!session.odyssee && session.mureMeasurement === 0))
+            (session.scenario && !scenarioHasSelection) ||
+            (session.mure &&
+              (session.gapFilling
+                ? session.mureCategory === 0 ||
+                  session.mureMeasurement === 0 ||
+                  session.gapFillingCountry === 0
+                : session.mureCategory === 0 ||
+                  session.mureCountry === 0 ||
+                  (!session.odyssee && session.mureMeasurement === 0)))
           "
         >
           Start
@@ -1022,11 +1173,13 @@ const start = () => {
             <p
               class="inline-block px-4 italic font-semibold bg-white dark:bg-blue-950 dark:text-white"
               :class="{
-                'max-w-[40%]': !session.mure,
-                'max-w-[30%]': session.mure
+                'max-w-[40%]': !session.mure && !session.scenario,
+                'max-w-[30%]': session.mure || session.scenario
               }"
             >
-              <span v-if="session.mure">Do you want to use your own inputs?</span>
+              <span v-if="session.mure || session.scenario"
+                >Do you want to use your own inputs?</span
+              >
               <span v-else>Do you want to select data from a predefined use case?</span>
             </p>
           </div>
@@ -1035,7 +1188,12 @@ const start = () => {
           <div class="flex items-center justify-center gap-5">
             <div
               class="text-left dark:text-white"
-              v-if="!session.mure && !session.odyssee && !session.gapFilling"
+              v-if="
+                !session.mure &&
+                !session.odyssee &&
+                !session.gapFilling &&
+                !session.scenario
+              "
             >
               <h3 class="mb-2 font-semibold">
                 Assess the impacts of past energy savings or specific policies
@@ -1061,7 +1219,7 @@ const start = () => {
             </div>
             <div>
               <button
-                v-if="!session.mure || session.odyssee"
+                v-if="!session.scenario && (!session.mure || session.odyssee)"
                 class="px-6 py-1 mx-1 mb-4 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
                 @click="
                   session.mure = !session.mure;
@@ -1072,7 +1230,10 @@ const start = () => {
                 }}<span class="block font-bold text-white">ODYSSEE</span>
               </button>
               <button
-                v-if="!session.mure || (!session.odyssee && !session.gapFilling)"
+                v-if="
+                  !session.scenario &&
+                  (!session.mure || (!session.odyssee && !session.gapFilling))
+                "
                 class="px-6 py-1 mx-1 mb-4 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
                 @click="session.mure = !session.mure"
               >
@@ -1083,8 +1244,8 @@ const start = () => {
                 }}<span class="block font-bold text-white">MURE</span>
               </button>
               <button
-                v-if="!session.mure || session.gapFilling"
-                class="px-6 py-1 mx-1 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
+                v-if="!session.scenario && (!session.mure || session.gapFilling)"
+                class="px-6 py-1 mx-1 mb-4 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
                 @click="
                   session.mure = !session.mure;
                   session.gapFilling = !session.gapFilling;
@@ -1092,6 +1253,14 @@ const start = () => {
               >
                 {{ session.mure && session.gapFilling ? 'Deselect' : 'Scale a successful policy'
                 }}<span class="block font-bold text-white">GAP FILLING</span>
+              </button>
+              <button
+                v-if="!session.mure || session.scenario"
+                class="px-6 py-1 mx-1 mb-4 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
+                @click="session.scenario = !session.scenario"
+              >
+                {{ session.scenario ? 'Deselect' : 'Try a predefined scenario'
+                }}<span class="block font-bold text-white">SEED-MICAT</span>
               </button>
             </div>
           </div>

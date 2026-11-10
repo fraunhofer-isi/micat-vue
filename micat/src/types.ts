@@ -169,6 +169,7 @@ export interface ISessionState {
   mure: boolean;
   odyssee: boolean;
   gapFilling: boolean;
+  scenario: boolean;
   mureToken: MureTokenInterface;
   mureCategory: number;
   mureCountry: number;

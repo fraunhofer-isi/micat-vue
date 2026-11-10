@@ -422,6 +422,21 @@ const helpTexts: HelpTextInterface = {
     text: 'This value determines the average rent increase (in percentage points of the current rent) for tenants following a major renovation.<br /><br /><i>The default value stems from a Wuppertal Institute analysis of past data, although data availability is quite scarce.</i>',
     type: 'help'
   },
+  // Scenario
+  'scenario-info': {
+    title: 'SEED-MICAT Energy Outlook Scenario',
+    text:
+      '<p class="mb-3"><strong>General remark:</strong> The projections/reference presented in the MICAT tool (SEED-MICAT Energy Outlook Scenario) are based on a scenario developed independently within the SEED MICAT project using the PRIMES model, available National Energy and Climate Plans (NECPs), and the latest statistical data. The scenario follows a methodological framework broadly consistent with EU energy system projection exercises but was developed exclusively for the research and analytical purposes of the project. Consequently, the results do not represent, reproduce, replace, or constitute any official European Commission scenario and should not be interpreted as such.</p>' +
+      '<p class="mb-2"><strong>EE-data:</strong></p>' +
+      '<p class="mb-3 text-xs">The annual energy savings by measure were estimated using a Reference vs. Frozen scenario approach. For each measure, a dedicated Frozen scenario was developed in which the effect of the corresponding measure was held at base-year conditions, while all other drivers and assumptions remained consistent with the Reference scenario (SEED-MICAT Energy Outlook Scenario) as far as possible.</p>' +
+      '<p class="mb-3 text-xs">Annual energy savings are calculated as the difference in final energy consumption between the Frozen and Reference scenarios for each model year:<br /><em>ES(m,t) = E<sub>Frozen</sub>(m,t) − E<sub>Reference</sub>(m,t)</em><br />where ES(m,t) = annual energy savings associated with measure m in year t, E<sub>Frozen</sub>(m,t) = final energy consumption in the measure-specific Frozen scenario, E<sub>Reference</sub>(t) = final energy consumption in the Reference scenario.</p>' +
+      '<p class="mb-3 text-xs">The measures considered include:<br /><strong>Residential and Services:</strong> building envelope improvements, heating fuel switching, energy-efficient heating technologies, electric appliances, cooking and water heating, and behavioural changes.<br /><strong>Industry:</strong> cross-cutting technologies, fuel switching, process-specific measures, waste-heat recovery, and space heating/cooling measures.<br /><strong>Transport:</strong> vehicle efficiency improvements, fuel switching, and behavioural measures.</p>' +
+      '<p class="mb-3 text-xs">For technologies that combine both fuel switching and efficiency improvements (e.g. heat pumps), a specific allocation approach was applied. Efficiency gains associated with technologies already present in the base year were attributed to the corresponding energy-efficiency measure, while savings resulting from the deployment of new technologies replacing conventional alternatives were attributed to the fuel-switch measure.</p>' +
+      '<p class="mb-3 text-xs">The decomposition was calibrated such that, for each sector and year, the sum of savings across all reported measures is equal to the difference between the overall Frozen and Reference scenarios:<br /><br /><strong>Σ ES(m,t) = E<sub>Frozen</sub>(sector,t) − E<sub>Reference</sub>(sector,t).</strong></p>' +
+      '<p class="mb-2"><strong>RES-data:</strong></p>' +
+      '<p class="text-xs">For the RES-module, the newly installed capacities (wind and PV) from 2020–2050 are derived from the SEED-MICAT Energy Outlook Scenario. For the split between rooftop and utility scale a default split of 50/50 was used (can be altered by the users).</p>',
+    type: 'help'
+  },
   // MURE
   'mure-sector': {
     title: 'Sector',

@@ -30,6 +30,7 @@ export const useSessionStore = defineStore({
       mure: String(localStorage.getItem('mure') || 'false').toLowerCase() === 'true',
       odyssee: String(localStorage.getItem('odyssee') || 'false').toLowerCase() === 'true',
       gapFilling: String(localStorage.getItem('gapFilling') || 'false').toLowerCase() === 'true',
+      scenario: String(localStorage.getItem('scenario') || 'false').toLowerCase() === 'true',
       mureToken: JSON.parse(localStorage.getItem('mureToken') || JSON.stringify({})),
       mureCategory: parseInt(localStorage.getItem('mureCategory') || '0'),
       mureCountry: parseInt(localStorage.getItem('mureCountry') || '0'),
@@ -77,6 +78,10 @@ export const useSessionStore = defineStore({
     updateGapFilling(gapFilling: boolean, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
       localStorage.setItem('gapFilling', gapFilling.toString());
+    },
+    updateScenario(scenario: boolean, manualChange?: boolean) {
+      if (manualChange) this.resetted = false;
+      localStorage.setItem('scenario', scenario.toString());
     },
     updateMureToken(mureToken: MureTokenInterface, manualChange?: boolean) {
       if (manualChange) this.resetted = false;
@@ -167,6 +172,7 @@ export const useSessionStore = defineStore({
       this.updateMure(false, false);
       this.updateOdyssee(false, false);
       this.updateGapFilling(false, false);
+      this.updateScenario(false, false);
       this.updateMureCategory(0, false);
       this.updateMureCountry(0, false);
       this.updateMureMeasurement(0, false);

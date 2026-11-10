@@ -97,6 +97,12 @@ export const mureSubsectorMapping: { [key: number]: number } = {
   4: 16, // Services <-> Average tertiary
   5: 18 // Transport <-> Average transport
 };
+export const scenarioSectorMapping: { [key: string]: number } = {
+  Residential: 17, // Average residential
+  Industry: 2, // Average industry
+  Services: 16, // Average tertiary
+  Transport: 18 // Average transport
+};
 export const mureCategoryToSectorMapping: { [key: number]: number } = {
   2: 4, // Household -> Residential
   3: 2, // Industry -> Industry
