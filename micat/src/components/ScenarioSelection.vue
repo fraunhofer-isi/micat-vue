@@ -203,19 +203,27 @@ const formatValue = (val: number | null): string => {
     </div>
 
     <div class="flex items-center mb-4">
-      <span class="text-sm font-semibold dark:text-white">Methodology</span>
+      <h3 class="font-semibold dark:text-white">Methodology & Data</h3>
       <InformationCircleIcon
         @click="openModal('scenario-info')"
         class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
       ></InformationCircleIcon>
     </div>
 
+    <!-- Region (fixed to EU27) -->
+    <div class="grid items-center grid-cols-5 mb-4" v-if="readonly">
+      <div class="col-span-2">
+        <span class="text-sm dark:text-white">Region</span>
+      </div>
+      <div class="col-span-3">
+        <span class="text-sm font-bold text-gray-800 dark:text-gray-200">European Union</span>
+      </div>
+    </div>
+
     <!-- Readonly summary (after Start) -->
     <div v-if="readonly">
       <div v-for="sector in sectors" :key="`ro-${sector}`" class="mb-3">
-        <template
-          v-if="selectedEERows.filter((r) => r.sector === sector).length > 0"
-        >
+        <template v-if="selectedEERows.filter((r) => r.sector === sector).length > 0">
           <h3 class="text-xs font-bold text-gray-500 dark:text-gray-400">{{ sector }}</h3>
           <ul class="ml-1">
             <li

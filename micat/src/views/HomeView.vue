@@ -736,12 +736,18 @@ const importInput = async (e: Event) => {
 };
 const onScenarioUpdate = (data: ScenarioSelectionData) => {
   scenarioData.value = data;
-  scenarioHasSelection.value =
-    data.eeRows.length > 0 || data.resRows.length > 0;
+  scenarioHasSelection.value = data.eeRows.length > 0 || data.resRows.length > 0;
 };
 const loadScenarioPrograms = () => {
   if (!scenarioData.value) return;
   const data = scenarioData.value;
+
+  // Set region to EU27
+  const eu27 = regions.value.find((r) => String(r[1]).toLowerCase().includes('european'));
+  if (eu27) {
+    session.region = eu27[0] as number;
+    session.updateRegion(session.region);
+  }
 
   // Set years from scenario data
   years.value = [...data.years];
@@ -751,46 +757,52 @@ const loadScenarioPrograms = () => {
   const newPrograms: ProgramInterface[] = [];
   let internalIdCounter = 1;
 
-  // Create EE programs
+  // Group EE rows by sector → one program per sector, each measure is an improvement
+  const eeBySector: { [key: string]: typeof data.eeRows } = {};
   for (const row of data.eeRows) {
-    const subsectorId = scenarioSectorMapping[row.sector];
+    if (!eeBySector[row.sector]) eeBySector[row.sector] = [];
+    eeBySector[row.sector].push(row);
+  }
+
+  for (const [sector, rows] of Object.entries(eeBySector)) {
+    const subsectorId = scenarioSectorMapping[sector];
     if (!subsectorId) continue;
 
     const subsector = subsectors.value.find((s) => s.id === subsectorId);
     if (!subsector) continue;
 
-    const matchedImprovement = subsector.improvements.find(
-      (imp) => imp.label?.toLowerCase().trim() === row.name.toLowerCase().trim()
-    );
-
-    const values: { [key: string]: number } = {};
-    for (const [yearStr, val] of Object.entries(row.values)) {
-      values[yearStr] = val ?? 0;
-    }
+    const improvements = rows.map((row) => {
+      const matched = subsector.improvements.find(
+        (imp) => imp.label?.toLowerCase().trim() === row.name.toLowerCase().trim()
+      );
+      const values: { [key: string]: number } = {};
+      for (const [yearStr, val] of Object.entries(row.values)) {
+        values[yearStr] = val ?? 0;
+      }
+      return {
+        id: matched?.id ?? 0,
+        internalId: internalIdCounter++,
+        name: matched?.name,
+        label: matched?.label,
+        values,
+        percentage: 100,
+        showParameterWarning: false
+      };
+    });
 
     newPrograms.push({
-      name: `${row.sector} - ${row.name}`,
+      name: sector,
       type: 'energyEfficiency',
       unit: 1,
       unitName: 'ktoe (kilo tonne of oil equivalent)',
       subsector: subsectorId,
       subsectorName: subsector.name,
       showSubsectorMenu: false,
-      improvements: [
-        {
-          id: matchedImprovement?.id ?? 0,
-          internalId: internalIdCounter++,
-          name: matchedImprovement?.name,
-          label: matchedImprovement?.label,
-          values,
-          percentage: 100,
-          showParameterWarning: false
-        }
-      ]
+      improvements
     });
   }
 
-  // Create RES programs
+  // Group RES rows by resolved subsector → one program per technology group
   const resAliases: { [key: string]: { subsector: string[]; improvement?: string } } = {
     'pv-rooftop': { subsector: ['solar pv', 'pv'], improvement: 'rooftop' },
     'pv- utility scale': { subsector: ['solar pv', 'pv'], improvement: 'utility' },
@@ -798,6 +810,14 @@ const loadScenarioPrograms = () => {
     'wind off-shore': { subsector: ['wind'], improvement: 'offshore' },
     'wind offshore': { subsector: ['wind'], improvement: 'offshore' }
   };
+
+  const resGrouped: {
+    [subsectorId: number]: {
+      subsector: SubsectorInterface;
+      rows: { row: (typeof data.resRows)[0]; alias?: (typeof resAliases)[string] }[];
+    };
+  } = {};
+
   for (const row of data.resRows) {
     const techLower = row.technology.toLowerCase().trim();
     const techNorm = techLower.replace(/[\s\-_]+/g, '');
@@ -814,39 +834,50 @@ const loadScenarioPrograms = () => {
       );
     });
 
-    let matchedImprovement = subsector?.improvements?.[0];
-    if (subsector && alias?.improvement) {
-      const keyword = alias.improvement.toLowerCase();
-      const found = subsector.improvements.find(
-        (imp) => imp.label?.toLowerCase().includes(keyword) || imp.name?.toLowerCase().includes(keyword)
-      );
-      if (found) matchedImprovement = found;
+    const sid = subsector ? (subsector.id as number) : 0;
+    if (!resGrouped[sid]) {
+      resGrouped[sid] = { subsector: subsector!, rows: [] };
     }
+    resGrouped[sid].rows.push({ row, alias });
+  }
 
-    const values: { [key: string]: number } = {};
-    for (const [yearStr, val] of Object.entries(row.values)) {
-      values[yearStr] = val ?? 0;
-    }
+  for (const [, group] of Object.entries(resGrouped)) {
+    const subsector = group.subsector;
+    const improvements = group.rows.map(({ row, alias }) => {
+      let matched = subsector?.improvements?.[0];
+      if (subsector && alias?.improvement) {
+        const keyword = alias.improvement.toLowerCase();
+        const found = subsector.improvements.find(
+          (imp) =>
+            imp.label?.toLowerCase().includes(keyword) ||
+            imp.name?.toLowerCase().includes(keyword)
+        );
+        if (found) matched = found;
+      }
+      const values: { [key: string]: number } = {};
+      for (const [yearStr, val] of Object.entries(row.values)) {
+        values[yearStr] = val ?? 0;
+      }
+      return {
+        id: matched?.id ?? 0,
+        internalId: internalIdCounter++,
+        name: matched?.name,
+        label: matched?.label,
+        values,
+        percentage: 100,
+        showParameterWarning: false
+      };
+    });
 
     newPrograms.push({
-      name: row.technology,
+      name: subsector?.name ?? 'Renewables',
       type: 'renewable',
       unit: 1,
       unitName: 'MW',
       subsector: subsector ? (subsector.id as number) : 0,
       subsectorName: subsector?.name ?? '',
       showSubsectorMenu: false,
-      improvements: [
-        {
-          id: matchedImprovement?.id ?? 0,
-          internalId: internalIdCounter++,
-          name: matchedImprovement?.name,
-          label: matchedImprovement?.label,
-          values,
-          percentage: 100,
-          showParameterWarning: false
-        }
-      ]
+      improvements
     });
   }
 
@@ -903,9 +934,9 @@ const start = () => {
         </h1>
         <p class="mt-6 text-lg font-light dark:text-white">
           <span v-if="session.scenario"
-            >Select measures from the SEED-MICAT Energy Outlook Scenario and analyse their
-            multiple impacts. The scenario data is based on the PRIMES model and available
-            National Energy and Climate Plans.</span
+            >Select measures from the SEED-MICAT Energy Outlook Scenario and analyse their multiple
+            impacts. The scenario data is based on the PRIMES model and available National Energy
+            and Climate Plans.</span
           >
           <span v-else-if="session.gapFilling"
             >Select a successful policy measure from the
@@ -995,8 +1026,78 @@ const start = () => {
           :readonly="stage === stages.full"
           @update="onScenarioUpdate"
         ></ScenarioSelection>
+        <!-- Timeframe for scenario mode (shown in full stage) -->
         <div
-          v-else
+          v-if="session.scenario && stage === stages.full"
+          class="relative px-8 py-8 mb-5 border border-gray-300 rounded-3xl dark:border-gray-400"
+        >
+          <div class="absolute top-[-14px] left-0 w-full text-center">
+            <span
+              class="inline-block px-4 italic font-bold bg-white dark:bg-blue-950 dark:text-white"
+            >
+              Timeframe
+            </span>
+          </div>
+          <div class="grid items-center grid-cols-5">
+            <div class="col-span-2">
+              <label class="text-sm dark:text-white">Years</label>
+              <InformationCircleIcon
+                @click="openModal('years')"
+                class="inline w-6 h-6 ml-2 cursor-pointer dark:text-white"
+              ></InformationCircleIcon>
+            </div>
+            <div class="col-span-3">
+              <div class="flex flex-wrap">
+                <div
+                  v-for="year in years"
+                  v-bind:key="`scenario-year-${year}`"
+                  class="mb-6 mr-2 rounded-full whitespace-nowrap"
+                >
+                  <span
+                    class="px-2 py-2 text-center text-white border rounded-l-full bg-sky-600 border-sky-600"
+                  >
+                    {{ year }}
+                  </span>
+                  <span
+                    class="px-2 py-2 text-center border rounded-r-full dark:bg-white text-sky-900 border-sky-600"
+                  >
+                    <TrashIcon
+                      @click="removeYear(year)"
+                      class="mt-[-3px] h-5 w-5 inline"
+                      :class="{
+                        'text-red-200': years.length <= 2,
+                        'text-red-700': years.length > 2,
+                        'cursor-pointer': years.length > 2
+                      }"
+                    ></TrashIcon>
+                  </span>
+                </div>
+              </div>
+              <div>
+                <select
+                  id="scenario-new-year"
+                  class="py-2.5 px-0 w-full text-sm text-gray-500 bg-white dark:bg-blue-950 border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-200 dark:border-gray-200 focus:outline-none focus:ring-0 focus:border-gray-200 max-w-[100px]"
+                  v-model="newYearSelected"
+                >
+                  <option
+                    v-for="newYear in newYears"
+                    v-bind:key="`scenario-new-year-${newYear}`"
+                    :value="newYear"
+                    :selected="newYear === newYearSelected"
+                  >
+                    {{ newYear }}
+                  </option>
+                </select>
+                <PlusCircleIcon
+                  @click="addYear()"
+                  class="inline ml-5 cursor-pointer h-7 w-7 text-sky-700 dark:text-white"
+                ></PlusCircleIcon>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          v-if="!session.mure && !session.scenario"
           class="relative px-8 py-8 mb-5 border border-gray-300 rounded-3xl dark:border-gray-400"
         >
           <div class="absolute top-[-14px] left-0 w-full text-center">
@@ -1188,12 +1289,7 @@ const start = () => {
           <div class="flex items-center justify-center gap-5">
             <div
               class="text-left dark:text-white"
-              v-if="
-                !session.mure &&
-                !session.odyssee &&
-                !session.gapFilling &&
-                !session.scenario
-              "
+              v-if="!session.mure && !session.odyssee && !session.gapFilling && !session.scenario"
             >
               <h3 class="mb-2 font-semibold">
                 Assess the impacts of past energy savings or specific policies
@@ -1231,8 +1327,7 @@ const start = () => {
               </button>
               <button
                 v-if="
-                  !session.scenario &&
-                  (!session.mure || (!session.odyssee && !session.gapFilling))
+                  !session.scenario && (!session.mure || (!session.odyssee && !session.gapFilling))
                 "
                 class="px-6 py-1 mx-1 mb-4 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
                 @click="session.mure = !session.mure"
@@ -1254,6 +1349,20 @@ const start = () => {
                 {{ session.mure && session.gapFilling ? 'Deselect' : 'Scale a successful policy'
                 }}<span class="block font-bold text-white">GAP FILLING</span>
               </button>
+            </div>
+          </div>
+          <div class="flex items-center justify-center gap-5 mt-5">
+            <div
+              class="text-left dark:text-white"
+              v-if="!session.mure && !session.odyssee && !session.gapFilling && !session.scenario"
+            >
+              <h3 class="mb-2 font-semibold">Explore an EU27 Showcase</h3>
+              <p class="text-xs">
+                Analyse the Multiple Impacts if the energy efficiency savings resulting from the
+                comparison if a frozen efficiency with a reference scenario between 2020 and 2050.
+              </p>
+            </div>
+            <div>
               <button
                 v-if="!session.mure || session.scenario"
                 class="px-6 py-1 mx-1 mb-4 text-xs text-orange-200 uppercase bg-orange-500 rounded-full whitespace-nowrap hover:bg-orange-600 disabled:bg-orange-600 disabled:text-orange-500"
