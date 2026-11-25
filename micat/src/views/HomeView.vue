@@ -21,7 +21,8 @@ import {
   AdjustmentsVerticalIcon,
   ExclamationTriangleIcon,
   ArrowDownTrayIcon,
-  ArrowUpTrayIcon
+  ArrowUpTrayIcon,
+  ArrowsPointingOutIcon
 } from '@heroicons/vue/24/outline';
 import type {
   ModalInjectInterface,
@@ -107,6 +108,7 @@ const homeOnboardingSteps: Array<OnboardingStepInterface> = [
   }
 ];
 const showOnboarding = ref<boolean>(false);
+const showVideoModal = ref<boolean>(false);
 
 // Injections
 const { openModal } = inject<ModalInjectInterface>('modal') || defaultModalInject;
@@ -906,6 +908,30 @@ const start = () => {
 
 <template>
   <main>
+    <Teleport to="body">
+      <div
+        v-if="false && showVideoModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+        @click.self="showVideoModal = false"
+      >
+        <div class="relative w-[90vw] max-w-5xl aspect-video">
+          <iframe
+            class="absolute inset-0 w-full h-full rounded-xl"
+            src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"
+            title="MICATool Tutorial"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+          <button
+            class="absolute -top-10 right-0 text-white hover:text-gray-300 text-sm font-semibold"
+            @click="showVideoModal = false"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </Teleport>
     <GlobalParametersOverlay
       v-if="showGlobalParametersOverlay"
       @close="showGlobalParametersOverlay = false"
@@ -962,6 +988,47 @@ const start = () => {
             comprehensive multiple impact analysis.</span
           >
         </p>
+        <!-- TODO: reactivate video and links when tutorial is ready -->
+        <div v-if="false" class="relative mt-6 aspect-video w-full rounded-xl overflow-hidden shadow-lg">
+          <iframe
+            class="absolute inset-0 w-full h-full"
+            src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"
+            title="MICATool Tutorial"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+          <button
+            class="absolute top-2 right-2 p-1.5 bg-black/50 hover:bg-black/70 text-white rounded-lg transition-colors"
+            title="Maximize video"
+            @click="showVideoModal = true"
+          >
+            <ArrowsPointingOutIcon class="w-5 h-5" />
+          </button>
+        </div>
+        <div v-if="false" class="mt-6 flex flex-wrap gap-3">
+          <a
+            href="https://doc.micatool.eu"
+            target="_blank"
+            class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-sky-600 rounded-full hover:bg-sky-700 transition-colors"
+          >
+            Documentation
+          </a>
+          <a
+            href="https://www.micat-project.eu"
+            target="_blank"
+            class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-sky-600 rounded-full hover:bg-sky-700 transition-colors"
+          >
+            Project Website
+          </a>
+          <a
+            href="https://github.com/fraunhofer-isi/micat"
+            target="_blank"
+            class="inline-flex items-center px-5 py-2 text-sm font-semibold text-white bg-sky-600 rounded-full hover:bg-sky-700 transition-colors"
+          >
+            Source Code
+          </a>
+        </div>
       </div>
       <div
         class="relative col"

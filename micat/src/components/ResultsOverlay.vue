@@ -271,6 +271,13 @@ const categories: CategoriesInterface = {
         yAxis: 'Savings in €'
       },
       {
+        title: 'Value of energy',
+        description:
+          '<p class="mb-2">This indicator calculates the monetary value of avoided primary energy use from renewable energy measures. It accounts for wholesale energy prices, ETS prices, and variable non-fuel costs weighted by conversion efficiencies. For district heat technologies, heat-specific non-fuel costs and conversion efficiencies are used instead of electricity-specific ones.</p>',
+        identifier: 'valueOfEnergy',
+        yAxis: 'Value in €'
+      },
+      {
         title: 'Reduction of greenhouse gas emissions',
         description:
           '<p class="mb-2">This graph displays the monetary benefits associated with reduced greenhouse gas emissions. The costs of greenhouse gas emissions can be monetised in several ways, inter alia with the costs of carbon in carbon certificate schemes such as the EU Emission Trading System (ETS), the cost of removal or the cost of avoidance for future generations. The MICATool uses societal costs of carbon as a calculation basis, which are calculated in line with common evaluation methodologies by the German Federal Environmental Agency.</p><p>The equations can be found <a target="_blank" class="font-bold" href="https://doc.micatool.eu/ecologic_indicators/reduction_GHG.html">here</a>, the fact sheet can be downloaded as <a target="_blank" class="font-bold" href="https://micatool.eu/seed-micat-project-wAssets/docs/publications/factsheets/Environmental-impact-GHG-savings-savings-of-direct-carbon-emissions.pdf">PDF</a>.</p>',
@@ -353,6 +360,7 @@ const categories: CategoriesInterface = {
   }
 };
 const measurementsForEnergyEfficiency = [
+  'reductionOfEnergyCost',
   'reductionInDisabilityAdjustedLifeYears',
   'reductionInDisabilityAdjustedLifeYearsMonetization',
   'avoidedExcessColdWeatherMortality',
@@ -430,7 +438,7 @@ const activeIndicators = ref<Array<string>>(
   categories.monetization.measurements
     .filter(
       (m) =>
-        ['addedAssetValueOfBuildings', 'impactOnGrossDomesticProduct'].indexOf(m.identifier) === -1
+        ['addedAssetValueOfBuildings', 'impactOnGrossDomesticProduct', 'impactOnPublicBudget'].indexOf(m.identifier) === -1
     )
     .map((measurement) => measurement.identifier)
 );
@@ -858,8 +866,12 @@ const cbaData: Ref<Array<CbaData>> = computedAsync(
       // Sum up all indicators ΔMI_{m,y}
       const totalIndicatorsByYear: { [year: string]: number } = {};
       const perIndicatorByYear: { [identifier: string]: { [year: string]: number } } = {};
+      const isRenewable = session.programs[0]?.type === 'renewable';
       const indicators = categories.monetization.measurements.filter(
-        (measurement) => activeIndicators.value.indexOf(measurement.identifier) > -1
+        (measurement) =>
+          activeIndicators.value.indexOf(measurement.identifier) > -1 &&
+          !(!isRenewable && measurementsForRenewables.indexOf(measurement.identifier) > -1) &&
+          !(isRenewable && measurementsForEnergyEfficiency.indexOf(measurement.identifier) > -1)
       );
       indicators.forEach((indicator, i) => {
         if (['impactOnGrossDomesticProduct'].indexOf(indicator.identifier) > -1) {
@@ -1225,6 +1237,10 @@ const { openModal } = inject<ModalInjectInterface>('modal') || defaultModalInjec
                     !(
                       session.programs[0].type !== 'renewable' &&
                       measurementsForRenewables.indexOf(measurement.identifier) > -1
+                    ) &&
+                    !(
+                      session.programs[0].type === 'renewable' &&
+                      measurementsForEnergyEfficiency.indexOf(measurement.identifier) > -1
                     )
                 )"
                 v-bind:key="`measurement-${measurement.identifier}`"
@@ -1280,7 +1296,17 @@ const { openModal } = inject<ModalInjectInterface>('modal') || defaultModalInjec
                     activeIndicators.indexOf(measurement.identifier) === -1
                 }"
                 v-for="(measurement, i) in categories['monetization'].measurements.filter(
-                  (measurement) => measurement.identifier !== 'addedAssetValueOfBuildings'
+                  (measurement) =>
+                    measurement.identifier !== 'addedAssetValueOfBuildings' &&
+                    measurement.identifier !== 'impactOnPublicBudget' &&
+                    !(
+                      session.programs[0].type !== 'renewable' &&
+                      measurementsForRenewables.indexOf(measurement.identifier) > -1
+                    ) &&
+                    !(
+                      session.programs[0].type === 'renewable' &&
+                      measurementsForEnergyEfficiency.indexOf(measurement.identifier) > -1
+                    )
                 )"
                 v-bind:key="`measurement-cba-${measurement.identifier}`"
               >
